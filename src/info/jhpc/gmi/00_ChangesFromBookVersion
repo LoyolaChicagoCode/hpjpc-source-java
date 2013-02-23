@@ -1,0 +1,53 @@
+This is the latest (improved) code for Generic Mailbox Invocations, a
+messaging framework for Remote Procedure Calls (RPC) with all of the
+benefits of RMI minus the hacks.
+
+This is not intended to be user documentation. This document will
+probably disappear at some point. This only identifies the recent
+changes to GMI and what you'll need to do to make GMI and your code
+coexist happily and merrily.
+
+1. All code is now contained in a package named jhpc.gmi. This package
+will need to be imported in all code. It is recommended that you make
+this change immediately and keep the .jar file in your class path.
+
+2. RemoteCallServerDispatcher had a bug. When a remote exception
+occurred, rather than dying gracefully, the client was left
+hanging. Needless to say, I should have documented this problem. The
+new version of this class includes full support for remote
+exceptions. If you have your own defined exceptions, you should make
+sure they are Serializable. Remote exceptions are wrapped in a
+CallMessageException instance, which is returned to the client. This
+makes it possible to have a remote call that can actually return (and
+not throw) an Exception or subclass thereof.
+
+3. RemoteCallClient has also been cleaned up to accommodate the new
+remote exception capability. There are new GMI*Exception classes that
+will be thrown if a communication failure occurs during the call or
+the reply.  There is also an exception generated if a communication
+failure occurs during the disconnect operation.
+
+4. An unfortunate consequence of 3 (which you will later agree is a
+feature) is that you now must put try/catch around remote calls. I
+wanted to do this a long time ago, and this is just plugging a hole
+that I knew existed. In case you are wondering why this is a problem,
+consider the case where a remote call legitimately returns null. The
+original GMI used null as a flag to indicate general call failure
+(from the RemoteCallClient point of view.)  Now you can rest assured
+that the return of null is clearly a result, not an exception or an
+error. I hope this makes sense.
+
+5. The exception architecture for remote calls substantially differs
+from Java RMI. Regardless of whether your exceptions are local or
+remote, GMI simply does not care. Everything is an Exception. What I
+really despise about RMI are all of these kludges that impose an
+enormous burden on the programmer. GMI encapsulates the ugliness so
+programmers never have to see it in their code. Interestingly enough,
+the changes to accommodate exceptions were very straightforward. Since
+so little code had to be written (and some was even removed), I have
+taken the opportunity to comment the code, in case you want to
+understand how GMI works (the comments are placed strategically in the
+call() and run() methods in RemoteCallClient and
+RemoteCallServerDispatcher classes, respectively.
+
+Enjoy!

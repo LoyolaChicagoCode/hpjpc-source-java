@@ -1,0 +1,44 @@
+This directory contains a lot of stuff.
+
+There is code that specifically is designed to support remote calls
+using SocketServer and Socket classes. You are expected to use this
+code for the Chat implementation.
+
+The key classes are:
+
+RemoteCallServer - this is a generic server for remote calls.
+
+RemoteCallClient - this is a generic client. It is needed to issue calls
+	to a RemoteCallServer instance.
+
+CallMessage - An abstract class that can be used to create remote call
+	messages.
+
+Callable - An interface that any class that wants to be remote must 
+	implement.
+
+Goodbye - A reserved message that can be used to zap a particular
+	client/server session.
+
+
+
+ChatClientLogin - the main login screen
+
+ChatClientRoom - the client room, which is launched upon successful login
+	and is used to carry out the chat
+
+ChatServer - this is the remote object that maanges the chat room.
+ChatUserData - this is used to maintain state for each user joining the
+	chat.
+
+ChatLogin - a message used to login to the ChatServer
+ChatSession - a reply message used to pass the session ID back to client
+GetMessages - used to request messages for a particular user.
+Logout - a message used to Logout of the chat room.
+Ok.java - an acknowledgment message. Also can be used to notify of
+	errors.
+
+PutMessage - used to send a message to the chat room.
+
+You'll need to add other message types for this assignment. I think this
+provides an excellent starting point for you to work from.

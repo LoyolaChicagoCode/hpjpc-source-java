@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# You may need to update to reflect the shell that you're using. If you're
+# not using bash, the question is, "why?" ;-)
+
+# You may need to change these variables.
+# Where is your Java compiler installed?
+#   On Unix, it's usually in /usr/local/java or another respectable location.
+JAVA_HOME=/usr/local/java
+export PATH=$JAVA_HOME/bin:$PATH
+
+# Where are the libraries from the book installed? If you unpacked the 
+# distribution, it should be some path leading up to 'jhpc-1.0rc1' or 
+# the current distribution name.
+
+HPJPCLIB=<full path up to and including>/jhpc-1.0rc1
+
+# This is an important one. It mostly applies to JDK 1.1.x and earlier. 
+# If you are confident about Java 2, go ahead and just make sure that 
+# $HPJPCLIB is in the path.
+
+export CLASSPATH=$JAVA_HOME/lib/classes.zip:.:$HPJPCLIB
+
+JAVA=$JAVA_HOME/bin/java 
+
+echo "*** Starting Memo Server ***"
+$JAVA jhpc.memo.MemoServer\$Server &
+
+# This is not a kludge. I have this here so I have time to react and see
+# what is going on, and observe in another window whether the correct number
+# of processes are started, etc.
+sleep 3
+
+WORKERS=4
+PROBLEM_SIZE=40
+BLOCK_SIZE=20
+JIT=
+
+echo "Starting Memo Server"
+$JAVA jhpc.memo.MemoServer\$Server &
+
+sleep 5
+
+
+echo "*** Starting Master ***"
+
+echo "Starting Master"
+$JAVA  WarshallTQ\$MemoTest1 localhost 2099 0 $WORKERS $PROBLEM_SIZE $BLOCK_SIZE &
+
+
+for x in 1 2 3 4
+do
+   echo "*** Starting Worker $x ***"
+   $JAVA WarshallTQ\$MemoTest1 localhost 2099 $x $WORKERS $PROBLEM_SIZE $BLOCK_SIZE &
+done
