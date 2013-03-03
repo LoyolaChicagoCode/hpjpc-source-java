@@ -29,16 +29,16 @@ import info.jhpc.thread.*;
 import java.util.Random;
 
 public class LCS {
+
+   // begin-LCS-vars
    int numThreads;
-
    char[] c0;
-
    char[] c1;
-
    int[][] a;
-
    Accumulator done;
+   // end-LCS-vars
 
+   // begin-LCS-constructor1
    public LCS(char[] c0, char[] c1, int numThreads) {
       this.numThreads = numThreads;
       this.c0 = c0;
@@ -56,25 +56,32 @@ public class LCS {
          left = right;
       }
    }
+   // end-LCS-constructor1
 
+   // begin-LCS-constructor2
    public LCS(String s0, String s1, int numThreads) {
       this(s0.toCharArray(), s1.toCharArray(), numThreads);
    }
+   // end-LCS-constructor2
 
    private class Band extends Thread {
+      // begin-Band-vars
       int low;
-
       int high;
-
       Semaphore left, right;
+      // begin-Band-vars
 
+
+      // begin-Band-constructor
       Band(int low, int high, Semaphore left, Semaphore right) {
          this.low = low;
          this.high = high;
          this.left = left;
          this.right = right;
       }
+      // end-Band-constructor
 
+      // begin-Band-run
       public void run() {
          try {
             int i, j, k;
@@ -92,6 +99,8 @@ public class LCS {
          } catch (InterruptedException ex) {
          }
       }
+      // end-Band-run
+
    }
 
    int startOfBand(int i, int nb, int N) {
@@ -115,6 +124,7 @@ public class LCS {
    }
 
    public static class Test1 {
+      // begin-LCS-main
       public static void main(String[] args) {
          if (args.length < 2) {
             System.out.println("Usage: java LCS$Test1 string0 string1");
@@ -130,5 +140,6 @@ public class LCS {
          LCS w = new LCS(s0, s1, nt);
          System.out.println(w.getLength());
       }
+      // end-LCS-main
    }
 }
