@@ -103,10 +103,13 @@ public class LCS {
 
    }
 
+   // begin-LCS-startOfBand
    int startOfBand(int i, int nb, int N) {
       return 1 + i * (N / nb) + Math.min(i, N % nb);
    }
+   // end-LCS-startOfBand
 
+   // begin-LCS-getLength
    public int getLength() {
       try {
          done.getFuture().getValue();
@@ -114,6 +117,7 @@ public class LCS {
       }
       return a[c0.length][c1.length];
    }
+   // end-LCS-getLength
 
    public int[][] getArray() {
       try {
