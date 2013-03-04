@@ -69,7 +69,7 @@ public class LCS {
       int low;
       int high;
       Semaphore left, right;
-      // begin-Band-vars
+      // end-Band-vars
 
 
       // begin-Band-constructor
