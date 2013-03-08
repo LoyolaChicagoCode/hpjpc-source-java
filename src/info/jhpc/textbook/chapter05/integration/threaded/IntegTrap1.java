@@ -148,7 +148,7 @@ public class IntegTrap1 {
 
          for (i = 0; i < numThreads; i++) {
             // create and start new child threads
-            childThreads[i] = new IntegTrap1Region(start, end, granularity, fn);
+            childThreads[i] = new IntegTrap1Region(start, end, granularity / numThreads, fn);
             childThreads[i].start();
 
             // set the range for the next thhread
@@ -184,7 +184,7 @@ public class IntegTrap1 {
       System.out.println("===============================");
       System.out.println("Total area under curve : " + totalArea);
       System.out.println("Number of threads used : " + threadCount);
-      System.out.println("Granularity of calc.   : " + granularity
+      System.out.println("Granularity of calc.   : " + granularity / threadCount
             + " trapaziods per sub-region");
       System.out.println("Total run time         : " + run_time + " msec.");
       System.out.println("===============================\n");

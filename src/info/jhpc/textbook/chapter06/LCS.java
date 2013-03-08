@@ -141,8 +141,11 @@ public class LCS {
          String s1 = args[1];
          System.out.println(s0);
          System.out.println(s1);
+         long t0 = System.currentTimeMillis();
          LCS w = new LCS(s0, s1, nt);
+         long t1 = System.currentTimeMillis() - t0;
          System.out.println(w.getLength());
+         System.out.println("Elapsed time " + t1 + " milliseconds");
       }
       // end-LCS-main
    }
