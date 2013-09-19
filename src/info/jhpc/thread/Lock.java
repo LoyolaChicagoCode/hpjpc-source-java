@@ -41,6 +41,7 @@ http://opensource.org.
 
 package info.jhpc.thread;
 
+// begin-class-Lock
 class Lock {
    protected boolean locked;
 
@@ -59,3 +60,4 @@ class Lock {
       notify();
    }
 }
+// end-class-Lock
