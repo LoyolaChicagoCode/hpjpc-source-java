@@ -48,6 +48,8 @@ package info.jhpc.thread;
  * @version 0.2 Beta
  */
 
+// begin-class-SimpleBarrier
+
 public class SimpleBarrier {
    /**
     * Number of threads that still must gather.
@@ -88,3 +90,5 @@ public class SimpleBarrier {
       }
    }
 }
+
+// end-class-SimpleBarrier

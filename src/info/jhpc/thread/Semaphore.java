@@ -48,6 +48,8 @@ package info.jhpc.thread;
  * @version 0.2 Beta
  */
 
+// begin-class-Semaphore
+
 public class Semaphore {
    /**
     * The current count, which must be non-negative.
@@ -97,3 +99,6 @@ public class Semaphore {
       notify();
    }
 }
+
+// end-class-Semaphore
+
