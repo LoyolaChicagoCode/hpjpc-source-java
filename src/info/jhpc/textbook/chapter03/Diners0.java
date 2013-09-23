@@ -11,15 +11,15 @@ class Diners0 {
         int i,j=0;
         boolean goOn;
 
-        for (i=0;i<5;i++) {
+        for (i=0; i<5; i++) {
             fork[i]=new Fork(i);
         }
 
-        for (i=0;i<5;i++) {
+        for (i=0; i<5; i++) {
             diner[i]=new Diner0(fork[i],fork[(i+1)%5]);
         }
 
-        for (i=0;i<5;i++) {
+        for (i=0; i<5; i++) {
             diner[i].start();
         }
 
@@ -30,7 +30,7 @@ class Diners0 {
         goOn=true;
 
         while (goOn) {
-            for (i=0;i<5;i++) {
+            for (i=0; i<5; i++) {
                 System.out.print(diner[i].state);
             }
 
@@ -41,13 +41,15 @@ class Diners0 {
 
             goOn=false;
 
-            for (i=0;i<5;i++) {
+            for (i=0; i<5; i++) {
                 goOn |= diner[i].state != 'd';
             }
 
             try {
                 Thread.sleep(51);
-            } catch (InterruptedException e) {return;} 
+            } catch (InterruptedException e) {
+                return;
+            }
         }
     }
 }

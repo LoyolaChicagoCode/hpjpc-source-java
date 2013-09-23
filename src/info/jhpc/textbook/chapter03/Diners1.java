@@ -1,5 +1,6 @@
 // begin-class-Diners1
-class Diners1 {1
+class Diners1 {
+    1
     static Fork[] fork=new Fork[5];
     static Diner0[] diner=new Diner0[5];
 
