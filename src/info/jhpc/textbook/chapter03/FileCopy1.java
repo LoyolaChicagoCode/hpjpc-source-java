@@ -1,10 +1,12 @@
+package info.jhpc.textbook.chapter03;
+
 import java.io.*;
 import java.util.*;
 
 // begin-class-FileCopy1
 public class FileCopy1 {
 
-    public static int getIntProp(Properties p, String key
+    public static int getIntProp(Properties p, String key,
                                  int defaultValue) {
 
         try {

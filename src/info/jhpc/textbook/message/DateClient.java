@@ -44,6 +44,7 @@ package info.jhpc.textbook.message;
 import info.jhpc.message.Message;
 import info.jhpc.message.MessageClient;
 
+// begin-class-DateClient-Message
 public class DateClient {
 
    public static void main(String[] args) {
@@ -84,3 +85,5 @@ public class DateClient {
       conn.disconnect();
    }
 }
+//end-class-DateClient-Message
+

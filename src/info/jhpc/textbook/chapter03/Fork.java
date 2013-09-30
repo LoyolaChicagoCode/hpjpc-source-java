@@ -16,9 +16,8 @@ class Fork {
         lock.unlock();
     }
 
-    public Fork(int i) {
-        Integer i = new Integer(i);
-        id = i.toString().charAt(0);
+    public Fork(int value) {
+        this.id = new Integer(value).toString().charAt(0);
     }
 }
 // end-class-Fork

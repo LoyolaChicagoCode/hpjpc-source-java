@@ -51,6 +51,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
 
+// begin-class-MessageServer
 public class MessageServer extends Thread {
    private ServerSocket callListener;
    private Hashtable subscribers;
@@ -71,12 +72,12 @@ public class MessageServer extends Thread {
       log("Created MessageServer instance fully!");
    }
 
-   public void subscribe(int messageType, Deliverable d) {
+   public void subscribe(int messageType, MessageService d) {
       subscribers.put(messageType + "", d);
    }
 
-   public Deliverable getSubscriber(int messageType) {
-      return (Deliverable) subscribers.get(messageType + "");
+   public MessageService getSubscriber(int messageType) {
+      return (MessageService) subscribers.get(messageType + "");
    }
 
    public void run() {
@@ -94,3 +95,4 @@ public class MessageServer extends Thread {
       }
    }
 }
+//end-class-MessageServer

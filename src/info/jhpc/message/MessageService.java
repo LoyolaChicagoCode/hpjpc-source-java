@@ -41,6 +41,8 @@ http://opensource.org.
 
 package info.jhpc.message;
 
-public interface Deliverable {
-   Message send(Message m);
+// begin-interface-MessageService
+public interface MessageService {
+   Message process(Message m);
 }
+// end-interface-MessageService

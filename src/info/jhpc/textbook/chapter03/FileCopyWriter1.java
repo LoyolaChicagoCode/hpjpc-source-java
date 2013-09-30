@@ -1,3 +1,5 @@
+package info.jhpc.textbook.chapter03;
+
 import java.io.*;
 import java.util.*;
 
@@ -30,9 +32,9 @@ class FileCopyWriter1 extends Thread {
             }
             if (buffer.getSize() > 0) {
                 try {
-                    char[] buffer = buffer.getBuffer();
-                    int size = buffer.getSize();
-                    fw.write(buffer, 0, size);
+                    char[] bufferData = buffer.getBuffer();
+                    int size = bufferData.length;
+                    fw.write(bufferData, 0, size);
                 } catch(Exception e) {
                     break;
                 }

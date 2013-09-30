@@ -1,6 +1,7 @@
+package info.jhpc.textbook.chapter03;
+
 // begin-class-Diners1
 class Diners1 {
-    1
     static Fork[] fork=new Fork[5];
     static Diner0[] diner=new Diner0[5];
 
@@ -31,7 +32,7 @@ class Diners1 {
 
         while (goOn) {
             for (i=0; i<5; i++) {
-                System.out.print(diner[i].state);
+                System.out.print(diner[i].getDinerState());
             }
 
             if (++j%5==0)
@@ -41,7 +42,7 @@ class Diners1 {
             goOn=false;
 
             for (i=0; i<5; i++) {
-                goOn |= diner[i].state != 'd';
+                goOn |= diner[i].getDinerState() != 'd';
             }
 
             try {

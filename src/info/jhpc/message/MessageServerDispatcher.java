@@ -47,6 +47,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
+// begin-class-MessageServerDispatcher
 public class MessageServerDispatcher extends Thread {
    MessageServer callServer;
    Socket socket;
@@ -84,9 +85,9 @@ public class MessageServerDispatcher extends Thread {
                socket.close();
                return;
             }
-            Deliverable d = callServer.getSubscriber(m.getType());
+            MessageService d = callServer.getSubscriber(m.getType());
             if (d != null)
-               result = d.send(m);
+               result = d.process(m);
             else {
                System.err.println("-> No subscribers for this message.");
                result = new Message();
@@ -108,3 +109,4 @@ public class MessageServerDispatcher extends Thread {
       }
    }
 }
+// end-class-MessageServerDispatcher

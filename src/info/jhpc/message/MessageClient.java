@@ -46,6 +46,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+// begin-class-MessageClient
 public class MessageClient extends Thread {
    Socket socket;
    DataOutputStream out;
@@ -87,3 +88,4 @@ public class MessageClient extends Thread {
       }
    }
 }
+// end-class-MessageClient

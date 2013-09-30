@@ -42,7 +42,7 @@ http://opensource.org.
 package info.jhpc.thread;
 
 // begin-class-Lock
-class Lock {
+public class Lock {
    protected boolean locked;
 
    public Lock() {

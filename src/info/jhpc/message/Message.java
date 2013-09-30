@@ -45,6 +45,7 @@ import java.io.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+// begin-class-Message
 public class Message {
    private static boolean debug = true;
    private static int maxDebugLevel = 1;
@@ -214,3 +215,4 @@ public class Message {
 
    }
 }
+// end-class-Message

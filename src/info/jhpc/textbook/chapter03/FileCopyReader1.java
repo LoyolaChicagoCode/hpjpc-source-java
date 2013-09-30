@@ -1,3 +1,5 @@
+package info.jhpc.textbook.chapter03;
+
 import java.io.*;
 import java.util.*;
 

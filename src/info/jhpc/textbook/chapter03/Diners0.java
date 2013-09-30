@@ -31,7 +31,7 @@ class Diners0 {
 
         while (goOn) {
             for (i=0; i<5; i++) {
-                System.out.print(diner[i].state);
+                System.out.print(diner[i].getDinerState());
             }
 
             if (++j%5==0)
@@ -42,7 +42,7 @@ class Diners0 {
             goOn=false;
 
             for (i=0; i<5; i++) {
-                goOn |= diner[i].state != 'd';
+                goOn |= diner[i].getDinerState() != 'd';
             }
 
             try {

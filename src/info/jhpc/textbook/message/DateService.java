@@ -41,17 +41,18 @@ http://opensource.org.
 
 package info.jhpc.textbook.message;
 
-import info.jhpc.message.Deliverable;
+import info.jhpc.message.MessageService;
 import info.jhpc.message.Message;
 import info.jhpc.message.MessageServer;
 
 import java.util.Date;
 
-public class DateService implements Deliverable {
+//begin-class-DateService-Message
+public class DateService implements MessageService {
    public static final int DATE_SERVICE_MESSAGE = 100;
    public static final int DATE_SERVICE_PORT = 1999;
 
-   public Message send(Message m) {
+   public Message process(Message m) {
       Date today = new Date();
       m.setParam("date", today.toString());
       return m;
@@ -71,3 +72,5 @@ public class DateService implements Deliverable {
       msThread.start();
    }
 }
+//end-class-DateService-Message
+

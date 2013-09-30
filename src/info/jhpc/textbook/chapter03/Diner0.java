@@ -21,6 +21,10 @@ class Diner0 extends Thread {
         sleep((long)(Math.random()*7.0));
     }
 
+    public char getDinerState() {
+    	return state;
+    }
+
     public void run() {
         int i;
 
