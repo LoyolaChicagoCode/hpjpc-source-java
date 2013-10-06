@@ -1,0 +1,55 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.5
+version = '1.0'
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart', 'Implementation-Version': version
+    }
+}
+
+sourceSets {
+    main {
+      java {
+        srcDir 'src'
+      }
+
+      resources {
+        srcDir 'resources'
+      }
+
+    }
+}
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+test {
+    systemProperties 'property': 'value'
+}
+
+uploadArchives {
+    repositories {
+       flatDir {
+           dirs 'repos'
+       }
+    }
+}
+
+task FileCopy0(dependsOn: 'classes', type: JavaExec) {
+    main = 'info.jhpc.textbook.chapter03.FileCopy0'
+    classpath = sourceSets.main.runtimeClasspath
+    args = [fc0_src, fc0_dest]
+}
+
+task FileCopy1(dependsOn: 'classes', type: JavaExec) {
+    main = 'info.jhpc.textbook.chapter03.FileCopy1'
+    classpath = sourceSets.main.runtimeClasspath
+    args = [fc0_src, fc0_dest]
+}

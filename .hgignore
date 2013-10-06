@@ -13,6 +13,7 @@ syntax: glob
 
 # generated files
 bin/
+build/
 gen/
 proguard_cache/
 tmp/
@@ -21,7 +22,7 @@ tmp/
 local.properties
 .cache
 .settings/
-
+.gradle/
 # Emacs files
 *~
 \#*\#
