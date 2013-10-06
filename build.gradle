@@ -54,14 +54,18 @@ task FileCopy1(dependsOn: 'classes', type: JavaExec) {
     args = [fc0_src, fc0_dest]
 }
 
+// begin-task-Diners0
 task Diners0(dependsOn: 'classes', type: JavaExec) {
     main = 'info.jhpc.textbook.chapter03.Diners0'
     classpath = sourceSets.main.runtimeClasspath
     args = []
 }
+// end-task-Diners0
 
+// begin-task-Diners1
 task Diners1(dependsOn: 'classes', type: JavaExec) {
     main = 'info.jhpc.textbook.chapter03.Diners1'
     classpath = sourceSets.main.runtimeClasspath
     args = []
 }
+// end-task-Diners1
