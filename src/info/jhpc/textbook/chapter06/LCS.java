@@ -36,6 +36,7 @@ public class LCS {
    char[] c1;
    int[][] a;
    Accumulator done;
+
    // end-LCS-vars
 
    // begin-LCS-constructor1
@@ -56,12 +57,14 @@ public class LCS {
          left = right;
       }
    }
+
    // end-LCS-constructor1
 
    // begin-LCS-constructor2
    public LCS(String s0, String s1, int numThreads) {
       this(s0.toCharArray(), s1.toCharArray(), numThreads);
    }
+
    // end-LCS-constructor2
 
    private class Band extends Thread {
@@ -69,8 +72,8 @@ public class LCS {
       int low;
       int high;
       Semaphore left, right;
-      // end-Band-vars
 
+      // end-Band-vars
 
       // begin-Band-constructor
       Band(int low, int high, Semaphore left, Semaphore right) {
@@ -79,6 +82,7 @@ public class LCS {
          this.left = left;
          this.right = right;
       }
+
       // end-Band-constructor
 
       // begin-Band-run
@@ -107,6 +111,7 @@ public class LCS {
    int startOfBand(int i, int nb, int N) {
       return 1 + i * (N / nb) + Math.min(i, N % nb);
    }
+
    // end-LCS-startOfBand
 
    // begin-LCS-getLength
@@ -117,6 +122,7 @@ public class LCS {
       }
       return a[c0.length][c1.length];
    }
+
    // end-LCS-getLength
 
    public int[][] getArray() {

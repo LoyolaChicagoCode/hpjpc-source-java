@@ -4,20 +4,20 @@ import info.jhpc.thread.*;
 
 // begin-class-Fork
 class Fork {
-    public char id;
+   public char id;
 
-    private Lock lock=new Lock();
+   private Lock lock = new Lock();
 
-    public void pickup() throws InterruptedException {
-        lock.lock();
-    }
+   public void pickup() throws InterruptedException {
+      lock.lock();
+   }
 
-    public void putdown() throws InterruptedException {
-        lock.unlock();
-    }
+   public void putdown() throws InterruptedException {
+      lock.unlock();
+   }
 
-    public Fork(int value) {
-        this.id = new Integer(value).toString().charAt(0);
-    }
+   public Fork(int value) {
+      this.id = new Integer(value).toString().charAt(0);
+   }
 }
 // end-class-Fork

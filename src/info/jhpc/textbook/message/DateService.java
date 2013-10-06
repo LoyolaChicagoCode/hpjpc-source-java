@@ -72,5 +72,5 @@ public class DateService implements MessageService {
       msThread.start();
    }
 }
-//end-class-DateService-Message
+// end-class-DateService-Message
 

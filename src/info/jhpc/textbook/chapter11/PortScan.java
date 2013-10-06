@@ -72,7 +72,7 @@ import java.net.*;
 import java.util.*;
 
 public class PortScan {
-   private Hashtable services;
+   private Hashtable<String, String> services;
 
    public static String[] serviceLabels = { "service", "portinfo" };
 
@@ -84,11 +84,12 @@ public class PortScan {
 
    public PortScan(String servicesFile) throws Exception {
       FileReader fr = new FileReader(servicesFile);
+      @SuppressWarnings("resource")
       BufferedReader br = new BufferedReader(fr);
       String inLine;
       lineSplitter = new Splitter(serviceLabels, " \t\n");
       portInfoSplitter = new Splitter(portInfoLabels, "/");
-      services = new Hashtable();
+      services = new Hashtable<String, String>();
 
       while (true) {
          inLine = br.readLine();
@@ -117,7 +118,7 @@ public class PortScan {
             System.out.println("Tested " + count + " ports.");
          try {
             Socket s = new Socket(host, port);
-            String service = (String) services.get(port + "");
+            String service = services.get(port + "");
             if (service != null)
                System.out.println(port + " -> " + service);
             else
