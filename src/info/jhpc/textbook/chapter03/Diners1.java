@@ -17,7 +17,7 @@ class Diners1 {
         for (i=0; i<4; i++) {
             diner[i]=new Diner0(fork[i],fork[(i+1)%5]);
         }
-        diner[4]=new Diner0(fork[4],fork[0]);
+        diner[4]=new Diner0(fork[0],fork[4]);
         // end-fork-ordering
 
         for (i=0; i<5; i++) {
