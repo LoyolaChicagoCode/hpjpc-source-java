@@ -42,17 +42,21 @@ uploadArchives {
     }
 }
 
+// begin-task-FileCopy0
 task FileCopy0(dependsOn: 'classes', type: JavaExec) {
     main = 'info.jhpc.textbook.chapter03.FileCopy0'
     classpath = sourceSets.main.runtimeClasspath
     args = [fc0_src, fc0_dest]
 }
+// end-task-FileCopy0
 
+// begin-task-FileCopy1
 task FileCopy1(dependsOn: 'classes', type: JavaExec) {
     main = 'info.jhpc.textbook.chapter03.FileCopy1'
     classpath = sourceSets.main.runtimeClasspath
     args = [fc0_src, fc0_dest]
 }
+// end-task-FileCopy1
 
 // begin-task-Diners0
 task Diners0(dependsOn: 'classes', type: JavaExec) {
