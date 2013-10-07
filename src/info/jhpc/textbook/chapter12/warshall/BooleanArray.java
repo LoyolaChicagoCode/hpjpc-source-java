@@ -26,6 +26,7 @@ package info.jhpc.textbook.chapter12.warshall;
 
 import java.io.*;
 
+@SuppressWarnings("serial")
 public class BooleanArray implements Serializable {
 
    private boolean[] data;

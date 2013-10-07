@@ -47,7 +47,7 @@ import java.net.Socket;
 import java.util.Hashtable;
 
 public class RemoteCallServer extends Thread {
-   private Hashtable registeredObjects = new Hashtable();
+   private Hashtable<String, Callable> registeredObjects = new Hashtable<String, Callable>();
    private ServerSocket callListener;
 
    public RemoteCallServer(int port) throws IOException {
@@ -64,7 +64,7 @@ public class RemoteCallServer extends Thread {
    }
 
    public synchronized Callable lookup(String target) {
-      return (Callable) registeredObjects.get(target);
+      return registeredObjects.get(target);
    }
 
    /* currently every call will be dispatched as a thread */
@@ -73,8 +73,7 @@ public class RemoteCallServer extends Thread {
       while (true) {
          try {
             Socket s = callListener.accept();
-            RemoteCallServerDispatcher csd = new RemoteCallServerDispatcher(
-                  this, s);
+            RemoteCallServerDispatcher csd = new RemoteCallServerDispatcher(this, s);
             csd.setDaemon(false);
             csd.start();
          } catch (Exception e) {

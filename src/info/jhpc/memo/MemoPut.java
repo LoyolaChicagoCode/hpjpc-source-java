@@ -47,6 +47,10 @@ import info.jhpc.thread.SharedTableOfQueues;
 import java.io.Serializable;
 
 class MemoPut extends MemoMessage {
+   /**
+    * 
+    */
+   private static final long serialVersionUID = -993232814998652143L;
    Serializable key, value;
 
    public MemoPut(String target, Serializable key, Serializable value) {

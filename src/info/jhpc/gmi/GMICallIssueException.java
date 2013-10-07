@@ -45,6 +45,10 @@ import java.io.Serializable;
 
 public class GMICallIssueException extends Exception implements Serializable {
 
+   /**
+    * 
+    */
+   private static final long serialVersionUID = -1557074051823242013L;
    CallMessage cm;
 
    public GMICallIssueException(CallMessage cm) {

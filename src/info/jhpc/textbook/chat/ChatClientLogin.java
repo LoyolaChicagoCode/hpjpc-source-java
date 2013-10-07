@@ -63,10 +63,14 @@ import java.util.Vector;
 public class ChatClientLogin extends Frame implements ActionListener,
       WindowListener {
 
+   /**
+    *
+    */
+   private static final long serialVersionUID = -7907738610923357381L;
    TextField username;
    TextField password;
    RemoteCallClient rpc;
-   Vector clientSessionList = new Vector();
+   Vector<ChatClientRoom> clientSessionList = new Vector<ChatClientRoom>();
 
    ChatClientLogin(RemoteCallClient rpc) {
       super("Login");
@@ -103,6 +107,7 @@ public class ChatClientLogin extends Frame implements ActionListener,
          doLogin();
    }
 
+   @SuppressWarnings("deprecation")
    public void doLogin() {
       ChatLogin cl = new ChatLogin("aol2000", username.getText(),
             password.getText());
@@ -127,9 +132,9 @@ public class ChatClientLogin extends Frame implements ActionListener,
 
    public void goAway() {
       /* need to cleanup here */
-      Enumeration cc = clientSessionList.elements();
+      Enumeration<ChatClientRoom> cc = clientSessionList.elements();
       while (cc.hasMoreElements()) {
-         ChatClientRoom ccr = (ChatClientRoom) cc.nextElement();
+         ChatClientRoom ccr = cc.nextElement();
          ccr.goAway();
       }
       this.dispose();
@@ -172,6 +177,7 @@ public class ChatClientLogin extends Frame implements ActionListener,
    public static String host = "127.0.0.1";
    public static int port = 1999;
 
+   @SuppressWarnings("deprecation")
    public static void main(String args[]) {
 
       try {

@@ -23,7 +23,7 @@
  Boston, MA  02111-1307, USA.
  */
 /**
- * Defines the exception thrown when the granularity supplied 
+ * Defines the exception thrown when the granularity supplied
  * does not define a caluculatable situation.
  *
  * Written by: John Shafaee
@@ -32,6 +32,11 @@
 package info.jhpc.textbook.chapter05.integration.threaded;
 
 public class BadGranularityException extends IllegalArgumentException {
+   /**
+    *
+    */
+   private static final long serialVersionUID = 6420987400385790542L;
+
    public BadGranularityException() {
       super("Granularity must be at least 1.");
    }

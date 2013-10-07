@@ -46,13 +46,13 @@ import java.util.Hashtable;
 
 /**
  * Lock single or multiple locks.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class LockTable {
-   protected Hashtable table = new Hashtable();
+   protected Hashtable<Object, Object> table = new Hashtable<Object, Object>();
 
    /**
     * Lock single lock indicated by object s. Since LockTable uses a hashtable

@@ -41,7 +41,7 @@ http://opensource.org.
 
 package info.jhpc.textbook.chat;
 
-/* This is intended for simple acknowledgement when there isn't an 
+/* This is intended for simple acknowledgement when there isn't an
  * interesting reply. It can be used to return that something might
  * not be ok but exceptions are recommended for this purpose.
  */
@@ -51,6 +51,10 @@ import info.jhpc.gmi.CallMessage;
 import java.io.Serializable;
 
 public class Ok extends CallMessage implements Serializable {
+   /**
+    *
+    */
+   private static final long serialVersionUID = -1123540960535314811L;
    private boolean ok;
 
    public Ok() {

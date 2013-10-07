@@ -1,7 +1,5 @@
 package info.jhpc.textbook.chapter03;
 
-import info.jhpc.thread.*;
-
 // begin-class-Diners0
 class Diners0 {
    static Fork[] fork = new Fork[5];

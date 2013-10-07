@@ -45,6 +45,10 @@ import java.io.Serializable;
 
 public class CallMessageException extends CallMessage implements Serializable {
 
+   /**
+    * 
+    */
+   private static final long serialVersionUID = 7146326613732084298L;
    Serializable exception;
 
    public CallMessageException(Exception e) {

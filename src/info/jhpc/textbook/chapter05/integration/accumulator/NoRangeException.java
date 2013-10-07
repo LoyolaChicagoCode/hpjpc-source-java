@@ -23,7 +23,7 @@
  Boston, MA  02111-1307, USA.
  */
 /**
- * Defines the exception thrown when the supplied range 
+ * Defines the exception thrown when the supplied range
  * doen not contain a calulatable distance.
  *
  * Written by: John Shafaee
@@ -33,6 +33,11 @@
 package info.jhpc.textbook.chapter05.integration.accumulator;
 
 public class NoRangeException extends IllegalArgumentException {
+
+   /**
+    *
+    */
+   private static final long serialVersionUID = 4181543101749114265L;
 
    public NoRangeException() {
       super("No range specified: x_begin == x_end.");

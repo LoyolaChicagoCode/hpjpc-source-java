@@ -72,13 +72,13 @@ class Knapsack4 {
    }
 
    class SearchFactory {
-      Stack prev = new Stack();
+      Stack<Search> prev = new Stack<Search>();
 
       Search make(int i, int rw, int p, BitSet b, TerminationGroup tg) {
          Search g = null;
          synchronized (this) {
             if (!prev.isEmpty())
-               g = (Search) prev.pop();
+               g = prev.pop();
          }
          if (g == null)
             return new Search(i, rw, p, b, tg);

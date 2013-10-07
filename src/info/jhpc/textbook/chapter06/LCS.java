@@ -26,7 +26,6 @@
 package info.jhpc.textbook.chapter06;
 
 import info.jhpc.thread.*;
-import java.util.Random;
 
 public class LCS {
 
@@ -88,7 +87,7 @@ public class LCS {
       // begin-Band-run
       public void run() {
          try {
-            int i, j, k;
+            int i, j;
             for (i = 1; i < a.length; i++) {
                left.down();
                for (j = low; j <= high; j++) {
@@ -141,8 +140,6 @@ public class LCS {
             System.exit(0);
          }
          int nt = 3;
-         int i;
-
          String s0 = args[0];
          String s1 = args[1];
          System.out.println(s0);

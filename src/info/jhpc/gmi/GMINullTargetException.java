@@ -45,6 +45,11 @@ import java.io.Serializable;
 
 public class GMINullTargetException extends Exception implements Serializable {
 
+   /**
+    * 
+    */
+   private static final long serialVersionUID = -2904353673130554775L;
+
    public String toString() {
       return "GMINullTargetException: A CallMessage was received with a null invocation target.";
    }

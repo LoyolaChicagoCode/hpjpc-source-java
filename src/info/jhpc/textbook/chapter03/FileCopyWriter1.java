@@ -1,21 +1,17 @@
 package info.jhpc.textbook.chapter03;
 
 import java.io.*;
-import java.util.*;
 
 // begin-class-FileCopyWriter1
 class FileCopyWriter1 extends Thread {
 
    private Pool pool;
    private BufferQueue copyBuffers;
-   private String filename;
-
    FileWriter fw;
 
    public FileCopyWriter1(String filename, Pool pool, BufferQueue copyBuffers)
          throws IOException {
 
-      this.filename = filename;
       this.pool = pool;
       this.copyBuffers = copyBuffers;
       fw = new FileWriter(filename);

@@ -26,8 +26,6 @@
 //create a bunch of threads to send messages to each other
 package info.jhpc.textbook.chapter04;
 
-import info.jhpc.thread.*;
-
 class TestSTOQ1 extends Thread {
    final static int threadCount = 5, interCount = 1000;
 

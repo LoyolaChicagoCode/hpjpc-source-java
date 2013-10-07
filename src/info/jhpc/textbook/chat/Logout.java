@@ -46,6 +46,10 @@ import info.jhpc.gmi.CallMessage;
 import java.io.Serializable;
 
 public class Logout extends CallMessage implements Serializable {
+   /**
+    *
+    */
+   private static final long serialVersionUID = -4462544502210564339L;
    String sessionId;
 
    public Logout(String target, String sessionId) {

@@ -23,7 +23,7 @@
  Boston, MA  02111-1307, USA.
  */
 /**
- * Defines the exception thrown when the specified range is 
+ * Defines the exception thrown when the specified range is
  * in decreasing order.
  *
  * Written by: John Shafaee
@@ -34,6 +34,7 @@ package info.jhpc.textbook.chapter12.integration;
 
 import java.io.*;
 
+@SuppressWarnings("serial")
 public class BadThreadCountException extends IllegalArgumentException implements
       Serializable {
    public BadThreadCountException() {

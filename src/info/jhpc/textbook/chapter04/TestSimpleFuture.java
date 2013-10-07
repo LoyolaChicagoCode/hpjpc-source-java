@@ -24,10 +24,6 @@
  */
 package info.jhpc.textbook.chapter04;
 
-import java.util.*;
-import java.io.*;
-import info.jhpc.thread.*;
-
 class TestSimpleFuture {
    static class Add extends Thread {
       SimpleFuture result, left, right;

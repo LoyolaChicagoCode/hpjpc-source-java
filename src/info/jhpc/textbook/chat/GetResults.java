@@ -46,15 +46,16 @@ import info.jhpc.gmi.CallMessage;
 import java.io.Serializable;
 import java.util.Vector;
 
+@SuppressWarnings("serial")
 public class GetResults extends CallMessage implements Serializable {
-   Vector messages;
+   Vector<String> messages;
 
-   public GetResults(Vector messages) {
+   public GetResults(Vector<String> vector) {
       super(null);
-      this.messages = messages;
+      this.messages = vector;
    }
 
-   public Vector getMessages() {
+   public Vector<String> getMessages() {
       return messages;
    }
 }

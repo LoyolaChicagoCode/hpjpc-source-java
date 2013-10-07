@@ -36,7 +36,12 @@ import java.io.*;
 
 class IntegTrapRegion implements Serializable {
 
-   // Provate variables used in calculating a specified region
+   /**
+    *
+    */
+   private static final long serialVersionUID = -8937266464553439210L;
+
+   // Private variables used in calculating a specified region
    private double x_start, x_end;
 
    private int granularity;

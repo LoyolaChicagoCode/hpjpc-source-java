@@ -27,8 +27,6 @@
 // use SharedTableOfQueues.getSkip to receive
 package info.jhpc.textbook.chapter04;
 
-import info.jhpc.thread.*;
-
 class TestSTOQ3 extends Thread {
    final static int numSenders = 2, numReceivers = 3, maxMsg = 1000;
 

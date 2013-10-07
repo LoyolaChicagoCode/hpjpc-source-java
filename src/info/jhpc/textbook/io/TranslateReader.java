@@ -86,7 +86,7 @@ public class TranslateReader extends FilterReader {
       return n;
    }
 
-   public static void main(String[] args) {
+   public static void main(String[] args) throws IOException {
       StringReader sr = new StringReader("George Thiruvathukal");
       TranslateReader translateReader = new TranslateReader(sr);
       LineNumberReader lnr = new LineNumberReader(translateReader);
@@ -96,6 +96,7 @@ public class TranslateReader extends FilterReader {
          System.out.println(line);
       } catch (Exception e) {
       }
+      lnr.close();
    }
 
 }

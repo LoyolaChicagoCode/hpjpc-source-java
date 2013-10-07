@@ -47,6 +47,7 @@ import java.io.Serializable;
 
 /* ChatLogin is used to login */
 
+@SuppressWarnings("serial")
 public class ChatLogin extends CallMessage implements Serializable {
    private String userId;
    private String password;

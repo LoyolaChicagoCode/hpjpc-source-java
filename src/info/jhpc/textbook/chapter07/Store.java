@@ -24,8 +24,6 @@
  */
 package info.jhpc.textbook.chapter07;
 
-import info.jhpc.thread.*;
-
 class Store implements Op1 {
    StoreOp dst;
 

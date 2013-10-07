@@ -23,7 +23,7 @@
  Boston, MA  02111-1307, USA.
  */
 /**
- * Defines the exception thrown when the specified range is 
+ * Defines the exception thrown when the specified range is
  * in decreasing order.
  */
 package info.jhpc.textbook.chapter12.integration;
@@ -32,6 +32,11 @@ import java.io.*;
 
 public class BadRangeException extends IllegalArgumentException implements
       Serializable {
+   /**
+    *
+    */
+   private static final long serialVersionUID = -3897237834970947313L;
+
    public BadRangeException() {
       super("Bad specified range: x_start < x_end.");
    }

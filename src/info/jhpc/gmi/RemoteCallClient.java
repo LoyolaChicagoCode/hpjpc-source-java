@@ -54,7 +54,6 @@ public final class RemoteCallClient {
    private Socket socket;
    private ObjectOutputStream out;
    private ObjectInputStream in;
-   private OutputStream debug = null;
    private RemoteCallAgent callAgent;
    private RemoteReplyAgent replyAgent;
    private SharedTableOfQueues callStore = new SharedTableOfQueues();
@@ -74,7 +73,6 @@ public final class RemoteCallClient {
    }
 
    public void setDebug(OutputStream debug) {
-      this.debug = debug;
    }
 
    public Object call(CallMessage message) throws Exception {

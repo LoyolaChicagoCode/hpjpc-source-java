@@ -24,8 +24,6 @@
  */
 package info.jhpc.textbook.chapter07;
 
-import info.jhpc.thread.*;
-
 class Binop2 implements /* Runnable, */StoreOp {
    Object lopnd, ropnd;
 

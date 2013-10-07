@@ -33,9 +33,12 @@ import java.io.*;
 import info.jhpc.memo.*;
 import info.jhpc.thread.*;
 
-import java.util.Random;
-
 public class Block extends Thread implements Serializable {
+   /**
+    *
+    */
+   private static final long serialVersionUID = 7904913209018671293L;
+
    boolean[][] block;
 
    public int r, c; // upperleft

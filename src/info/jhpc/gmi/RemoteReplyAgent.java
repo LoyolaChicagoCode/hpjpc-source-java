@@ -50,11 +50,9 @@ import java.net.Socket;
 import java.util.Vector;
 
 public final class RemoteReplyAgent extends Thread {
-   private Socket socket;
    private ObjectInputStream in;
-   private OutputStream debug = null;
    private SharedTableOfQueues callStore;
-   private Vector ticketsAwaited = new Vector();
+   private Vector<String> ticketsAwaited = new Vector<String>();
    private boolean disconnected = false;
    ErrorLog err = new ErrorLog("RemoteReplyAgent", false);
 
@@ -62,7 +60,6 @@ public final class RemoteReplyAgent extends Thread {
          SharedTableOfQueues callStore) {
       err.setFunction("RemoteReplyAgent");
       err.setTag("1");
-      this.socket = socket;
       this.in = in;
       this.callStore = callStore;
       err.information("starting RemoteReplyAgent thread");
@@ -70,26 +67,25 @@ public final class RemoteReplyAgent extends Thread {
    }
 
    public void setDebug(OutputStream debug) {
-      this.debug = debug;
    }
 
    /*
     * To accompany High-Performance Java Platform(tm) Computing: Threads and
     * Networking, published by Prentice Hall PTR and Sun Microsystems Press.
-    * 
+    *
     * Threads and Networking Library Copyright (C) 1999-2000 Thomas W.
     * Christopher and George K. Thiruvathukal
-    * 
+    *
     * This library is free software; you can redistribute it and/or modify it
     * under the terms of the GNU Library General Public License as published by
     * the Free Software Foundation; either version 2 of the License, or (at your
     * option) any later version.
-    * 
+    *
     * This library is distributed in the hope that it will be useful, but
     * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
     * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Library General Public
     * License for more details.
-    * 
+    *
     * You should have received a copy of the GNU Library General Public License
     * along with this library; if not, write to the Free Software Foundation,
     * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.

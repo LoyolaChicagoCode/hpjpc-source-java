@@ -44,12 +44,17 @@ package info.jhpc.thread;
 /**
  * Thrown if a com.toolsofcomputing.thread.Semaphore is assigned a negative
  * initial value
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class NegativeSemaphoreException extends RuntimeException {
+   /**
+    *
+    */
+   private static final long serialVersionUID = 4726476179030918777L;
+
    public NegativeSemaphoreException() {
       super("Semaphore given a negative count");
    }

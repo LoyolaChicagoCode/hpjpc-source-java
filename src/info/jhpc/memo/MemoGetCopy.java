@@ -46,6 +46,10 @@ import info.jhpc.thread.SharedTableOfQueues;
 import java.io.Serializable;
 
 class MemoGetCopy extends MemoMessage {
+   /**
+    * 
+    */
+   private static final long serialVersionUID = -468669996175572957L;
    Serializable key;
 
    public MemoGetCopy(String target, Serializable key) {

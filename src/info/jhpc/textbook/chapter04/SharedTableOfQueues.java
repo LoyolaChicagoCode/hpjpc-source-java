@@ -32,7 +32,7 @@ import java.util.*;
 /* snip: all */
 class SharedTableOfQueues extends Monitor {
 
-   Hashtable tbl = new Hashtable();
+   Hashtable<Object, Folder> tbl = new Hashtable<Object, Folder>();
 
    private class Folder {
       volatile QueueComponent q = new QueueComponent();
@@ -45,7 +45,7 @@ class SharedTableOfQueues extends Monitor {
    /* snip: put */
    public void put(Object key, Object value) {
       enter();
-      Folder f = (Folder) tbl.get(key);
+      Folder f = tbl.get(key);
       if (f == null)
          tbl.put(key, f = new Folder());
       f.q.put(value);
@@ -59,7 +59,7 @@ class SharedTableOfQueues extends Monitor {
       Folder f = null;
       enter();
       try {
-         f = (Folder) tbl.get(key);
+         f = tbl.get(key);
          if (f == null)
             tbl.put(key, f = new Folder());
          f.numWaiting++;
@@ -81,7 +81,7 @@ class SharedTableOfQueues extends Monitor {
       Folder f = null;
       enter();
       try {
-         f = (Folder) tbl.get(key);
+         f = tbl.get(key);
          if (f == null || f.q.isEmpty()) {
             return null;
          }

@@ -44,12 +44,17 @@ package info.jhpc.thread;
 /**
  * Thrown if a thread tries to operate on a com.toolsofcomputing.thread.Monitor
  * that it doesn't have locked.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class MonitorException extends RuntimeException {
+   /**
+    *
+    */
+   private static final long serialVersionUID = 3701657508355132071L;
+
    public MonitorException() {
       super("Illegal operation by thread outside Monitor");
    }

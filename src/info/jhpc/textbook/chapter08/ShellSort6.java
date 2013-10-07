@@ -123,7 +123,7 @@ public class ShellSort6 {
       AccumulatorFactory af = new AccumulatorFactory(ff);
       Accumulator waitFor = af.make(1);
       waitFor.signal();
-      int k, m;
+      int k;
       k = N / 5;
       waitFor = setupPass(a, waitFor, k, af);
       k = N / 7;

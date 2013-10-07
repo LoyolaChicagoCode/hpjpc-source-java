@@ -46,6 +46,10 @@ import java.io.Serializable;
 public class CallMessageGeneralReply extends CallMessage implements
       Serializable {
 
+   /**
+    * 
+    */
+   private static final long serialVersionUID = -6336239929527317340L;
    Serializable reply;
 
    public CallMessageGeneralReply(Serializable reply) {

@@ -46,6 +46,10 @@ import info.jhpc.gmi.CallMessage;
 import java.io.Serializable;
 
 public class PutMessage extends CallMessage implements Serializable {
+   /**
+    *
+    */
+   private static final long serialVersionUID = -7744141831608998063L;
    private String sessionId;
    private String message;
 

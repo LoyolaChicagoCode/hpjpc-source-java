@@ -60,7 +60,6 @@ public class CaesarWriter extends TranslateWriter {
       OutputStreamWriter osw = new OutputStreamWriter(System.out);
       CaesarWriter cw = new CaesarWriter(osw, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", key);
       try {
-
          while (true) {
             String input = in.readLine();
             if (input == null)
@@ -68,6 +67,7 @@ public class CaesarWriter extends TranslateWriter {
             cw.write(input + "\n");
             cw.flush();
          }
+         cw.close();
       } catch (Exception e) {
          return;
       }

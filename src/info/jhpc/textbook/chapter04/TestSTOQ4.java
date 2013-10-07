@@ -27,8 +27,6 @@
 //another will remove them and check their order
 package info.jhpc.textbook.chapter04;
 
-import info.jhpc.thread.*;
-
 class TestSTOQ4 extends Thread {
    final static int maxMsg = 1000;
 
@@ -39,7 +37,6 @@ class TestSTOQ4 extends Thread {
    boolean receiver;
 
    public static void main(String[] x) {
-      int i;
       System.out.println("one thread will write strings into a single queue");
       System.out.println("another will remove them and check their order");
       Thread worker = new TestSTOQ4(false);

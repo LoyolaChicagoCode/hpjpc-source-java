@@ -48,14 +48,14 @@ public class Splitter {
 
    private String text;
    private String delimiters;
-   private Vector tokens;
+   private Vector<String> tokens;
    private StringTokenizer tokenizer;
    private String labels[];
 
    public Splitter(String[] labels, String text, String delimiters) {
       this.text = text;
       this.delimiters = delimiters;
-      tokens = new Vector();
+      tokens = new Vector<String>();
       tokenizer = null;
       this.labels = labels;
       performSplit();
@@ -73,7 +73,7 @@ public class Splitter {
       }
       this.text = defaultText;
       this.delimiters = delimiters;
-      tokens = new Vector();
+      tokens = new Vector<String>();
       tokenizer = null;
       this.labels = labels;
       performSplit();
@@ -120,7 +120,7 @@ public class Splitter {
 
    public String getTokenAt(int position) {
       if (position >= 0 && position < tokens.size())
-         return (String) tokens.elementAt(position);
+         return tokens.elementAt(position);
       else
          return null;
    }
@@ -145,7 +145,7 @@ public class Splitter {
       return -1;
    }
 
-   public Vector getAllTokens() {
+   public Vector<String> getAllTokens() {
       return tokens;
    }
 

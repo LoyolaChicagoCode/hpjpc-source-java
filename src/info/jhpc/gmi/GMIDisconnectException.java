@@ -45,6 +45,11 @@ import java.io.Serializable;
 
 public class GMIDisconnectException extends Exception implements Serializable {
 
+   /**
+    *
+    */
+   private static final long serialVersionUID = -3777760146465962393L;
+
    public String toString() {
       return "GMIDisconnectException: Could not disconnect from GMI Server";
    }

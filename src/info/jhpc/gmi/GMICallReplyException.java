@@ -45,6 +45,11 @@ import java.io.Serializable;
 
 public class GMICallReplyException extends Exception implements Serializable {
 
+   /**
+    * 
+    */
+   private static final long serialVersionUID = -4699640171317554183L;
+
    public String toString() {
       return "GMICallReplyException: Could not read reply for GMI Call.";
    }

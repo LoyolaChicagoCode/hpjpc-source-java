@@ -1,6 +1,5 @@
 package info.jhpc.textbook.chapter03;
 
-import java.util.*;
 import java.io.*;
 
 // begin-class-FileCopy0

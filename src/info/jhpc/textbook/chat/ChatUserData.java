@@ -45,7 +45,7 @@ import java.util.Vector;
 
 public class ChatUserData {
    private String userName;
-   private Vector inList = new Vector();
+   private Vector<String> inList = new Vector<String>();
 
    ChatUserData(String userName) {
       this.userName = userName;
@@ -55,8 +55,8 @@ public class ChatUserData {
       inList.addElement(message);
    }
 
-   public Vector getSomeMessages(int max) {
-      Vector results = new Vector();
+   public Vector<String> getSomeMessages(int max) {
+      Vector<String> results = new Vector<String>();
       int n;
       if (max <= 0)
          return results;
@@ -67,10 +67,11 @@ public class ChatUserData {
       return results;
    }
 
-   public Vector getAllMessages() {
-      Vector results = (Vector) inList.clone();
+   @SuppressWarnings("unchecked")
+   public Vector<String> getAllMessages() {
+      Vector<String> clone = (Vector<String>) inList.clone();
       inList.removeAllElements();
-      return results;
+      return clone;
    }
 
    public String getUserName() {

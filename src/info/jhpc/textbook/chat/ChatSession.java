@@ -47,6 +47,7 @@ import java.io.Serializable;
 
 /* ChatSession messages are sent as replies from ChatLogin requests */
 
+@SuppressWarnings("serial")
 public class ChatSession extends CallMessage implements Serializable {
    private String sessionId;
    private boolean success;

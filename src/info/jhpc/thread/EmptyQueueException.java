@@ -43,10 +43,11 @@ package info.jhpc.thread;
 
 /**
  * Exception thrown if a get() method is called on an empty QueueComponent.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
+@SuppressWarnings("serial")
 public class EmptyQueueException extends RuntimeException {
    public EmptyQueueException() {
       super("get() from an empty queue");

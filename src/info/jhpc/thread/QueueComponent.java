@@ -47,17 +47,17 @@ import java.util.Stack;
  * A class used to provide FIFO queues for the other classes in the thread
  * package. THIS IS NOT THREAD-SAFE. DO NOT USE THIS ALONE FOR INTER-THREAD
  * COMMUNICATION. This must be contained within a locked object.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class QueueComponent {
-   Stack hd = new Stack(), tl = new Stack();
+   Stack<Object> hd = new Stack<Object>(), tl = new Stack<Object>();
 
    /**
     * Removes and returns the first element in the queue.
-    * 
+    *
     * @throws EmptyQueueException
     *            if the queue is empty.
     */
@@ -73,7 +73,7 @@ public class QueueComponent {
 
    /**
     * Returns a reference to the first element in the queue without removing it.
-    * 
+    *
     * @throws EmptyQueueException
     *            if the queue is empty.
     */
@@ -89,7 +89,7 @@ public class QueueComponent {
 
    /**
     * Enqueues its parameter.
-    * 
+    *
     * @param elem
     *           the value to be enqueued.
     */

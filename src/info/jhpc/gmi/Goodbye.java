@@ -44,6 +44,11 @@ package info.jhpc.gmi;
 import java.io.Serializable;
 
 public class Goodbye extends CallMessage implements Serializable {
+   /**
+    * 
+    */
+   private static final long serialVersionUID = 2293749431543865285L;
+
    public Goodbye() {
       super(null);
    }

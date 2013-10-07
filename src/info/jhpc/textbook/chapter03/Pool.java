@@ -6,7 +6,7 @@ import java.io.*;
 // begin-class-Pool
 public class Pool {
 
-   Vector freeBufferList = new Vector();
+   Vector<Buffer> freeBufferList = new Vector<Buffer>();
    OutputStream debug = System.out;
    int buffers, bufferSize;
 
@@ -22,7 +22,7 @@ public class Pool {
    public synchronized Buffer use() throws InterruptedException {
       while (freeBufferList.size() == 0)
          wait();
-      Buffer nextBuffer = (Buffer) freeBufferList.lastElement();
+      Buffer nextBuffer = freeBufferList.lastElement();
       freeBufferList.removeElement(nextBuffer);
       return nextBuffer;
    }

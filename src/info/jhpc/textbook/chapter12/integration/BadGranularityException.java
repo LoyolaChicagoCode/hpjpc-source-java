@@ -23,7 +23,7 @@
  Boston, MA  02111-1307, USA.
  */
 /**
- * Defines the exception thrown when the granularity supplied 
+ * Defines the exception thrown when the granularity supplied
  * does not define a caluculatable situation.
  *
  * Written by: John Shafaee
@@ -36,6 +36,11 @@ import java.io.*;
 
 public class BadGranularityException extends IllegalArgumentException implements
       Serializable {
+   /**
+    *
+    */
+   private static final long serialVersionUID = 280261353940199229L;
+
    public BadGranularityException() {
       super("Granularity must be at least 1.");
    }

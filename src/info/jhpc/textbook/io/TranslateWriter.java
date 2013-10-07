@@ -101,7 +101,7 @@ public class TranslateWriter extends FilterWriter {
       write(charArray, off, len);
    }
 
-   public static void main(String[] args) {
+   public static void main(String[] args) throws IOException {
       OutputStreamWriter osw = new OutputStreamWriter(System.out);
       TranslateWriter translateWriter = new TranslateWriter(osw);
 
@@ -113,5 +113,6 @@ public class TranslateWriter extends FilterWriter {
          System.err.println("Could not write to translate writer.");
          System.exit(1);
       }
+      translateWriter.close();
    }
 }

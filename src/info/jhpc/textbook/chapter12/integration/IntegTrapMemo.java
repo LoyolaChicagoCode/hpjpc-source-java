@@ -24,12 +24,12 @@
  */
 /**
  * This class manages a choosen number of threads to complete the
- * integeral computation of a defined, single variable function 
+ * integeral computation of a defined, single variable function
  * by means of trapazoidal areas.
  *
  * @author John Shafaee
  * Date: July 5, 1999
- * 
+ *
  */
 
 package info.jhpc.textbook.chapter12.integration;
@@ -129,17 +129,10 @@ public class IntegTrapMemo {
       // initiate the array for managing child threads
       // childThreads = new IntegTrapRegion[ numThreads ];
 
-      // initiate the start and finish time variable
-      long begin_time = 0;
-      long end_time = 0;
-
       try {
          double range = b - a;
          double start = a;
          double end = a + ((1.0d) / numThreads * range);
-
-         // begin timing the process from thread creation time
-         begin_time = System.currentTimeMillis();
 
          for (int i = 0; i < numThreads; i++) {
             // create and start new child threads

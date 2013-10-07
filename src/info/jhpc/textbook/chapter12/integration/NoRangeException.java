@@ -23,7 +23,7 @@
  Boston, MA  02111-1307, USA.
  */
 /**
- * Defines the exception thrown when the supplied range 
+ * Defines the exception thrown when the supplied range
  * doen not contain a calulatable distance.
  *
  * Written by: John Shafaee
@@ -35,6 +35,11 @@ import java.io.*;
 
 public class NoRangeException extends IllegalArgumentException implements
       Serializable {
+
+   /**
+    *
+    */
+   private static final long serialVersionUID = -3630621438432276710L;
 
    public NoRangeException() {
       super("No range specified: x_begin == x_end.");

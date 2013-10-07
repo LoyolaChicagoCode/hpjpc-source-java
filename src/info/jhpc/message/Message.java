@@ -54,7 +54,7 @@ public class Message {
    private static final String P_LONG = "L$";
    private static final String P_BOOLEAN = "B$";
 
-   private Hashtable parameters = new Hashtable();
+   private Hashtable<Object, String> parameters = new Hashtable<Object, String>();
    private int type = 0;
    private int tag = 0;
    private int length = 0;
@@ -78,11 +78,11 @@ public class Message {
       // output # of pairs
       out.writeInt(parameters.size());
       // output pairs
-      Enumeration e = parameters.keys();
+      Enumeration<Object> e = parameters.keys();
       while (e.hasMoreElements()) {
          String key = (String) e.nextElement();
          out.writeUTF(key);
-         String value = (String) parameters.get(key);
+         String value = parameters.get(key);
          out.writeUTF(value);
       }
    }
@@ -125,7 +125,7 @@ public class Message {
    }
 
    public String getParam(String key) {
-      return (String) parameters.get(P_STRING + key);
+      return parameters.get(P_STRING + key);
    }
 
    public void setStringParam(String key, String value) {
@@ -133,7 +133,7 @@ public class Message {
    }
 
    public String getStringParam(String key) {
-      return (String) parameters.get(P_STRING + key);
+      return parameters.get(P_STRING + key);
    }
 
    public void setIntegerParam(String key, int value) {
@@ -142,7 +142,7 @@ public class Message {
 
    public int getIntegerParam(String key) {
       try {
-         return Integer.parseInt((String) parameters.get(P_INTEGER + key));
+         return Integer.parseInt(parameters.get(P_INTEGER + key));
       } catch (Exception e) {
          return 0; // This cannot happen. I'm just making javac happy.
       }
@@ -154,7 +154,7 @@ public class Message {
 
    public long getLongParam(String key) {
       try {
-         return Long.parseLong((String) parameters.get(P_LONG + key));
+         return Long.parseLong(parameters.get(P_LONG + key));
       } catch (Exception e) {
          return 0; // This cannot happen. I'm just making javac happy.
       }
@@ -165,12 +165,12 @@ public class Message {
    }
 
    public boolean getBooleanParam(String key) {
-      String value = (String) parameters.get(P_BOOLEAN + key);
+      String value = parameters.get(P_BOOLEAN + key);
       return value.equals(true + "");
    }
 
    public void merge(Message m) {
-      Enumeration e = m.parameters.keys();
+      Enumeration<Object> e = m.parameters.keys();
       while (e.hasMoreElements()) {
          Object key = e.nextElement();
          parameters.put(key, m.parameters.get(key));
@@ -178,7 +178,6 @@ public class Message {
    }
 
    public String toString() {
-      String repAsString = "";
       return "Message: type = " + type + " param = " + parameters;
    }
 

@@ -46,7 +46,7 @@ import java.util.Stack;
 /**
  * An assign-once variable that allows consumers to wait for a value to be
  * produced.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
@@ -58,7 +58,7 @@ public class Future extends SimpleFuture implements RunDelayed {
     * have them wait and to remove them.)
     */
 
-   protected Stack runnablesWaiting = null;
+   protected Stack<Runnable> runnablesWaiting = null;
 
    /**
     * The default queue into which to put (runDelayed) runnables that are
@@ -89,7 +89,7 @@ public class Future extends SimpleFuture implements RunDelayed {
 
    /**
     * Create a Future with a value initially assigned.
-    * 
+    *
     * @param val
     *           The value the Future is to be initialized with.
     */
@@ -101,7 +101,7 @@ public class Future extends SimpleFuture implements RunDelayed {
    /**
     * Assigns a value to the Future and notifies all waiting threads. Attempts
     * to change a previously assigned value will be ignored.
-    * 
+    *
     * @param val
     *           The value to be assigned to the Future.
     */
@@ -110,7 +110,7 @@ public class Future extends SimpleFuture implements RunDelayed {
       super.setValue(val);
       if (runnablesWaiting != null) {
          while (!runnablesWaiting.empty()) {
-            getRunQueue().run((Runnable) runnablesWaiting.pop());
+            getRunQueue().run(runnablesWaiting.pop());
          }
          runnablesWaiting = null;
       }
@@ -119,7 +119,7 @@ public class Future extends SimpleFuture implements RunDelayed {
    /**
     * Get the RunQueue for a Future object. The run queue should be changed with
     * setRunQueue for more precise control.
-    * 
+    *
     * @return The RunQueue that objects runDelayed on a Future object will be
     *         placed in.
     */
@@ -138,7 +138,7 @@ public class Future extends SimpleFuture implements RunDelayed {
 
    /**
     * Get the RunQueue for the Future class.
-    * 
+    *
     * @return The RunQueue that objects runDelayed on a pure Future will be
     *         placed in.
     */
@@ -156,7 +156,7 @@ public class Future extends SimpleFuture implements RunDelayed {
          runQueue.run(r);
       else {
          if (runnablesWaiting == null)
-            runnablesWaiting = new Stack();
+            runnablesWaiting = new Stack<Runnable>();
          runnablesWaiting.push(r);
       }
    }

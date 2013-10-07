@@ -45,6 +45,11 @@ import java.io.Serializable;
 
 public abstract class CallMessage implements Serializable {
    /**
+    *
+    */
+   private static final long serialVersionUID = -1984358643551609711L;
+
+   /**
     * The name of the remote object. This must correspond to the name of an
     * object that was bound and registered.
     */
@@ -54,7 +59,7 @@ public abstract class CallMessage implements Serializable {
 
    /**
     * establish a tag for use in a remote call.
-    * 
+    *
     * @param ticket
     *           the tag
     */
@@ -71,7 +76,7 @@ public abstract class CallMessage implements Serializable {
 
    /**
     * Constructs a Call message with an invocation target in mind.
-    * 
+    *
     * @param target
     *           the name of a remote object.
     */
@@ -83,7 +88,7 @@ public abstract class CallMessage implements Serializable {
    /**
     * Change the invocation target. This allows a call message to be reused to
     * make multiple calls to different objects.
-    * 
+    *
     * @param target
     *           the name of a remote object.
     */
@@ -94,7 +99,7 @@ public abstract class CallMessage implements Serializable {
    /**
     * Get the invocation target. This method cannot be overridden as GMI depends
     * on it to determine the name of the object to be called.
-    * 
+    *
     * @return the invocation target.
     */
    public final String getTarget() {

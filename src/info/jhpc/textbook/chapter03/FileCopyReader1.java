@@ -1,19 +1,16 @@
 package info.jhpc.textbook.chapter03;
 
 import java.io.*;
-import java.util.*;
 
 // begin-class-FileCopyReader1
 class FileCopyReader1 extends Thread {
 
    private Pool pool;
    private BufferQueue copyBuffers;
-   private String filename;
    FileReader fr;
 
    public FileCopyReader1(String filename, Pool pool, BufferQueue copyBuffers)
          throws IOException {
-      this.filename = filename;
       this.pool = pool;
       this.copyBuffers = copyBuffers;
       fr = new FileReader(filename);

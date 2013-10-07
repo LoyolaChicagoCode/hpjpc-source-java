@@ -45,7 +45,7 @@ import java.util.Stack;
 
 /**
  * Allows multiple threads and runnables to gather at a point before proceeding.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
@@ -56,7 +56,7 @@ public class Barrier extends SimpleBarrier implements RunDelayed {
     * have them wait and to remove them.)
     */
 
-   protected Stack runnablesWaiting = null;// new Stack();//
+   protected Stack<Runnable> runnablesWaiting = null;// new Stack();//
 
    /**
     * The default queue into which to put (runDelayed) runnables that are
@@ -79,7 +79,7 @@ public class Barrier extends SimpleBarrier implements RunDelayed {
 
    /**
     * Creates a Barrier at which n Threads or Runnables may repeatedly gather.
-    * 
+    *
     * @param n
     *           total number of threads that must gather.
     */
@@ -91,7 +91,7 @@ public class Barrier extends SimpleBarrier implements RunDelayed {
    /**
     * Is called by a thread to wait for the rest of the n Threads or Runnables
     * to gather before the set of threads or runnables may continue executing.
-    * 
+    *
     * @throws InterruptedException
     *            If interrupted while waiting.
     */
@@ -120,7 +120,7 @@ public class Barrier extends SimpleBarrier implements RunDelayed {
       RunQueue q = getRunQueue();
       if (runnablesWaiting != null) {
          while (!runnablesWaiting.empty()) {
-            q.run((Runnable) runnablesWaiting.pop());
+            q.run(runnablesWaiting.pop());
          }
          // runnablesWaiting=null;
       }
@@ -129,7 +129,7 @@ public class Barrier extends SimpleBarrier implements RunDelayed {
    /**
     * Get the RunQueue for a Barrier object. The run queue should be changed
     * with setRunQueue for more precise control.
-    * 
+    *
     * @return The RunQueue that objects runDelayed on a Barrier object will be
     *         placed in.
     */
@@ -148,7 +148,7 @@ public class Barrier extends SimpleBarrier implements RunDelayed {
 
    /**
     * Get the RunQueue for the Barrier class.
-    * 
+    *
     * @return The RunQueue that objects runDelayed on a pure Future will be
     *         placed in.
     */
@@ -165,7 +165,7 @@ public class Barrier extends SimpleBarrier implements RunDelayed {
    public synchronized void runDelayed(Runnable r) {
       if (--count > 0) {
          if (runnablesWaiting == null) {
-            runnablesWaiting = new Stack();
+            runnablesWaiting = new Stack<Runnable>();
          }
          runnablesWaiting.push(r);
       } else {

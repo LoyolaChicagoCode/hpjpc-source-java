@@ -47,7 +47,7 @@ import java.util.Hashtable;
  * Provide a shared table of queues for thread communication. This combines two
  * of the most useful thread communication data structures: directories and
  * queues.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
@@ -56,7 +56,7 @@ public class SharedTableOfQueues {
    /**
     * The table used to hold the shared queues.
     */
-   Hashtable tbl = new Hashtable();
+   Hashtable<Object, FutureQueue> tbl = new Hashtable<Object, FutureQueue>();
 
    /**
     * The FutureFactory to use when creating futures in the contained
@@ -73,7 +73,7 @@ public class SharedTableOfQueues {
 
    /**
     * The constructor that uses an explicit FutureFactory.
-    * 
+    *
     * @param f
     *           The FutureFactory to use.
     */
@@ -83,7 +83,7 @@ public class SharedTableOfQueues {
 
    /**
     * The constructor that uses an explicit RunQueue in its future factory.
-    * 
+    *
     * @param rq
     *           The RunQueue to use it its FutureFactory.
     */
@@ -97,7 +97,7 @@ public class SharedTableOfQueues {
     */
    protected synchronized FutureQueue getQueue(Object key) {
       FutureQueue f;
-      f = (FutureQueue) tbl.get(key);
+      f = tbl.get(key);
       if (f == null)
          tbl.put(key, f = new FutureQueue());
       return f;
@@ -106,7 +106,7 @@ public class SharedTableOfQueues {
    /**
     * Put an object, <i>value</i>, into the queue with name <i>key</i>. Create a
     * queue with name <i>key</i> if not already present.
-    * 
+    *
     * @param key
     *           The name of the queue.
     * @param value
@@ -125,7 +125,7 @@ public class SharedTableOfQueues {
    /**
     * Remove and return an object from the queue named <i>key</i>. If the queue
     * is empty, wait for an object to be put into the queue.
-    * 
+    *
     * @param key
     *           The name of the queue.
     * @return The object removed from the queue.
@@ -148,7 +148,7 @@ public class SharedTableOfQueues {
     * Return a reference to the first object in the queue named <i>key</i>. If
     * the queue is empty, wait for an object to be put into the queue. The
     * object is not removed from the queue.
-    * 
+    *
     * @param key
     *           The name of the queue.
     * @return The object removed from the queue.
@@ -167,7 +167,7 @@ public class SharedTableOfQueues {
 
    /**
     * Test whether the FutureQueue associated with <i>key</i> is empty.
-    * 
+    *
     * @param key
     *           The name of the queue.
     * @return true if the queue is empty (or not present), false otherwise.
@@ -184,7 +184,7 @@ public class SharedTableOfQueues {
 
    /**
     * Get a Future by calling get()in the FutureQueue. named <i>key</i>.
-    * 
+    *
     * @param key
     *           The name of the queue.
     * @return The Future from the queue.
@@ -203,7 +203,7 @@ public class SharedTableOfQueues {
 
    /**
     * Return a reference by calling look() in the FutureQueue. named <i>key</i>.
-    * 
+    *
     * @param key
     *           The name of the queue.
     * @return The Future from the queue.
@@ -216,7 +216,7 @@ public class SharedTableOfQueues {
    /**
     * Remove and return an object from the queue named <i>key</i>. If the queue
     * is empty, return null immediately.
-    * 
+    *
     * @param key
     *           The name of the queue.
     * @return The object removed from the queue or null if the queue is empty.
@@ -236,7 +236,7 @@ public class SharedTableOfQueues {
     * Return a reference to the first object in the queue named <i>key</i>. If
     * the queue is empty, return null immediately. The object is not removed
     * from the queue.
-    * 
+    *
     * @param key
     *           The name of the queue.
     * @return The object removed from the queue or null if the queue is empty.
@@ -253,7 +253,7 @@ public class SharedTableOfQueues {
     * Execute the <i>run()</i> method in Runnable object <i>r</i> in a new
     * thread as soon as the queue named <i>key</i> is non-empty. Method
     * <i>runDelayed()</i> returns immediately.
-    * 
+    *
     * @param key
     *           The name of the queue.
     * @param r

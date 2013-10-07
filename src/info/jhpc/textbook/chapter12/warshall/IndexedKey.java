@@ -28,6 +28,11 @@ import java.util.Random;
 import java.io.*;
 
 class IndexedKey implements Serializable {
+   /**
+    *
+    */
+   private static final long serialVersionUID = 5742533745001444067L;
+
    private static Random rand = new Random();
 
    private static Random hasher = new Random();

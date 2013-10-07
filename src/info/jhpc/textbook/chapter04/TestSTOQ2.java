@@ -26,8 +26,6 @@
 //create a bunch of threads to put strings into and take them out of queues
 package info.jhpc.textbook.chapter04;
 
-import info.jhpc.thread.*;
-
 class TestSTOQ2 extends Thread {
    final static int numSenders = 2, numReceivers = 3, maxMsg = 1000;
 

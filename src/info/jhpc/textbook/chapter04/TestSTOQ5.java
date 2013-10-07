@@ -28,8 +28,6 @@
 //  they will be removed using a getSkip loop
 package info.jhpc.textbook.chapter04;
 
-import info.jhpc.thread.*;
-
 class TestSTOQ5 extends Thread {
    final static int maxMsg = 1000;
 
@@ -40,7 +38,6 @@ class TestSTOQ5 extends Thread {
    boolean receiver;
 
    public static void main(String[] x) {
-      int i;
       System.out.println("one thread will write strings into an array");
       System.out.println(" (one queue per element)");
       System.out.println("another will remove them and check their order");

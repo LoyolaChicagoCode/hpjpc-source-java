@@ -45,7 +45,7 @@ import java.util.Hashtable;
 
 /**
  * A table of Futures that are automatically created on look-up (get).
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
@@ -60,7 +60,7 @@ public class FutureTable {
    /**
     * The table.
     */
-   protected Hashtable tbl = new Hashtable();
+   protected Hashtable<Object, Future> tbl = new Hashtable<Object, Future>();
 
    /**
     * Default constructor. Use the default FutureFactory, which uses Future's
@@ -72,7 +72,7 @@ public class FutureTable {
 
    /**
     * Constructor taking an explicit future factory.
-    * 
+    *
     * @param f
     *           The future factory to use when creating futures.
     */
@@ -82,7 +82,7 @@ public class FutureTable {
 
    /**
     * Constructor taking an explicit run queue.
-    * 
+    *
     * @param f
     *           The run queue to use in the created futures.
     */
@@ -93,11 +93,11 @@ public class FutureTable {
    /**
     * Returns the Future associated with the key in this table. Creates one if
     * none existed previously.
-    * 
+    *
     * @return The Future associated with the key.
     */
    public synchronized Future get(Object key) {
-      Future f = (Future) tbl.get(key);
+      Future f = tbl.get(key);
       if (f == null)
          tbl.put(key, f = new Future());
       return f;

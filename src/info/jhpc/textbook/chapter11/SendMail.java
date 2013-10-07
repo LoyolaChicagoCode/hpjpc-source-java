@@ -73,6 +73,11 @@ import java.util.*;
 
 public class SendMail extends Frame implements Runnable, ActionListener {
 
+   /**
+    *
+    */
+   private static final long serialVersionUID = 5601274884960479044L;
+
    private TextField to, from, subject, smtpHost;
 
    private TextArea message;
@@ -195,8 +200,7 @@ public class SendMail extends Frame implements Runnable, ActionListener {
 
    public void run() {
       try {
-         String input, firstToken;
-         StringTokenizer st;
+         String input;
          while (true) {
             input = in.readLine();
             if (input == null)
@@ -213,6 +217,7 @@ public class SendMail extends Frame implements Runnable, ActionListener {
       System.out.println("Leaving run() method normally.");
    }
 
+   @SuppressWarnings("unused")
    public static void main(String args[]) {
       SendMail sm = new SendMail();
    }

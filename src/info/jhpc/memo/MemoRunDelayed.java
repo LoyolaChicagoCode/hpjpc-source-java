@@ -52,6 +52,10 @@ import java.io.Serializable;
  */
 
 class MemoRunDelayed extends MemoMessage implements Runnable {
+   /**
+    * 
+    */
+   private static final long serialVersionUID = -2729006700678257257L;
    Serializable key;
    Serializable runnable;
 

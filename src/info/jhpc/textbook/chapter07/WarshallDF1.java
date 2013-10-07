@@ -87,7 +87,7 @@ class WarshallDF1 {
    }
 
    public boolean[][] closure(boolean[][] a) {
-      int i, j, k;
+      int i, k;
       RunQueue rq = new RunQueue(numThreads);
       FutureFactory ff = new FutureFactory(rq);
       Future[] srcRows = new Future[a.length];

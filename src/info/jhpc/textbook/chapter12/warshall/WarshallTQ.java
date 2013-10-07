@@ -31,8 +31,6 @@ package info.jhpc.textbook.chapter12.warshall;
 import java.io.*;
 
 import info.jhpc.memo.*;
-import info.jhpc.thread.*;
-
 import java.util.Random;
 
 class WarshallTQ {
@@ -44,8 +42,6 @@ class WarshallTQ {
 
    private int memoPort;
 
-   private String spaceName;
-
    private MemoClient space;
 
    public WarshallTQ(String memoHost, int memoPort, String name, int blkSize) {
@@ -53,7 +49,6 @@ class WarshallTQ {
       this.numBlocks = 0;
       this.memoHost = memoHost;
       this.memoPort = memoPort;
-      this.spaceName = name;
    }
 
    public void connectToMemo() throws Exception {
@@ -79,7 +74,6 @@ class WarshallTQ {
       IndexedKey kthCols = IndexedKey.unique(0);
       NR = a.length;
       NC = a[0].length;
-      int nt = ((NR + blkSize - 1) / blkSize) * ((NC + blkSize - 1) / blkSize);
       for (i = 0; i < NR; i += blkSize)
          for (j = 0; j < NC; j += blkSize) {
             Block b = new Block(a, i, j, kthRows, kthCols, blkSize);
@@ -91,7 +85,7 @@ class WarshallTQ {
 
    public void closureDoWork(int workerNumber, int numberOfWorkers)
          throws Exception {
-      int numBlocksToWorkOn, remainder;
+      int numBlocksToWorkOn;
       Integer globalBlockCount = (Integer) space.getCopy("blockCount");
       numBlocksToWorkOn = 1 + globalBlockCount.intValue() / numberOfWorkers;
 
@@ -138,6 +132,11 @@ class WarshallTQ {
    }
 
    public static class MemoTest1 implements Serializable {
+
+      /**
+       *
+       */
+      private static final long serialVersionUID = -347843593802114356L;
 
       public static void main(String args[]) {
          if (args.length < 6) {

@@ -54,7 +54,7 @@ import java.util.Hashtable;
 // begin-class-MessageServer
 public class MessageServer extends Thread {
    private ServerSocket callListener;
-   private Hashtable subscribers;
+   private Hashtable<String, MessageService> subscribers;
 
    public static final boolean logging = true;
 
@@ -68,7 +68,7 @@ public class MessageServer extends Thread {
       log("Simple Messaging Architecture (SMA) version 1.0");
       log("Copyright (c) 2000, George K. Thiruvathukal");
       callListener = new ServerSocket(port);
-      subscribers = new Hashtable();
+      subscribers = new Hashtable<String, MessageService>();
       log("Created MessageServer instance fully!");
    }
 
@@ -77,7 +77,7 @@ public class MessageServer extends Thread {
    }
 
    public MessageService getSubscriber(int messageType) {
-      return (MessageService) subscribers.get(messageType + "");
+      return subscribers.get(messageType + "");
    }
 
    public void run() {

@@ -23,7 +23,7 @@
  Boston, MA  02111-1307, USA.
  */
 /**
- * Defines the exception thrown when the specified range is 
+ * Defines the exception thrown when the specified range is
  * in decreasing order.
  *
  * Written by: John Shafaee
@@ -32,6 +32,7 @@
 
 package info.jhpc.textbook.chapter05.integration.threaded;
 
+@SuppressWarnings("serial")
 public class BadThreadCountException extends IllegalArgumentException {
    public BadThreadCountException() {
       super("Thread count must be atleast 1.");

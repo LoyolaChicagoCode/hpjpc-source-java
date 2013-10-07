@@ -45,6 +45,7 @@ import info.jhpc.gmi.CallMessage;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class GetMessages extends CallMessage implements Serializable {
 
    String sessionId;

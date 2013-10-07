@@ -26,6 +26,7 @@ package info.jhpc.textbook.chapter12.integration;
 
 import java.io.*;
 
+@SuppressWarnings("serial")
 class function implements F_of_x, Serializable {
    public function() {
    }

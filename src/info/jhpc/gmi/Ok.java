@@ -44,6 +44,10 @@ package info.jhpc.gmi;
 import java.io.Serializable;
 
 public class Ok extends CallMessage implements Serializable {
+   /**
+    * 
+    */
+   private static final long serialVersionUID = 1171575062354566266L;
    private boolean ok;
 
    public Ok() {

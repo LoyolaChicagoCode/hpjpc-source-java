@@ -43,6 +43,7 @@ package info.jhpc.textbook.io;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.IOException;
 
 public class CaesarReader extends TranslateReader {
 
@@ -51,7 +52,7 @@ public class CaesarReader extends TranslateReader {
             inAlphabet);
    }
 
-   public static void main(String[] args) {
+   public static void main(String[] args) throws IOException {
       String key = args[0];
       InputStreamReader isr = new InputStreamReader(System.in);
       CaesarReader cr = new CaesarReader(isr, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", key);
@@ -68,7 +69,7 @@ public class CaesarReader extends TranslateReader {
       } finally {
          System.out.flush();
       }
-
+      cr.close();
    }
 
 }

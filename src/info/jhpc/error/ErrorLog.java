@@ -57,12 +57,11 @@ public class ErrorLog {
    private String className;
    private String funcName;
    private String tag;
-   private boolean forceStderr;
    private PrintStream ps;
 
    /**
     * create an instance
-    * 
+    *
     * @param ps
     *           the stream to use for writing messages
     * @param className
@@ -73,12 +72,11 @@ public class ErrorLog {
    public ErrorLog(PrintStream ps, String className, boolean forceStderr) {
       this.ps = ps;
       this.className = className;
-      this.forceStderr = forceStderr;
    }
 
    /**
     * create an instance
-    * 
+    *
     * @param className
     *           the name of the class issuing messages
     * @param forceStderr
@@ -90,7 +88,7 @@ public class ErrorLog {
 
    /**
     * set the method (or function) name where messages are being issued
-    * 
+    *
     * @param funcName
     *           name of the method (or function)
     */
@@ -100,7 +98,7 @@ public class ErrorLog {
 
    /**
     * set a tag so you can easily search for the error with your editor
-    * 
+    *
     * @param tag
     *           a tag that (hopefully) will be unique
     */
@@ -110,7 +108,7 @@ public class ErrorLog {
 
    /**
     * internal method to print message without new line
-    * 
+    *
     * @param message
     *           the message to print
     */
@@ -122,7 +120,7 @@ public class ErrorLog {
 
    /**
     * internal method to print message with new line
-    * 
+    *
     * @param message
     *           the message to print
     */
@@ -134,7 +132,7 @@ public class ErrorLog {
 
    /**
     * write an error message
-    * 
+    *
     * @param type
     *           kind of message (see static constants)
     * @param message

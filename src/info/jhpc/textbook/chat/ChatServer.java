@@ -66,13 +66,13 @@ public class ChatServer implements Callable {
       return nextSessionId;
    }
 
-   private Hashtable sessions = new Hashtable();
+   private Hashtable<String, ChatUserData> sessions = new Hashtable<String, ChatUserData>();
 
    /*
     * GKT: You should provide a file that maintains the list of users and
     * passwords. I would be impressed if someone supported basic password
     * scrambling and encryption.
-    * 
+    *
     * Right now, anyone can login and participate.
     */
 
@@ -95,23 +95,23 @@ public class ChatServer implements Callable {
 
    private void showRoom() {
       System.out.println("--- Chat Room State ---");
-      Enumeration e = sessions.keys();
+      Enumeration<String> e = sessions.keys();
       while (e.hasMoreElements()) {
-         String key = (String) e.nextElement();
+         String key = e.nextElement();
          System.out.println("Session " + key + " " + sessions.get(key));
       }
       System.out.println("-----------------------");
    }
 
    private CallMessage doPutMessage(PutMessage in) {
-      ChatUserData originatingUser = (ChatUserData) sessions.get(in
+      ChatUserData originatingUser = sessions.get(in
             .getSessionId());
       if (originatingUser == null)
          return new Ok(false);
-      Enumeration e = sessions.keys();
+      Enumeration<String> e = sessions.keys();
       while (e.hasMoreElements()) {
          Object sessionId = e.nextElement();
-         ChatUserData cud = (ChatUserData) sessions.get(sessionId);
+         ChatUserData cud = sessions.get(sessionId);
          String text = "<" + originatingUser.getUserName() + "> "
                + in.getMessage();
          cud.appendMessage(text);
@@ -126,7 +126,7 @@ public class ChatServer implements Callable {
     */
 
    private CallMessage doGetMessages(GetMessages in) {
-      ChatUserData cud = (ChatUserData) sessions.get(in.getSessionId());
+      ChatUserData cud = sessions.get(in.getSessionId());
       if (cud == null)
          return new Ok(false);
       return new GetResults(cud.getSomeMessages(in.getMax()));

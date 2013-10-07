@@ -57,6 +57,7 @@ import java.util.Vector;
  * server.
  */
 
+@SuppressWarnings("serial")
 public class ChatClientRoom extends Frame implements ActionListener, Runnable,
       WindowListener {
 
@@ -109,7 +110,7 @@ public class ChatClientRoom extends Frame implements ActionListener, Runnable,
       String toBeSent = sendText.getText();
       PutMessage pm = new PutMessage("aol2000", sessionId, toBeSent);
       try {
-         Ok ok = (Ok) rpc.call(pm);
+         rpc.call(pm);
       } catch (Exception e) {
          System.out.println("ChatClientRoom.doSend() GMI call failed.");
          return;
@@ -117,6 +118,7 @@ public class ChatClientRoom extends Frame implements ActionListener, Runnable,
       sendText.setText("");
    }
 
+   @SuppressWarnings("rawtypes")
    public void run() {
       while (keepPolling) {
          /* sleep 1000 milliseconds; you may want to change this */
@@ -149,6 +151,7 @@ public class ChatClientRoom extends Frame implements ActionListener, Runnable,
       }
    }
 
+   @SuppressWarnings("unused")
    public void goAway() {
       if (dead)
          return;
@@ -190,6 +193,7 @@ public class ChatClientRoom extends Frame implements ActionListener, Runnable,
    public void windowOpened(WindowEvent e) {
    }
 
+   @SuppressWarnings("deprecation")
    public static void main(String args[]) {
       ChatClientRoom ccr = new ChatClientRoom(null, "AAA");
       ccr.pack();

@@ -51,7 +51,7 @@ package info.jhpc.thread;
  * created at a time to avoid clogging the system with too many threads. This,
  * however, can lead to deadlock if the threads wait on conditions that objects
  * later in the queue will cause.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
@@ -148,7 +148,7 @@ public class PriorityRunQueue {
    /**
     * Create a PriorityRunQueue with a specified maximum number of Xeq threads
     * that can be created at a time.
-    * 
+    *
     * @param maxCreatable
     *           Initial value for maxThreadsCreated.
     */
@@ -161,7 +161,7 @@ public class PriorityRunQueue {
     * Create a PriorityRunQueue with a specified maximum number of Xeq threads
     * that can be created at a time and a maximum number that can be waiting at
     * any one time for more Runnable objects to execute.
-    * 
+    *
     * @param maxCreatable
     *           Initial value for maxThreadsCreated.
     * @param maxWaiting
@@ -196,13 +196,12 @@ public class PriorityRunQueue {
 
    /**
     * Enqueue an object to be run when a thread becomes available.
-    * 
+    *
     * @param runnable
     *           The Runnable object to be enqueued for execution.
     */
 
    public void put(Runnable runnable, double priority) {
-      int nt;
       boolean createThread = false;
       synchronized (this) {
          N++;
@@ -218,7 +217,6 @@ public class PriorityRunQueue {
          priorities[N] = (float) priority;
          siftDown(N);
 
-         nt = numThreadsWaiting;
          if (numThreadsWaiting > 0) {
             numThreadsWaiting--;
             numNotifies++;
@@ -275,7 +273,7 @@ public class PriorityRunQueue {
 
    /**
     * Same as put(runnable, priority).
-    * 
+    *
     * @param runnable
     *           The Runnable object to be enqueued for execution.
     */
@@ -291,7 +289,7 @@ public class PriorityRunQueue {
     * Will wait for an object to run if the limit on waiting threads hasn't been
     * reached. If it has, dequeue will throw an InterruptedException to kill the
     * Xeq thread.
-    * 
+    *
     * @throws InterruptedException
     *            To kill the Xeq thread if the limit of waiting threads has been
     *            reached and there are no objects to run.
@@ -324,7 +322,7 @@ public class PriorityRunQueue {
    /**
     * Set the limit on the number of threads created by this PriorityRunQueue
     * object that may be waiting at any one time to run objects.
-    * 
+    *
     * @param n
     *           The new limit.
     */
@@ -339,7 +337,7 @@ public class PriorityRunQueue {
    /**
     * Set the limit on the number of threads that may be created by this
     * PriorityRunQueue object at any one time to run objects.
-    * 
+    *
     * @param n
     *           The new limit.
     */
@@ -351,7 +349,7 @@ public class PriorityRunQueue {
    /**
     * Get the limit on the number of threads created to process objects that may
     * be waiting for new objects to process.
-    * 
+    *
     * @return maxThreadsWaiting
     */
 
@@ -362,7 +360,7 @@ public class PriorityRunQueue {
    /**
     * Get the limit on the number of threads that may be created to process
     * objects.
-    * 
+    *
     * @return maxThreadsCreated
     */
 
@@ -373,7 +371,7 @@ public class PriorityRunQueue {
    /**
     * Get the number of threads that have been created by this PriorityRunQueue
     * to process objects and which are waiting to process more such objects.
-    * 
+    *
     * @return numThreadsWaiting
     */
 
@@ -384,7 +382,7 @@ public class PriorityRunQueue {
    /**
     * Get the number of existing threads that have been created by this
     * PriorityRunQueue to process objects.
-    * 
+    *
     * @return numThreadsCreated
     */
 
@@ -407,7 +405,7 @@ public class PriorityRunQueue {
 
    /**
     * Set the time limit an Xeq thread is to wait for a Runnable.
-    * 
+    *
     * @param n
     *           The new limit.
     */
@@ -421,7 +419,7 @@ public class PriorityRunQueue {
 
    /**
     * Get the time limit an Xeq thread is to wait for a Runnable.
-    * 
+    *
     * @return waitTime
     */
 
@@ -431,7 +429,7 @@ public class PriorityRunQueue {
 
    /**
     * Set the priority at which the Runnables are to execute.
-    * 
+    *
     * @param n
     *           The new priority.
     */
@@ -442,7 +440,7 @@ public class PriorityRunQueue {
 
    /**
     * Get the priority at which the Runnables are to execute.
-    * 
+    *
     * @return priority
     */
 
@@ -452,7 +450,7 @@ public class PriorityRunQueue {
 
    /**
     * Set whether the created threads will be daemons.
-    * 
+    *
     * @param d
     *           True if the created threads are to be daemon threads; false if
     *           user threads.
@@ -464,7 +462,7 @@ public class PriorityRunQueue {
 
    /**
     * Find out whether the created threads are daemons.
-    * 
+    *
     * @return true if the created threads are daemons.
     */
 
