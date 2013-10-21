@@ -72,4 +72,21 @@ task Diners1(dependsOn: 'classes', type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     args = []
 }
+
 // end-task-Diners1
+
+// begin-task-DateService
+task DateService(dependsOn: 'classes', type: JavaExec) {
+    main = 'info.jhpc.textbook.message.DateService'
+    classpath = sourceSets.main.runtimeClasspath
+    args = []
+}
+// end-task-DateService
+
+// begin-task-DateClient
+task DateClient(dependsOn: 'classes', type: JavaExec) {
+    main = 'info.jhpc.textbook.message.DateClient'
+    classpath = sourceSets.main.runtimeClasspath
+    args = [date_host, date_port]
+}
+// end-task-DateClient
