@@ -90,3 +90,19 @@ task DateClient(dependsOn: 'classes', type: JavaExec) {
     args = [date_host, date_port]
 }
 // end-task-DateClient
+
+// begin-task-KeyValService
+task KeyValService(dependsOn: 'classes', type: JavaExec) {
+    main = 'info.jhpc.textbook.message.KeyValService'
+    classpath = sourceSets.main.runtimeClasspath
+    args = []
+}
+// end-task-KeyValService
+
+// begin-task-KeyValClient
+task KeyValClient(dependsOn: 'classes', type: JavaExec) {
+    main = 'info.jhpc.textbook.message.KeyValClient'
+    classpath = sourceSets.main.runtimeClasspath
+    args = [kv_host, kv_port]
+}
+// end-task-KeyValClient
