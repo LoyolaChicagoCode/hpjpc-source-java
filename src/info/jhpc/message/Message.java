@@ -178,7 +178,19 @@ public class Message {
    }
 
    public String toString() {
-      return "Message: type = " + type + " param = " + parameters;
+      StringBuffer buffer = new StringBuffer();
+      buffer.append("Message {");
+      Enumeration<Object> e = parameters.keys();
+      while (e.hasMoreElements()) {
+         String key = (String)e.nextElement();
+         String value = parameters.get(key);
+         buffer.append(key);
+         buffer.append("=");
+         buffer.append(value);
+         if (e.hasMoreElements()) buffer.append(", ");
+      }
+      buffer.append("}");
+      return buffer.toString();
    }
 
    public static void main(String args[]) {
