@@ -47,3 +47,34 @@ To run the version *without deadlock*:
 java -classpath ./target/hpjpc-<VERSION>.jar info.jhpc.textbook.chapter03.Diners1
 ```
 
+Running Examples with Docker
+------------------------------
+
+These instructions assume you have installed `docker`. See https://docs.docker.com/install/ for details.
+We also assume you are in the checkout folder for `hpjpc-source-java`.
+
+
+```
+cd /usr/src/hpjpc-docker
+```
+
+Create the docker image:
+
+```
+sudo docker image build -t hpjpc .
+````
+
+Open an interactive session (in bash) so you can run the examples:
+
+```
+sudo docker run -it hpjpc bash
+```
+
+Try one of the examples, e.g. Dining philosophers with or without deadlock, just to make sure your setup is sane!
+
+```
+cd /usr/src/hpjpc-source-java
+./gradlew Diners0
+
+```
+
