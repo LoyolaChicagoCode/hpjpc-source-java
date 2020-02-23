@@ -51,11 +51,12 @@ Running Examples with Docker
 ------------------------------
 
 These instructions assume you have installed `docker`. See https://docs.docker.com/install/ for details.
-We also assume you are in the checkout folder for `hpjpc-source-java`.
+
+We also assume your current working directory is the checked out folder for the HPJPC project, e.g. `<path-to>/hpjpc-source-java`.
 
 
 ```
-cd /usr/src/hpjpc-docker
+cd /usr/src/hpjpc-source-java
 ```
 
 Create the docker image:
