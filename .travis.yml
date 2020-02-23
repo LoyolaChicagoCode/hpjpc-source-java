@@ -2,8 +2,8 @@ language: java
 sudo: false
 jdk: oraclejdk11
 script:
-- mvn compile
-- mvn package assembly:single
+- ./gradlew compileJava
+- ./gradlew jar
 deploy:
   provider: releases
   api_key: $GH_TOKEN
