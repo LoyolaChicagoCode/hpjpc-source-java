@@ -71,7 +71,19 @@ Try one of the examples, e.g. Dining philosophers with or without deadlock, just
 
 ```
 cd /usr/src/hpjpc-source-java
-./gradlew Diners0
 
 ```
 
+Either use Gradle:
+
+```
+./gradlew Diners0
+````
+
+.. or just use Java! Just make sure you area good typist. Ok, just kidding, use copy/paste.
+
+```
+java -classpath build/libs/hpjpc-source-java-1.0.jar info.jhpc.textbook.chapter03.Diners0
+```
+
+We'll have some scripts so you can run all examples easily. Stay tuned.
