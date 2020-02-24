@@ -44,124 +44,119 @@ package info.jhpc.thread;
 /**
  * Allows multiple threads and runnables to wait for a number of tasks to be
  * completed before proceeding.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 public class Accumulator implements RunDelayed {
 
-   /**
+    /**
+     *
      */
 
-   protected Future future;
+    protected Future future;
 
-   /**
+    /**
+     *
      */
 
-   protected int count;
+    protected int count;
 
-   /**
+    /**
+     *
      */
 
-   protected Object data;
+    protected Object data;
 
-   /**
-    * Creates an Accumulator which will wait for n completions.
-    * 
-    * @param n
-    *           total number of threads that must gather.
-    */
+    /**
+     * Creates an Accumulator which will wait for n completions.
+     *
+     * @param n total number of threads that must gather.
+     */
 
-   public Accumulator(int n) {
-      this(n, null, new Future());
-   }
+    public Accumulator(int n) {
+        this(n, null, new Future());
+    }
 
-   /**
-    * Creates an Accumulator which will wait for n completions before placing
-    * data in Future f.
-    * 
-    * @param n
-    *           total number of completions required.
-    * @param data
-    *           value to be placed in the future. It can be updated.
-    * @param f
-    *           future to be set to data when the number of completions have
-    *           occurred.
-    */
+    /**
+     * Creates an Accumulator which will wait for n completions before placing
+     * data in Future f.
+     *
+     * @param n    total number of completions required.
+     * @param data value to be placed in the future. It can be updated.
+     * @param f    future to be set to data when the number of completions have
+     *             occurred.
+     */
 
-   public Accumulator(int n, Object data, Future f) {
-      count = n;
-      this.data = data;
-      future = f;
-      if (count <= 0)
-         future.setValue(data);
-   }
+    public Accumulator(int n, Object data, Future f) {
+        count = n;
+        this.data = data;
+        future = f;
+        if (count <= 0)
+            future.setValue(data);
+    }
 
-   /**
-    * Creates an Accumulator which will wait for n completions before placing
-    * data in Future f.
-    * 
-    * @param n
-    *           total number of completions required.
-    * @param data
-    *           value to be placed in the future. It can be updated.
-    */
+    /**
+     * Creates an Accumulator which will wait for n completions before placing
+     * data in Future f.
+     *
+     * @param n    total number of completions required.
+     * @param data value to be placed in the future. It can be updated.
+     */
 
-   public Accumulator(int n, Object data) {
-      this(n, data, new Future());
-   }
+    public Accumulator(int n, Object data) {
+        this(n, data, new Future());
+    }
 
-   /**
-    * Is called by a thread or chore to signal that it's operation on the
-    * accumulator is complete. The nth of these signals will place the contants
-    * of the Accumulator's data field in its future.
-    */
-   public synchronized void signal() {
-      if (--count == 0)
-         future.setValue(data);
-   }
+    /**
+     * Is called by a thread or chore to signal that it's operation on the
+     * accumulator is complete. The nth of these signals will place the contants
+     * of the Accumulator's data field in its future.
+     */
+    public synchronized void signal() {
+        if (--count == 0)
+            future.setValue(data);
+    }
 
-   /**
-    * Get the data object.
-    * 
-    * @return The data object that will be placed in the future upon the proper
-    *         number of completions.
-    */
+    /**
+     * Get the data object.
+     *
+     * @return The data object that will be placed in the future upon the proper
+     * number of completions.
+     */
 
-   public Object getData() {
-      return data;
-   }
+    public Object getData() {
+        return data;
+    }
 
-   /**
-    * Get the Future to be set upon the correct number of signals.
-    * 
-    * @return The Future.
-    */
+    /**
+     * Set the data object.
+     *
+     * @param val A data object that will be placed in the future upon the proper
+     *            number of completions.
+     */
 
-   public Future getFuture() {
-      return future;
-   }
+    public void setData(Object val) {
+        data = val;
+    }
 
-   /**
-    * Set the data object.
-    * 
-    * @param val
-    *           A data object that will be placed in the future upon the proper
-    *           number of completions.
-    */
+    /**
+     * Get the Future to be set upon the correct number of signals.
+     *
+     * @return The Future.
+     */
 
-   public void setData(Object val) {
-      data = val;
-   }
+    public Future getFuture() {
+        return future;
+    }
 
-   /**
-    * Delay the runnable r until all elements of the group have terminated.
-    * 
-    * @param r
-    *           The runnable to be delayed.
-    */
+    /**
+     * Delay the runnable r until all elements of the group have terminated.
+     *
+     * @param r The runnable to be delayed.
+     */
 
-   public void runDelayed(Runnable r) {
-      future.runDelayed(r);
-   }
+    public void runDelayed(Runnable r) {
+        future.runDelayed(r);
+    }
 }

@@ -24,168 +24,168 @@
  */
 /**
  * This class manages a choosen number of threads to complete the
- * integeral computation of a defined, single variable function 
- * by means of trapazoidal areas. This is the second version of the 
- * IntegTrap3 program.  It utlizes the concurrent abstractions: 
+ * integeral computation of a defined, single variable function
+ * by means of trapazoidal areas. This is the second version of the
+ * IntegTrap3 program.  It utlizes the concurrent abstractions:
  * SimpleFutures and RunQueues.
  *
  * @author John Shafaee & Thomas Christopher
  * Date: July 22, 1999
- * 
  */
 package info.jhpc.textbook.chapter05.integration.accumulator;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Accumulator;
+import info.jhpc.thread.RunQueue;
 
 public class IntegTrap3 {
 
-   int numThreads;
+    int numThreads;
 
-   int numRegions;
+    int numRegions;
 
-   int granularity;
+    int granularity;
 
-   /**
-    * MAIN
-    */
-   public static void main(String[] args) {
+    /**
+     * Constructor - creates and initiates child threads for performing the
+     * calculation.
+     */
+    public IntegTrap3(int numThreads, int numRegions, int granularity) {
 
-      if (args.length != 5) {
-         System.out.println("\nUSAGE: IntegTrap3 <num threads>"
-               + " <num regions> <range start> <range end> <granularity>");
-         System.out.println("version: 3\n");
-         System.exit(1);
-      }
+        // check for invalid integration options
+        try {
+            if (numThreads < 1)
+                throw new BadThreadCountException();
 
-      int num_t = (new Integer(args[0])).intValue();
-      int num_r = (new Integer(args[1])).intValue();
-      double start = (new Double(args[2])).doubleValue();
-      double end = (new Double(args[3])).doubleValue();
-      int gran = (new Integer(args[4])).intValue();
+            if (numRegions < 1)
+                throw new BadRegionCountException();
 
-      System.out.println("Starting calculations...");
+            if (granularity < 1)
+                throw new BadGranularityException();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            System.exit(1);
+        }
+        this.numThreads = numThreads;
+        this.numRegions = numRegions;
+        this.granularity = granularity;
+    }
 
-      /**
-       * Define the function to integrate as a class that implements F_of_x.
-       * This endures that the object will provide the proper method for
-       * computing the result of a true function.
-       */
-      class function implements F_of_x {
-         public function() {
-         }
+    /**
+     * MAIN
+     */
+    public static void main(String[] args) {
 
-         public double f(double x) {
-            return x * x; // a parabola F(x) = x^2
-         }
-      }
+        if (args.length != 5) {
+            System.out.println("\nUSAGE: IntegTrap3 <num threads>"
+                    + " <num regions> <range start> <range end> <granularity>");
+            System.out.println("version: 3\n");
+            System.exit(1);
+        }
 
-      function fn = new function();
+        int num_t = (new Integer(args[0])).intValue();
+        int num_r = (new Integer(args[1])).intValue();
+        double start = (new Double(args[2])).doubleValue();
+        double end = (new Double(args[3])).doubleValue();
+        int gran = (new Integer(args[4])).intValue();
 
-      // begin timing the process from thread creation time
-      long begin_time = System.currentTimeMillis();
+        System.out.println("Starting calculations...");
 
-      IntegTrap3 integeral = new IntegTrap3(num_t, num_r, gran);
-      double area = integeral.integrate(start, end, fn);
+        /**
+         * Define the function to integrate as a class that implements F_of_x.
+         * This endures that the object will provide the proper method for
+         * computing the result of a true function.
+         */
+        class function implements F_of_x {
+            public function() {
+            }
 
-      // stop timing; all threads have completed
-      long end_time = System.currentTimeMillis();
+            public double f(double x) {
+                return x * x; // a parabola F(x) = x^2
+            }
+        }
 
-      // output results
-      printResults(area, num_t, num_r, gran, (end_time - begin_time));
+        function fn = new function();
 
-   }
+        // begin timing the process from thread creation time
+        long begin_time = System.currentTimeMillis();
 
-   /**
-    * Constructor - creates and initiates child threads for performing the
-    * calculation.
-    */
-   public IntegTrap3(int numThreads, int numRegions, int granularity) {
+        IntegTrap3 integeral = new IntegTrap3(num_t, num_r, gran);
+        double area = integeral.integrate(start, end, fn);
 
-      // check for invalid integration options
-      try {
-         if (numThreads < 1)
-            throw new BadThreadCountException();
+        // stop timing; all threads have completed
+        long end_time = System.currentTimeMillis();
 
-         if (numRegions < 1)
-            throw new BadRegionCountException();
+        // output results
+        printResults(area, num_t, num_r, gran, (end_time - begin_time));
 
-         if (granularity < 1)
-            throw new BadGranularityException();
-      } catch (Exception e) {
-         System.out.println(e.toString());
-         System.exit(1);
-      }
-      this.numThreads = numThreads;
-      this.numRegions = numRegions;
-      this.granularity = granularity;
-   }
+    }
 
-   public double integrate(double a, double b, F_of_x fn) {
-      int i;
+    /**
+     * Report the final results of the calculation.
+     */
+    public static void printResults(double totalArea, int threadCount,
+                                    int numRegions, int granularity, long run_time) {
 
-      // area under curve
-      double totalArea = 0.0d;
+        System.out.println("\n             RESULTS           ");
+        System.out.println("===============================");
+        System.out.println("Total area under curve : " + totalArea);
+        System.out.println("Number of threads used : " + threadCount);
+        System.out.println("Number of regions      : " + numRegions);
+        System.out.println("Granularity of calc.   : " + granularity
+                + " trapaziods per sub-region");
+        System.out.println("Total run time         : " + run_time + " msec.");
+        System.out.println("===============================\n");
 
-      Accumulator acc = null;
+    }
 
-      if (a > b)
-         throw new BadRangeException();
-      if (a == b)
-         throw new NoRangeException();
+    public double integrate(double a, double b, F_of_x fn) {
+        int i;
 
-      // create a RunQueue with the defined max. number of threads
-      RunQueue regionQueue = new RunQueue(numThreads);
+        // area under curve
+        double totalArea = 0.0d;
 
-      try {
-         double range = b - a;
-         double start = a;
-         double end = a + ((1.0d) / numRegions * range);
+        Accumulator acc = null;
 
-         acc = new Accumulator(numRegions, new Double(0.0));
+        if (a > b)
+            throw new BadRangeException();
+        if (a == b)
+            throw new NoRangeException();
 
-         for (i = 0; i < numRegions; i++) {
+        // create a RunQueue with the defined max. number of threads
+        RunQueue regionQueue = new RunQueue(numThreads);
 
-            // create a IntegTrap3Region with the designated
-            // Accumulator and pass it to the RunQueue
-            regionQueue.put(new IntegTrap3Region(start, end, granularity, fn,
-                  acc));
+        try {
+            double range = b - a;
+            double start = a;
+            double end = a + ((1.0d) / numRegions * range);
 
-            // set the range for the next thhread
-            start = end;
-            end = a + ((i + 2.0d) / numRegions * range);
-         }
-      } catch (Exception e) {
-         System.out.println("Exception occured in creating "
-               + "and initializing thread.\n" + e.toString());
-      }
+            acc = new Accumulator(numRegions, new Double(0.0));
 
-      try {
-         totalArea = ((Double) acc.getFuture().getValue()).doubleValue();
-      } catch (Exception e) {
-         System.out
-               .println("Could not retrieve value from Accumulator's Future.");
-         System.exit(1);
-      }
-      regionQueue.setMaxThreadsWaiting(0);
+            for (i = 0; i < numRegions; i++) {
 
-      return totalArea;
-   }
+                // create a IntegTrap3Region with the designated
+                // Accumulator and pass it to the RunQueue
+                regionQueue.put(new IntegTrap3Region(start, end, granularity, fn,
+                        acc));
 
-   /**
-    * Report the final results of the calculation.
-    */
-   public static void printResults(double totalArea, int threadCount,
-         int numRegions, int granularity, long run_time) {
+                // set the range for the next thhread
+                start = end;
+                end = a + ((i + 2.0d) / numRegions * range);
+            }
+        } catch (Exception e) {
+            System.out.println("Exception occured in creating "
+                    + "and initializing thread.\n" + e.toString());
+        }
 
-      System.out.println("\n             RESULTS           ");
-      System.out.println("===============================");
-      System.out.println("Total area under curve : " + totalArea);
-      System.out.println("Number of threads used : " + threadCount);
-      System.out.println("Number of regions      : " + numRegions);
-      System.out.println("Granularity of calc.   : " + granularity
-            + " trapaziods per sub-region");
-      System.out.println("Total run time         : " + run_time + " msec.");
-      System.out.println("===============================\n");
+        try {
+            totalArea = ((Double) acc.getFuture().getValue()).doubleValue();
+        } catch (Exception e) {
+            System.out
+                    .println("Could not retrieve value from Accumulator's Future.");
+            System.exit(1);
+        }
+        regionQueue.setMaxThreadsWaiting(0);
 
-   }
+        return totalArea;
+    }
 }

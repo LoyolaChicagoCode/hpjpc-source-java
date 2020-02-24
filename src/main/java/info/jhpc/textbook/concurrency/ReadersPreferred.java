@@ -46,117 +46,115 @@ package info.jhpc.textbook.concurrency;
  * readers. A reader may not begin reading if there is a writer writing;
  * otherwise, it may begin immediately. A writer may not begin writing if there
  * are any readers present or if another writer is writing.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class ReadersPreferred implements MultipleReadersWritersMonitor {
-   /**
-    * number readers reading
-    */
-   protected int nr = 0;
-   /**
-    * number of readers total (reading or waiting to read)
-    */
-   protected int nrtotal = 0;
-   /**
-    * number writers writing, 0 or 1
-    */
-   protected int nw = 0;
-   /**
-    * number of writers total (writing or waiting to write)
-    */
-   protected int nwtotal = 0;
+    /**
+     * number readers reading
+     */
+    protected int nr = 0;
+    /**
+     * number of readers total (reading or waiting to read)
+     */
+    protected int nrtotal = 0;
+    /**
+     * number writers writing, 0 or 1
+     */
+    protected int nw = 0;
+    /**
+     * number of writers total (writing or waiting to write)
+     */
+    protected int nwtotal = 0;
 
-   /**
-    * Reset the monitor. You will need to interrupt the threads in the monitor
-    * and sleep a while before resetting the monitor.
-    */
-   public void reset() {
-      nr = 0;
-      nrtotal = 0;
-      nw = 0;
-      nwtotal = 0;
-   }
+    /**
+     * Reset the monitor. You will need to interrupt the threads in the monitor
+     * and sleep a while before resetting the monitor.
+     */
+    public void reset() {
+        nr = 0;
+        nrtotal = 0;
+        nw = 0;
+        nwtotal = 0;
+    }
 
-   /**
-    * Called to begin reading the shared data structure. Will wait for access if
-    * necessary.
-    * <p/>
-    * Pattern for use:
-    * <p/>
-    * 
-    * <pre>
-    * 	mon.startReading();
-    * 	try {
-    * 	   ... read ...
-    * 	} finally {
-    * 	   mon.stopReading();
-    * 	}
-    * </pre>
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public synchronized void startReading() throws InterruptedException {
-      nrtotal++;
-      while (nw != 0)
-         wait();
-      nr++;
-   }
+    /**
+     * Called to begin reading the shared data structure. Will wait for access if
+     * necessary.
+     * <p/>
+     * Pattern for use:
+     * <p/>
+     *
+     * <pre>
+     * 	mon.startReading();
+     * 	try {
+     * 	   ... read ...
+     *    } finally {
+     * 	   mon.stopReading();
+     *    }
+     * </pre>
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public synchronized void startReading() throws InterruptedException {
+        nrtotal++;
+        while (nw != 0)
+            wait();
+        nr++;
+    }
 
-   /**
-    * Called when the thread is finished reading the shared data structure.
-    */
-   public synchronized void stopReading() {
-      nr--;
-      nrtotal--;
-      if (nrtotal == 0)
-         notify();
-   }
+    /**
+     * Called when the thread is finished reading the shared data structure.
+     */
+    public synchronized void stopReading() {
+        nr--;
+        nrtotal--;
+        if (nrtotal == 0)
+            notify();
+    }
 
-   /**
-    * Called to begin writing the shared data structure. Will wait for access if
-    * necessary.
-    * <p/>
-    * Pattern for use:
-    * <p/>
-    * 
-    * <pre>
-    * 	mon.startWriting();
-    * 	try {
-    * 	   ... write ...
-    * 	} finally {
-    * 	   mon.stopWriting();
-    * 	}
-    * </pre>
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public synchronized void startWriting() throws InterruptedException {
-      nwtotal++;
-      while (nrtotal + nw != 0)
-         wait();
-      nw = 1;
-   }
+    /**
+     * Called to begin writing the shared data structure. Will wait for access if
+     * necessary.
+     * <p/>
+     * Pattern for use:
+     * <p/>
+     *
+     * <pre>
+     * 	mon.startWriting();
+     * 	try {
+     * 	   ... write ...
+     *    } finally {
+     * 	   mon.stopWriting();
+     *    }
+     * </pre>
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public synchronized void startWriting() throws InterruptedException {
+        nwtotal++;
+        while (nrtotal + nw != 0)
+            wait();
+        nw = 1;
+    }
 
-   /**
-    * Called when the thread is finished writing the shared data structure.
-    */
-   public synchronized void stopWriting() {
-      nw = 0;
-      nwtotal--;
-      notifyAll();
-   }
+    /**
+     * Called when the thread is finished writing the shared data structure.
+     */
+    public synchronized void stopWriting() {
+        nw = 0;
+        nwtotal--;
+        notifyAll();
+    }
 
-   /**
-    * Get legible information about the identity of the monitor.
-    * 
-    * @return "Readers-Preferred Monitor"
-    */
-   public String getMonitorInfo() {
-      return "Readers-Preferred Monitor";
-   }
+    /**
+     * Get legible information about the identity of the monitor.
+     *
+     * @return "Readers-Preferred Monitor"
+     */
+    public String getMonitorInfo() {
+        return "Readers-Preferred Monitor";
+    }
 }

@@ -45,74 +45,72 @@ package info.jhpc.textbook.concurrency;
  * The interface that all the multiple readers/writers monitors implement.
  * Several threads may read simultaneously. At most one thread may write at a
  * time. No threads may be reading while another is writing, and vice versa.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public interface MultipleReadersWritersMonitor {
-   /**
-    * Called to begin reading the shared data structure. Will wait for access if
-    * necessary.
-    * <p/>
-    * Pattern for use:
-    * <p/>
-    * 
-    * <pre>
-    * 	mon.startReading();
-    * 	try {
-    * 	   ... read ...
-    * 	} finally {
-    * 	   mon.stopReading();
-    * 	}
-    * </pre>
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public abstract void startReading() throws InterruptedException;
+    /**
+     * Called to begin reading the shared data structure. Will wait for access if
+     * necessary.
+     * <p/>
+     * Pattern for use:
+     * <p/>
+     *
+     * <pre>
+     * 	mon.startReading();
+     * 	try {
+     * 	   ... read ...
+     *    } finally {
+     * 	   mon.stopReading();
+     *    }
+     * </pre>
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    void startReading() throws InterruptedException;
 
-   /**
-    * Called when the thread is finished reading the shared data structure.
-    */
-   public abstract void stopReading();
+    /**
+     * Called when the thread is finished reading the shared data structure.
+     */
+    void stopReading();
 
-   /**
-    * Called to begin writing the shared data structure. Will wait for access if
-    * necessary.
-    * <p/>
-    * Pattern for use:
-    * <p/>
-    * 
-    * <pre>
-    * 	mon.startWriting();
-    * 	try {
-    * 	   ... write ...
-    * 	} finally {
-    * 	   mon.stopWriting();
-    * 	}
-    * </pre>
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public abstract void startWriting() throws InterruptedException;
+    /**
+     * Called to begin writing the shared data structure. Will wait for access if
+     * necessary.
+     * <p/>
+     * Pattern for use:
+     * <p/>
+     *
+     * <pre>
+     * 	mon.startWriting();
+     * 	try {
+     * 	   ... write ...
+     *    } finally {
+     * 	   mon.stopWriting();
+     *    }
+     * </pre>
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    void startWriting() throws InterruptedException;
 
-   /**
-    * Called when the thread is finished writing the shared data structure.
-    */
-   public abstract void stopWriting();
+    /**
+     * Called when the thread is finished writing the shared data structure.
+     */
+    void stopWriting();
 
-   /**
-    * Get legible information about the identity of the monitor.
-    * 
-    * @return A brief description of the monitor.
-    */
-   public abstract String getMonitorInfo();
+    /**
+     * Get legible information about the identity of the monitor.
+     *
+     * @return A brief description of the monitor.
+     */
+    String getMonitorInfo();
 
-   /**
-    * Reset the monitor. You will need to interrupt the threads in the monitor
-    * and sleep a while before resetting the monitor.
-    */
-   public abstract void reset();
+    /**
+     * Reset the monitor. You will need to interrupt the threads in the monitor
+     * and sleep a while before resetting the monitor.
+     */
+    void reset();
 }

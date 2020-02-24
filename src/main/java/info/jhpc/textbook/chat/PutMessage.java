@@ -46,28 +46,28 @@ import info.jhpc.gmi.CallMessage;
 import java.io.Serializable;
 
 public class PutMessage extends CallMessage implements Serializable {
-   /**
-    *
-    */
-   private static final long serialVersionUID = -7744141831608998063L;
-   private String sessionId;
-   private String message;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7744141831608998063L;
+    private String sessionId;
+    private String message;
 
-   PutMessage(String target, String sessionId, String message) {
-      super(target);
-      this.sessionId = sessionId;
-      this.message = message;
-   }
+    PutMessage(String target, String sessionId, String message) {
+        super(target);
+        this.sessionId = sessionId;
+        this.message = message;
+    }
 
-   public String getSessionId() {
-      return sessionId;
-   }
+    public String getSessionId() {
+        return sessionId;
+    }
 
-   public String getMessage() {
-      return message;
-   }
+    public String getMessage() {
+        return message;
+    }
 
-   public void setMessage(String message) {
-      this.message = message;
-   }
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

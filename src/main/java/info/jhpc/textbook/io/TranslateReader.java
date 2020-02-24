@@ -44,59 +44,60 @@ package info.jhpc.textbook.io;
 import java.io.*;
 
 public class TranslateReader extends FilterReader {
-   private String from;
-   private String to;
-   private static char[] oneChar;
+    private static char[] oneChar;
 
-   static {
-      oneChar = new char[1];
-   }
+    static {
+        oneChar = new char[1];
+    }
 
-   public TranslateReader(Reader r, String from, String to) {
-      super(r);
-      this.from = from;
-      this.to = to;
-   }
+    private String from;
+    private String to;
 
-   public TranslateReader(Reader r) {
-      super(r);
-      String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      String lower = "abcdefghijklmnopqrstuvwxyz";
+    public TranslateReader(Reader r, String from, String to) {
+        super(r);
+        this.from = from;
+        this.to = to;
+    }
 
-      this.from = upper + lower;
-      this.to = lower + upper;
-   }
+    public TranslateReader(Reader r) {
+        super(r);
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = "abcdefghijklmnopqrstuvwxyz";
 
-   public int read() throws IOException {
-      int result = read(oneChar, 0, 1);
-      if (result < 0)
-         return result;
-      else
-         return oneChar[0];
-   }
+        this.from = upper + lower;
+        this.to = lower + upper;
+    }
 
-   public int read(char[] cbuf, int off, int len) throws IOException {
-      int n = super.read(cbuf, off, len);
-      int i;
-      for (i = 0; i < n; i++) {
-         int mapIndex = from.indexOf(cbuf[i]);
-         if (mapIndex >= 0)
-            cbuf[i] = to.charAt(mapIndex);
-      }
-      return n;
-   }
+    public static void main(String[] args) throws IOException {
+        StringReader sr = new StringReader("George Thiruvathukal");
+        TranslateReader translateReader = new TranslateReader(sr);
+        LineNumberReader lnr = new LineNumberReader(translateReader);
 
-   public static void main(String[] args) throws IOException {
-      StringReader sr = new StringReader("George Thiruvathukal");
-      TranslateReader translateReader = new TranslateReader(sr);
-      LineNumberReader lnr = new LineNumberReader(translateReader);
+        try {
+            String line = lnr.readLine();
+            System.out.println(line);
+        } catch (Exception e) {
+        }
+        lnr.close();
+    }
 
-      try {
-         String line = lnr.readLine();
-         System.out.println(line);
-      } catch (Exception e) {
-      }
-      lnr.close();
-   }
+    public int read() throws IOException {
+        int result = read(oneChar, 0, 1);
+        if (result < 0)
+            return result;
+        else
+            return oneChar[0];
+    }
+
+    public int read(char[] cbuf, int off, int len) throws IOException {
+        int n = super.read(cbuf, off, len);
+        int i;
+        for (i = 0; i < n; i++) {
+            int mapIndex = from.indexOf(cbuf[i]);
+            if (mapIndex >= 0)
+                cbuf[i] = to.charAt(mapIndex);
+        }
+        return n;
+    }
 
 }

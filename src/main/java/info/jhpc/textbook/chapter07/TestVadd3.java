@@ -24,23 +24,23 @@
  */
 package info.jhpc.textbook.chapter07;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Future;
 
 class TestVadd3 {
-   public static void main(String[] args) throws InterruptedException {
-      double[] x = { 1.0, 2.0, 3.0 };
-      double[] y = { 4.0, 5.0, 6.0 };
-      DFFuture1 f1 = new DFFuture1();
-      DFFuture1 f2 = new DFFuture1();
-      DFFuture1 f3 = new DFFuture1();
-      Fetch operation = new Fetch(f1, new Fetch2nd(f2, new Vadd(f3)));
-      f1.runDelayed(operation);
-      f1.setValue(x);
-      f2.setValue(y);
-      double[] z = (double[]) f3.getValue();
-      for (int i = 0; i < z.length; ++i)
-         System.out.print(z[i] + " ");
-      System.out.println();
-      Future.getClassRunQueue().setMaxThreadsWaiting(0);
-   }
+    public static void main(String[] args) throws InterruptedException {
+        double[] x = {1.0, 2.0, 3.0};
+        double[] y = {4.0, 5.0, 6.0};
+        DFFuture1 f1 = new DFFuture1();
+        DFFuture1 f2 = new DFFuture1();
+        DFFuture1 f3 = new DFFuture1();
+        Fetch operation = new Fetch(f1, new Fetch2nd(f2, new Vadd(f3)));
+        f1.runDelayed(operation);
+        f1.setValue(x);
+        f2.setValue(y);
+        double[] z = (double[]) f3.getValue();
+        for (int i = 0; i < z.length; ++i)
+            System.out.print(z[i] + " ");
+        System.out.println();
+        Future.getClassRunQueue().setMaxThreadsWaiting(0);
+    }
 }

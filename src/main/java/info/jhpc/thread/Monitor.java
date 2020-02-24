@@ -54,7 +54,7 @@ package info.jhpc.thread;
  * extend Monitor, like this bounded buffer example:
  * <p>
  * <blockquote>
- * 
+ *
  * <pre>
  * class BoundedBuffer3 extends Monitor{
  * Condition notEmpty=new Condition();
@@ -85,9 +85,9 @@ package info.jhpc.thread;
  * }
  * }
  * </pre>
- * 
+ *
  * </blockquote> or use a separate monitor <blockquote>
- * 
+ *
  * <pre>
  * class BoundedBuffer4 {
  * Monitor mon = new Monitor();
@@ -118,7 +118,7 @@ package info.jhpc.thread;
  * }
  * }
  * </pre>
- * 
+ *
  * </blockquote> A Monitor must be entered with an enter() call. It is left by a
  * call of leave(). You may enter the same monitor more than once, e.g. calling
  * one monitor-protected method from another. You must leave, of course, as many
@@ -142,244 +142,239 @@ package info.jhpc.thread;
  * sure you declare the fields of the Monitor-protected class to be
  * <b>volatile</b>.
  * <p>
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class Monitor {
-   /**
-    * Semaphore to lock the Monitor: <blockquote> monitorEntry.down();
-    * </blockquote> locks the monitor on entry, <blockquote> monitorEntry.up();
-    * </blockquote> unlocks the monitor on exit.
-    */
-   Semaphore monitorEntry = new Semaphore(1);
-   /**
-    * The current thread. When the monitor is not in use,
-    * <b>monitorEntry==null</b>. This is checked to see if the monitor is being
-    * reentered by the current owner or not.
-    */
-   volatile Thread current = null;
-   /**
-    * The number of times the monitor's current owner has entered it minus the
-    * number of times it has exited it.
-    */
-   volatile int monitorEntryCount = 0;
+    /**
+     * Semaphore to lock the Monitor: <blockquote> monitorEntry.down();
+     * </blockquote> locks the monitor on entry, <blockquote> monitorEntry.up();
+     * </blockquote> unlocks the monitor on exit.
+     */
+    Semaphore monitorEntry = new Semaphore(1);
+    /**
+     * The current thread. When the monitor is not in use,
+     * <b>monitorEntry==null</b>. This is checked to see if the monitor is being
+     * reentered by the current owner or not.
+     */
+    volatile Thread current = null;
+    /**
+     * The number of times the monitor's current owner has entered it minus the
+     * number of times it has exited it.
+     */
+    volatile int monitorEntryCount = 0;
 
-   /**
-    * The inner class for condition variables.
-    */
-   public class Condition implements MonitorCondition {
-      /**
-       * The number of threads waiting on this condition.
-       */
-      volatile int waiting = 0;
-      /**
-       * The semaphore upon which the waiting threads wait. <blockquote>
-       * waitCond.down(); </blockquote> to wait. <blockquote> waitCond.up();
-       * </blockquote> to to signal one of the waiting threads to resume
-       * execution.
-       */
-      Semaphore waitCond = new Semaphore(0);
+    /* snip: enter */
+    /*
+     * (non-Javadoc)
+     *
+     * @see info.jhpc.thread.IMonitor#enter()
+     */
+    public void enter() {
+        if (current == Thread.currentThread())
+            monitorEntryCount++;
+        else {
+            boolean interrupted = Thread.interrupted();
+            for (; ; )
+                try {
+                    monitorEntry.down();
+                    break;
+                } catch (InterruptedException ie) {
+                    interrupted = true;
+                }
+            current = Thread.currentThread();
+            monitorEntryCount = 1;
+            if (interrupted)
+                current.interrupt();
+        }
+    }
 
-      /**
-       * Wait for the condition to hold. Another thread will signal when this
-       * happens.
-       * 
-       * @throws InterruptedException
-       *            If interrupted while waiting.
-       * @throws MonitorException
-       *            If the thread executing this is not inside the Monitor.
-       */
-      public void await() throws InterruptedException, MonitorException {
-         if (current != Thread.currentThread())
-            throw new MonitorException("await()");
-         int count = monitorEntryCount;
-         monitorEntryCount = 0;
-         current = null;
-         waiting++;
-         monitorEntry.up();
-         waitCond.down();
-         current = Thread.currentThread();
-         monitorEntryCount = count;
-      }
+    /* snip: leave */
+    /*
+     * (non-Javadoc)
+     *
+     * @see info.jhpc.thread.IMonitor#leave()
+     */
+    public void leave() throws MonitorException {
+        if (current != Thread.currentThread())
+            throw new MonitorException("leave()");
+        monitorEntryCount--;
+        if (monitorEntryCount == 0) {
+            current = null;
+            monitorEntry.up();
+        }
+    }
 
-      /**
-       * Signal the condition has occurred. If there are any waiting threads, it
-       * signals one of them to resume execution, hands over the monitor to it,
-       * and waits to reenter the monitor.
-       * 
-       * @throws MonitorException
-       *            If the thread executing this is not inside the Monitor.
-       */
-      public void signal() throws MonitorException {
-         if (current != Thread.currentThread())
-            throw new MonitorException("signal()");
-         if (waiting > 0) {
-            waiting--;
+    /* pins: enter */
+
+    /* snip: release */
+    /*
+     * (non-Javadoc)
+     *
+     * @see info.jhpc.thread.IMonitor#release()
+     */
+    public MonitorLock release() throws MonitorException {
+        if (current != Thread.currentThread())
+            throw new MonitorException("release()");
+        Lock L = new Lock();
+        current = null;
+        monitorEntryCount = 0;
+        monitorEntry.up();
+        return L;
+    }
+
+    /* pins: leave */
+
+    /**
+     * The inner class for condition variables.
+     */
+    public class Condition implements MonitorCondition {
+        /**
+         * The number of threads waiting on this condition.
+         */
+        volatile int waiting = 0;
+        /**
+         * The semaphore upon which the waiting threads wait. <blockquote>
+         * waitCond.down(); </blockquote> to wait. <blockquote> waitCond.up();
+         * </blockquote> to to signal one of the waiting threads to resume
+         * execution.
+         */
+        Semaphore waitCond = new Semaphore(0);
+
+        /**
+         * Wait for the condition to hold. Another thread will signal when this
+         * happens.
+         *
+         * @throws InterruptedException If interrupted while waiting.
+         * @throws MonitorException     If the thread executing this is not inside the Monitor.
+         */
+        public void await() throws InterruptedException, MonitorException {
+            if (current != Thread.currentThread())
+                throw new MonitorException("await()");
             int count = monitorEntryCount;
             monitorEntryCount = 0;
             current = null;
-            waitCond.up();
-            boolean interrupted = Thread.interrupted();
-            for (;;)
-               try {
-                  monitorEntry.down();
-                  break;
-               } catch (InterruptedException ie) {
-                  interrupted = true;
-               }
+            waiting++;
+            monitorEntry.up();
+            waitCond.down();
             current = Thread.currentThread();
             monitorEntryCount = count;
-            if (interrupted)
-               current.interrupt();
-         }
-      }
+        }
 
-      /**
-       * Signal the condition has occurred and leaves the monitor. Equivalent to
-       * <blockquote> cond.signal(); mon.leave(); </blockquote> If there are any
-       * waiting threads, it signals one of them to resume execution and hands
-       * over the monitor to it.
-       * <p>
-       * If this thread has entered the monitor more than once,
-       * leaveWithSignal() behaves like signal(). After the signaled thread has
-       * run, the signaling thread will reenter the monitor to complete its
-       * execution.
-       * 
-       * @throws MonitorException
-       *            If the thread executing this is not inside the Monitor.
-       */
-      public void leaveWithSignal() throws MonitorException {
-         if (current != Thread.currentThread())
-            throw new MonitorException("leaveWithSignal()");
-         monitorEntryCount--;
-         if (waiting > 0) {
-            waiting--;
-            if (monitorEntryCount > 0) {
-               int count = monitorEntryCount;
-               monitorEntryCount = 0;
-               current = null;
-               waitCond.up();
-               boolean interrupted = Thread.interrupted();
-               for (;;)
-                  try {
-                     monitorEntry.down();
-                     break;
-                  } catch (InterruptedException ie) {
-                     interrupted = true;
-                  }
-               monitorEntryCount = count;
-               current = Thread.currentThread();
-               if (interrupted)
-                  current.interrupt();
+        /**
+         * Signal the condition has occurred. If there are any waiting threads, it
+         * signals one of them to resume execution, hands over the monitor to it,
+         * and waits to reenter the monitor.
+         *
+         * @throws MonitorException If the thread executing this is not inside the Monitor.
+         */
+        public void signal() throws MonitorException {
+            if (current != Thread.currentThread())
+                throw new MonitorException("signal()");
+            if (waiting > 0) {
+                waiting--;
+                int count = monitorEntryCount;
+                monitorEntryCount = 0;
+                current = null;
+                waitCond.up();
+                boolean interrupted = Thread.interrupted();
+                for (; ; )
+                    try {
+                        monitorEntry.down();
+                        break;
+                    } catch (InterruptedException ie) {
+                        interrupted = true;
+                    }
+                current = Thread.currentThread();
+                monitorEntryCount = count;
+                if (interrupted)
+                    current.interrupt();
+            }
+        }
+
+        /**
+         * Signal the condition has occurred and leaves the monitor. Equivalent to
+         * <blockquote> cond.signal(); mon.leave(); </blockquote> If there are any
+         * waiting threads, it signals one of them to resume execution and hands
+         * over the monitor to it.
+         * <p>
+         * If this thread has entered the monitor more than once,
+         * leaveWithSignal() behaves like signal(). After the signaled thread has
+         * run, the signaling thread will reenter the monitor to complete its
+         * execution.
+         *
+         * @throws MonitorException If the thread executing this is not inside the Monitor.
+         */
+        public void leaveWithSignal() throws MonitorException {
+            if (current != Thread.currentThread())
+                throw new MonitorException("leaveWithSignal()");
+            monitorEntryCount--;
+            if (waiting > 0) {
+                waiting--;
+                if (monitorEntryCount > 0) {
+                    int count = monitorEntryCount;
+                    monitorEntryCount = 0;
+                    current = null;
+                    waitCond.up();
+                    boolean interrupted = Thread.interrupted();
+                    for (; ; )
+                        try {
+                            monitorEntry.down();
+                            break;
+                        } catch (InterruptedException ie) {
+                            interrupted = true;
+                        }
+                    monitorEntryCount = count;
+                    current = Thread.currentThread();
+                    if (interrupted)
+                        current.interrupt();
+                } else {
+                    current = null;
+                    waitCond.up();
+                }
             } else {
-               current = null;
-               waitCond.up();
+                if (monitorEntryCount == 0) {
+                    current = null;
+                    monitorEntry.up();
+                }
             }
-         } else {
-            if (monitorEntryCount == 0) {
-               current = null;
-               monitorEntry.up();
-            }
-         }
-      }
-   }
+        }
+    }
 
-   /* snip: enter */
-   /*
-    * (non-Javadoc)
-    * 
-    * @see info.jhpc.thread.IMonitor#enter()
-    */
-   public void enter() {
-      if (current == Thread.currentThread())
-         monitorEntryCount++;
-      else {
-         boolean interrupted = Thread.interrupted();
-         for (;;)
-            try {
-               monitorEntry.down();
-               break;
-            } catch (InterruptedException ie) {
-               interrupted = true;
-            }
-         current = Thread.currentThread();
-         monitorEntryCount = 1;
-         if (interrupted)
-            current.interrupt();
-      }
-   }
+    /**
+     * Lock for a monitor left temporarily by release(). This Lock can be used by
+     * the same thread to reacquire the Monitor once.
+     */
+    private class Lock implements MonitorLock {
+        int n = monitorEntryCount;
+        Thread owner = current;
 
-   /* pins: enter */
-
-   /* snip: leave */
-   /*
-    * (non-Javadoc)
-    * 
-    * @see info.jhpc.thread.IMonitor#leave()
-    */
-   public void leave() throws MonitorException {
-      if (current != Thread.currentThread())
-         throw new MonitorException("leave()");
-      monitorEntryCount--;
-      if (monitorEntryCount == 0) {
-         current = null;
-         monitorEntry.up();
-      }
-   }
-
-   /* pins: leave */
-
-   /**
-    * Lock for a monitor left temporarily by release(). This Lock can be used by
-    * the same thread to reacquire the Monitor once.
-    */
-   private class Lock implements MonitorLock {
-      int n = monitorEntryCount;
-      Thread owner = current;
-
-      /**
-       * Enter the monitor again after an earlier release.
-       * 
-       * @throws MonitorException
-       *            If thread attempting to reacquire a Monitor not released by
-       *            this thread or if this Lock has been previously used.
-       */
-      public void reacquire() throws MonitorException {
-         if (owner != Thread.currentThread())
-            throw new MonitorException(
-                  "attempt to reacquire Monitor by a different thread");
-         boolean interrupted = Thread.interrupted();
-         for (;;)
-            try {
-               monitorEntry.down();
-               break;
-            } catch (InterruptedException ie) {
-               interrupted = true;
-            }
-         current = owner;
-         monitorEntryCount = n;
-         owner = null;
-         if (interrupted)
-            current.interrupt();
-      }
-   }
-
-   /* snip: release */
-   /*
-    * (non-Javadoc)
-    * 
-    * @see info.jhpc.thread.IMonitor#release()
-    */
-   public MonitorLock release() throws MonitorException {
-      if (current != Thread.currentThread())
-         throw new MonitorException("release()");
-      Lock L = new Lock();
-      current = null;
-      monitorEntryCount = 0;
-      monitorEntry.up();
-      return L;
-   }
-   /* pins: release */
+        /**
+         * Enter the monitor again after an earlier release.
+         *
+         * @throws MonitorException If thread attempting to reacquire a Monitor not released by
+         *                          this thread or if this Lock has been previously used.
+         */
+        public void reacquire() throws MonitorException {
+            if (owner != Thread.currentThread())
+                throw new MonitorException(
+                        "attempt to reacquire Monitor by a different thread");
+            boolean interrupted = Thread.interrupted();
+            for (; ; )
+                try {
+                    monitorEntry.down();
+                    break;
+                } catch (InterruptedException ie) {
+                    interrupted = true;
+                }
+            current = owner;
+            monitorEntryCount = n;
+            owner = null;
+            if (interrupted)
+                current.interrupt();
+        }
+    }
+    /* pins: release */
 }

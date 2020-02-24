@@ -49,133 +49,121 @@ import java.io.PrintStream;
  * messages.
  */
 public class ErrorLog {
-   public static final String WARNING = "Warning";
-   public static final String ERROR = "Error";
-   public static final String FATAL = "Fatal Error";
-   public static final String INFORMATION = "Information";
+    public static final String WARNING = "Warning";
+    public static final String ERROR = "Error";
+    public static final String FATAL = "Fatal Error";
+    public static final String INFORMATION = "Information";
 
-   private String className;
-   private String funcName;
-   private String tag;
-   private PrintStream ps;
+    private String className;
+    private String funcName;
+    private String tag;
+    private PrintStream ps;
 
-   /**
-    * create an instance
-    *
-    * @param ps
-    *           the stream to use for writing messages
-    * @param className
-    *           the name of the class issuing messages
-    * @param forceStderr
-    *           forcibly write all messages to System.err
-    */
-   public ErrorLog(PrintStream ps, String className, boolean forceStderr) {
-      this.ps = ps;
-      this.className = className;
-   }
+    /**
+     * create an instance
+     *
+     * @param ps          the stream to use for writing messages
+     * @param className   the name of the class issuing messages
+     * @param forceStderr forcibly write all messages to System.err
+     */
+    public ErrorLog(PrintStream ps, String className, boolean forceStderr) {
+        this.ps = ps;
+        this.className = className;
+    }
 
-   /**
-    * create an instance
-    *
-    * @param className
-    *           the name of the class issuing messages
-    * @param forceStderr
-    *           forcibly write all messages to System.err
-    */
-   public ErrorLog(String className, boolean forceStderr) {
-      this(System.err, className, forceStderr);
-   }
+    /**
+     * create an instance
+     *
+     * @param className   the name of the class issuing messages
+     * @param forceStderr forcibly write all messages to System.err
+     */
+    public ErrorLog(String className, boolean forceStderr) {
+        this(System.err, className, forceStderr);
+    }
 
-   /**
-    * set the method (or function) name where messages are being issued
-    *
-    * @param funcName
-    *           name of the method (or function)
-    */
-   public void setFunction(String funcName) {
-      this.funcName = funcName;
-   }
+    /**
+     * set the method (or function) name where messages are being issued
+     *
+     * @param funcName name of the method (or function)
+     */
+    public void setFunction(String funcName) {
+        this.funcName = funcName;
+    }
 
-   /**
-    * set a tag so you can easily search for the error with your editor
-    *
-    * @param tag
-    *           a tag that (hopefully) will be unique
-    */
-   public void setTag(String tag) {
-      this.tag = tag;
-   }
+    /**
+     * set a tag so you can easily search for the error with your editor
+     *
+     * @param tag a tag that (hopefully) will be unique
+     */
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 
-   /**
-    * internal method to print message without new line
-    *
-    * @param message
-    *           the message to print
-    */
-   private void print(String message) {
-      ps.print(message);
-      if (ps != System.err)
-         System.err.print(message);
-   }
+    /**
+     * internal method to print message without new line
+     *
+     * @param message the message to print
+     */
+    private void print(String message) {
+        ps.print(message);
+        if (ps != System.err)
+            System.err.print(message);
+    }
 
-   /**
-    * internal method to print message with new line
-    *
-    * @param message
-    *           the message to print
-    */
-   private void println(String message) {
-      ps.println(message);
-      if (ps != System.err)
-         System.err.println(message);
-   }
+    /**
+     * internal method to print message with new line
+     *
+     * @param message the message to print
+     */
+    private void println(String message) {
+        ps.println(message);
+        if (ps != System.err)
+            System.err.println(message);
+    }
 
-   /**
-    * write an error message
-    *
-    * @param type
-    *           kind of message (see static constants)
-    * @param message
-    *           the message to be printed
-    * @param errorCode
-    *           an exit code (zero is success)
-    */
-   public void error(String type, String message, int errorCode) {
-      print(type);
-      print(":");
-      print(className);
-      if (funcName != null) {
-         print(".");
-         print(funcName);
-         print("(...)");
-      }
-      if (tag != null) {
-         print(":");
-         print(tag);
-         print(" ");
-      }
-      println(message);
-      if (errorCode != 0)
-         System.exit(errorCode);
-   }
+    /**
+     * write an error message
+     *
+     * @param type      kind of message (see static constants)
+     * @param message   the message to be printed
+     * @param errorCode an exit code (zero is success)
+     */
+    public void error(String type, String message, int errorCode) {
+        print(type);
+        print(":");
+        print(className);
+        if (funcName != null) {
+            print(".");
+            print(funcName);
+            print("(...)");
+        }
+        if (tag != null) {
+            print(":");
+            print(tag);
+            print(" ");
+        }
+        println(message);
+        if (errorCode != 0)
+            System.exit(errorCode);
+    }
 
-   public void warning(String message) {
-      error(WARNING, message, 0);
-   }
+    public void warning(String message) {
+        error(WARNING, message, 0);
+    }
 
-   public void information(String message) {
-      error(INFORMATION, message, 0);
-   }
+    public void information(String message) {
+        error(INFORMATION, message, 0);
+    }
 
-   public void nonFatalError(String message) {
-      error(ERROR, message, 0);
-   }
+    public void nonFatalError(String message) {
+        error(ERROR, message, 0);
+    }
 
-   public void fatalError(String message) {
-      error(FATAL, message, -1);
-   }
+    public void fatalError(String message) {
+        error(FATAL, message, -1);
+    }
 
-   public void fatalError(String message, int exitCode) {
-      error(FATAL, message, exitCode);
-   }
+    public void fatalError(String message, int exitCode) {
+        error(FATAL, message, exitCode);
+    }
 }

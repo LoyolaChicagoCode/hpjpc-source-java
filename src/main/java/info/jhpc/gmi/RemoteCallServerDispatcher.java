@@ -48,138 +48,138 @@ import java.io.Serializable;
 import java.net.Socket;
 
 public class RemoteCallServerDispatcher extends Thread {
-   RemoteCallServer callServer;
-   Socket socket;
-   ObjectInputStream in;
-   ObjectOutputStream out;
+    RemoteCallServer callServer;
+    Socket socket;
+    ObjectInputStream in;
+    ObjectOutputStream out;
 
-   public RemoteCallServerDispatcher(RemoteCallServer callServer, Socket socket)
-         throws IOException {
-      this.callServer = callServer;
-      this.socket = socket;
-      this.in = new ObjectInputStream(socket.getInputStream());
-      this.out = new ObjectOutputStream(socket.getOutputStream());
-   }
+    public RemoteCallServerDispatcher(RemoteCallServer callServer, Socket socket)
+            throws IOException {
+        this.callServer = callServer;
+        this.socket = socket;
+        this.in = new ObjectInputStream(socket.getInputStream());
+        this.out = new ObjectOutputStream(socket.getOutputStream());
+    }
 
-   public void run() {
-      while (true) {
-         /*
-          * To accompany High-Performance Java Platform(tm) Computing: Threads
-          * and Networking, published by Prentice Hall PTR and Sun Microsystems
-          * Press.
-          * 
-          * Threads and Networking Library Copyright (C) 1999-2000 Thomas W.
-          * Christopher and George K. Thiruvathukal
-          * 
-          * This library is free software; you can redistribute it and/or modify
-          * it under the terms of the GNU Library General Public License as
-          * published by the Free Software Foundation; either version 2 of the
-          * License, or (at your option) any later version.
-          * 
-          * This library is distributed in the hope that it will be useful, but
-          * WITHOUT ANY WARRANTY; without even the implied warranty of
-          * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-          * Library General Public License for more details.
-          * 
-          * You should have received a copy of the GNU Library General Public
-          * License along with this library; if not, write to the Free Software
-          * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-          * 02111-1307, USA.
-          */
+    public void run() {
+        while (true) {
+            /*
+             * To accompany High-Performance Java Platform(tm) Computing: Threads
+             * and Networking, published by Prentice Hall PTR and Sun Microsystems
+             * Press.
+             *
+             * Threads and Networking Library Copyright (C) 1999-2000 Thomas W.
+             * Christopher and George K. Thiruvathukal
+             *
+             * This library is free software; you can redistribute it and/or modify
+             * it under the terms of the GNU Library General Public License as
+             * published by the Free Software Foundation; either version 2 of the
+             * License, or (at your option) any later version.
+             *
+             * This library is distributed in the hope that it will be useful, but
+             * WITHOUT ANY WARRANTY; without even the implied warranty of
+             * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+             * Library General Public License for more details.
+             *
+             * You should have received a copy of the GNU Library General Public
+             * License along with this library; if not, write to the Free Software
+             * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+             * 02111-1307, USA.
+             */
 
-         CallMessage message;
-         String replyTicket;
+            CallMessage message;
+            String replyTicket;
 
-         try {
-            message = (CallMessage) in.readObject();
-         } catch (Exception e0) {
-            System.err
-                  .println("GMI Exception: run(): Could not read CallMessage; stream may be corrupted.");
-            break;
-         }
-
-         replyTicket = message.getTicket();
-         /*
-          * Check whether client wants to disconnect. Goodbye is reserved for
-          * this purpose. If Goodbye is received, simply send it back to the
-          * client. If for some reason the message cannot be written or the
-          * flush fails, it is time to get out anyway, since no more messages
-          * will be received.
-          */
-         if (message instanceof Goodbye) {
             try {
-               message.setTicket(replyTicket);
-               out.writeObject(message);
-               out.flush();
-            } catch (Exception e1) {
-               System.err.println("GMI Exception: run(): e1 = " + e1);
+                message = (CallMessage) in.readObject();
+            } catch (Exception e0) {
+                System.err
+                        .println("GMI Exception: run(): Could not read CallMessage; stream may be corrupted.");
+                break;
             }
-            break;
-         }
 
-         /*
-          * Find the invocation target. The message contains the name of the
-          * invocation target, which must be used to index the list of Callables
-          * in the RemoteCallServer that created this RemoteCallServerDispatcher
-          * instance.
-          */
-         Callable callTarget = callServer.lookup(message.getTarget());
+            replyTicket = message.getTicket();
+            /*
+             * Check whether client wants to disconnect. Goodbye is reserved for
+             * this purpose. If Goodbye is received, simply send it back to the
+             * client. If for some reason the message cannot be written or the
+             * flush fails, it is time to get out anyway, since no more messages
+             * will be received.
+             */
+            if (message instanceof Goodbye) {
+                try {
+                    message.setTicket(replyTicket);
+                    out.writeObject(message);
+                    out.flush();
+                } catch (Exception e1) {
+                    System.err.println("GMI Exception: run(): e1 = " + e1);
+                }
+                break;
+            }
 
-         /*
-          * If the invocation target is null, this means that the client
-          * specified the name of an object that is not registered in the list
-          * of Callables. This corresponds to the "else" clause.
-          * 
-          * CallMessageException is used so the client can distinguish
-          * Exceptions (subclasses of CallMessageException) from normal return
-          * values (subclasses of CallMessage). If an exception is thrown when
-          * the invocation is performed, the Exception instance is wrapped in a
-          * CallMessageException instance and returned.
-          */
-         Serializable result;
-         if (callTarget != null) {
+            /*
+             * Find the invocation target. The message contains the name of the
+             * invocation target, which must be used to index the list of Callables
+             * in the RemoteCallServer that created this RemoteCallServerDispatcher
+             * instance.
+             */
+            Callable callTarget = callServer.lookup(message.getTarget());
+
+            /*
+             * If the invocation target is null, this means that the client
+             * specified the name of an object that is not registered in the list
+             * of Callables. This corresponds to the "else" clause.
+             *
+             * CallMessageException is used so the client can distinguish
+             * Exceptions (subclasses of CallMessageException) from normal return
+             * values (subclasses of CallMessage). If an exception is thrown when
+             * the invocation is performed, the Exception instance is wrapped in a
+             * CallMessageException instance and returned.
+             */
+            Serializable result;
+            if (callTarget != null) {
+                try {
+                    result = callTarget.call(message);
+                } catch (Exception e2) {
+                    result = new CallMessageException(e2);
+                }
+            } else {
+                GMINullTargetException gmiException = new GMINullTargetException();
+                result = new CallMessageException(gmiException);
+            }
+
+            /*
+             * At this point, result refers to either (a) the return value of the
+             * invocation or (b) an Exception that was thrown in performing the
+             * invocation. In either case, the result is returned. The client will
+             * rethrow the exception in the case where a CallMessageException
+             * instance is returned.
+             *
+             * The result may in fact have been a general Serializable. Since I
+             * need a CallMessage to encode the replyTicket, the Serializable needs
+             * to be wrapped in CallMessageGeneralReply.
+             */
             try {
-               result = callTarget.call(message);
-            } catch (Exception e2) {
-               result = new CallMessageException(e2);
+                CallMessage resultCM;
+                if (result instanceof CallMessage)
+                    resultCM = (CallMessage) result;
+                else
+                    resultCM = new CallMessageGeneralReply(result);
+                resultCM.setTicket(replyTicket);
+                out.writeObject(result);
+                out.flush();
+            } catch (Exception e3) {
+                System.err.println("GMI Exception: run(): e3 = " + e3);
             }
-         } else {
-            GMINullTargetException gmiException = new GMINullTargetException();
-            result = new CallMessageException(gmiException);
-         }
-
-         /*
-          * At this point, result refers to either (a) the return value of the
-          * invocation or (b) an Exception that was thrown in performing the
-          * invocation. In either case, the result is returned. The client will
-          * rethrow the exception in the case where a CallMessageException
-          * instance is returned.
-          * 
-          * The result may in fact have been a general Serializable. Since I
-          * need a CallMessage to encode the replyTicket, the Serializable needs
-          * to be wrapped in CallMessageGeneralReply.
-          */
-         try {
-            CallMessage resultCM;
-            if (result instanceof CallMessage)
-               resultCM = (CallMessage) result;
-            else
-               resultCM = new CallMessageGeneralReply(result);
-            resultCM.setTicket(replyTicket);
-            out.writeObject(result);
+        }
+        try {
             out.flush();
-         } catch (Exception e3) {
-            System.err.println("GMI Exception: run(): e3 = " + e3);
-         }
-      }
-      try {
-         out.flush();
-         out.close();
-         in.close();
-         socket.close();
-      } catch (Exception e4) {
-         System.err.println("GMI Exception: run(): tear down failed (warning)");
-         return;
-      }
-   }
+            out.close();
+            in.close();
+            socket.close();
+        } catch (Exception e4) {
+            System.err.println("GMI Exception: run(): tear down failed (warning)");
+            return;
+        }
+    }
 }

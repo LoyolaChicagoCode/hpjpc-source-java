@@ -44,5 +44,5 @@ package info.jhpc.gmi;
 import java.io.Serializable;
 
 public interface Callable {
-   Serializable call(CallMessage message) throws Exception;
+    Serializable call(CallMessage message) throws Exception;
 }

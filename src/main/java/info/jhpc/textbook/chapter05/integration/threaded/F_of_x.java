@@ -27,7 +27,7 @@
  * defined function, f(x).  Any function passed to IntegTrapRegion must
  * implement this interface in order to insure that the function exists
  * and it takes a double and returns a do9uble.
- *
+ * <p>
  * Written by: John Shafaee
  * Date: jul 21, 1999
  */
@@ -36,6 +36,6 @@ package info.jhpc.textbook.chapter05.integration.threaded;
 
 public interface F_of_x {
 
-   public double f(double x);
+    double f(double x);
 
 }

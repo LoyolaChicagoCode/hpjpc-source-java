@@ -26,104 +26,104 @@
 
 package info.jhpc.textbook.chapter04;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Monitor;
 
 class BoundedBuffer4 {
-   Monitor mon = new Monitor();
+    Monitor mon = new Monitor();
 
-   Monitor.Condition notEmpty = mon.new Condition();
+    Monitor.Condition notEmpty = mon.new Condition();
 
-   Monitor.Condition notFull = mon.new Condition();
+    Monitor.Condition notFull = mon.new Condition();
 
-   volatile int hd = 0, tl = 0;
+    volatile int hd = 0, tl = 0;
 
-   Object[] buffer;
+    Object[] buffer;
 
-   public BoundedBuffer4(int size) {
-      buffer = new Object[size];
-   }
+    public BoundedBuffer4(int size) {
+        buffer = new Object[size];
+    }
 
-   public void put(Object v) throws InterruptedException {
-      mon.enter();
-      if (tl - hd >= buffer.length)
-         notFull.await();
-      buffer[tl++ % buffer.length] = v;
-      notEmpty.signal();
-      mon.leave();
-   }
+    public void put(Object v) throws InterruptedException {
+        mon.enter();
+        if (tl - hd >= buffer.length)
+            notFull.await();
+        buffer[tl++ % buffer.length] = v;
+        notEmpty.signal();
+        mon.leave();
+    }
 
-   public Object get() throws InterruptedException {
-      mon.enter();
-      Object v;
-      if (tl == hd)
-         notEmpty.await();
-      v = buffer[hd++ % buffer.length];
-      notFull.leaveWithSignal();
-      return v;
-   }
+    public Object get() throws InterruptedException {
+        mon.enter();
+        Object v;
+        if (tl == hd)
+            notEmpty.await();
+        v = buffer[hd++ % buffer.length];
+        notFull.leaveWithSignal();
+        return v;
+    }
 }
 
 public class ProCon4 {
-   public static void main(String[] x) {
-      BoundedBuffer4 b = new BoundedBuffer4(3);
-      Thread pro1 = new Producer4(b);
-      Thread con1 = new Consumer4(b);
-      Thread pro2 = new Producer4(b);
-      Thread con2 = new Consumer4(b);
-      con1.start();
-      con2.start();
-      pro1.start();
-      pro2.start();
-      try {
-         pro1.join();
-         con1.join();
-         pro2.join();
-         con2.join();
-      } catch (InterruptedException e) {
-         return;
-      }
-   }
+    public static void main(String[] x) {
+        BoundedBuffer4 b = new BoundedBuffer4(3);
+        Thread pro1 = new Producer4(b);
+        Thread con1 = new Consumer4(b);
+        Thread pro2 = new Producer4(b);
+        Thread con2 = new Consumer4(b);
+        con1.start();
+        con2.start();
+        pro1.start();
+        pro2.start();
+        try {
+            pro1.join();
+            con1.join();
+            pro2.join();
+            con2.join();
+        } catch (InterruptedException e) {
+            return;
+        }
+    }
 }
 
 class Producer4 extends Thread {
-   BoundedBuffer4 buf;
+    BoundedBuffer4 buf;
 
-   public void run() {
-      int i;
-      try {
-         for (i = 0; i < 10; i++)
-            buf.put(new Integer(i));
-         buf.put(new Integer(-1));
-      } catch (InterruptedException e) {
-         return;
-      }
-   }
+    public Producer4(BoundedBuffer4 b) {
+        buf = b;
+    }
 
-   public Producer4(BoundedBuffer4 b) {
-      buf = b;
-   }
+    public void run() {
+        int i;
+        try {
+            for (i = 0; i < 10; i++)
+                buf.put(new Integer(i));
+            buf.put(new Integer(-1));
+        } catch (InterruptedException e) {
+            return;
+        }
+    }
 }
 
 class Consumer4 extends Thread {
-   BoundedBuffer4 buf;
+    BoundedBuffer4 buf;
 
-   public void run() {
-      Object j;
-      try {
-         j = buf.get();
-         while (((Integer) j).intValue() != -1) {
-            synchronized (System.out) {
-               System.out.println(j);
-            }
-            yield();
+    public Consumer4(BoundedBuffer4 b) {
+        buf = b;
+    }
+
+    public void run() {
+        Object j;
+        try {
             j = buf.get();
-         }
-      } catch (InterruptedException e) {
-         return;
-      }
-   }
-
-   public Consumer4(BoundedBuffer4 b) {
-      buf = b;
-   }
+            while (((Integer) j).intValue() != -1) {
+                synchronized (System.out) {
+                    System.out.println(j);
+                }
+                yield();
+                j = buf.get();
+            }
+        } catch (InterruptedException e) {
+            return;
+        }
+    }
 }

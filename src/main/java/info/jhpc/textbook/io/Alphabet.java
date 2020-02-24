@@ -43,52 +43,52 @@ package info.jhpc.textbook.io;
 
 public class Alphabet {
 
-   private String in;
-   private String key;
-   private String out;
+    private String in;
+    private String key;
+    private String out;
 
-   public static Alphabet getAlphabet(String in, String key) {
-      Alphabet a = new Alphabet(in, key);
-      return a;
-   }
+    public Alphabet(String in, String key) {
+        this.in = in;
+        this.key = key;
+        createCipherAlphabet();
+    }
 
-   public String getCipherAlphabet() {
-      return out;
-   }
+    public static Alphabet getAlphabet(String in, String key) {
+        Alphabet a = new Alphabet(in, key);
+        return a;
+    }
 
-   public Alphabet(String in, String key) {
-      this.in = in;
-      this.key = key;
-      createCipherAlphabet();
-   }
+    public static void main(String[] args) {
+        Alphabet a = new Alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "GEORGE");
+        System.out.println(a);
+    }
 
-   public void createCipherAlphabet() {
-      out = "";
-      for (int i = 0; i < key.length(); i++)
-         if (out.indexOf(key.charAt(i)) < 0)
-            out += key.charAt(i);
+    public String getCipherAlphabet() {
+        return out;
+    }
 
-      for (int i = out.length(); i < in.length(); i++) {
-         int j;
-         for (j = 0; j < in.length(); j++) {
-            if (i != j && out.indexOf(in.charAt(j)) < 0) {
-               out += in.charAt(j);
-               break;
+    public void createCipherAlphabet() {
+        out = "";
+        for (int i = 0; i < key.length(); i++)
+            if (out.indexOf(key.charAt(i)) < 0)
+                out += key.charAt(i);
+
+        for (int i = out.length(); i < in.length(); i++) {
+            int j;
+            for (j = 0; j < in.length(); j++) {
+                if (i != j && out.indexOf(in.charAt(j)) < 0) {
+                    out += in.charAt(j);
+                    break;
+                }
             }
-         }
 
-      }
-   }
+        }
+    }
 
-   public String toString() {
-      String out = "";
-      for (int i = 0; i < out.length(); i++)
-         out += (in.charAt(i) + ":" + out.charAt(i) + " ");
-      return out;
-   }
-
-   public static void main(String args[]) {
-      Alphabet a = new Alphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "GEORGE");
-      System.out.println(a);
-   }
+    public String toString() {
+        String out = "";
+        for (int i = 0; i < out.length(); i++)
+            out += (in.charAt(i) + ":" + out.charAt(i) + " ");
+        return out;
+    }
 }

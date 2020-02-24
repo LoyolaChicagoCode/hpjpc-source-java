@@ -59,144 +59,144 @@ import java.util.Vector;
 
 @SuppressWarnings("serial")
 public class ChatClientRoom extends Frame implements ActionListener, Runnable,
-      WindowListener {
+        WindowListener {
 
-   RemoteCallClient rpc;
-   String sessionId;
-   TextArea chatText;
-   TextField sendText;
-   Thread pollingThread;
-   volatile boolean keepPolling = true;
-   boolean dead = false;
+    RemoteCallClient rpc;
+    String sessionId;
+    TextArea chatText;
+    TextField sendText;
+    Thread pollingThread;
+    volatile boolean keepPolling = true;
+    boolean dead = false;
 
-   public ChatClientRoom(RemoteCallClient rpc, String sessionId) {
-      this.rpc = rpc;
-      this.sessionId = sessionId;
+    public ChatClientRoom(RemoteCallClient rpc, String sessionId) {
+        this.rpc = rpc;
+        this.sessionId = sessionId;
 
-      setLayout(new GridBagLayout());
-      GridBagConstraints gbc = new GridBagConstraints();
-      gbc.gridwidth = GridBagConstraints.REMAINDER;
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
 
-      Label label = new Label("Welcome to Chat: Session " + sessionId);
-      add(label, gbc);
+        Label label = new Label("Welcome to Chat: Session " + sessionId);
+        add(label, gbc);
 
-      chatText = new TextArea(24, 40);
-      add(chatText, gbc);
+        chatText = new TextArea(24, 40);
+        add(chatText, gbc);
 
-      Panel p = new Panel();
-      p.setLayout(new FlowLayout());
-      Button b = new Button("Send");
-      b.addActionListener(this);
-      p.add(b);
+        Panel p = new Panel();
+        p.setLayout(new FlowLayout());
+        Button b = new Button("Send");
+        b.addActionListener(this);
+        p.add(b);
 
-      sendText = new TextField(32);
-      p.add(sendText);
-      add(p, gbc);
+        sendText = new TextField(32);
+        p.add(sendText);
+        add(p, gbc);
 
-      pollingThread = new Thread(this);
-      pollingThread.start();
-      addWindowListener(this);
+        pollingThread = new Thread(this);
+        pollingThread.start();
+        addWindowListener(this);
 
-   }
+    }
 
-   public void actionPerformed(ActionEvent e) {
-      String command;
-      command = e.getActionCommand();
-      if (command.equals("Send"))
-         doSend();
-   }
+    @SuppressWarnings("deprecation")
+    public static void main(String[] args) {
+        ChatClientRoom ccr = new ChatClientRoom(null, "AAA");
+        ccr.pack();
+        ccr.show();
+    }
 
-   public void doSend() {
-      String toBeSent = sendText.getText();
-      PutMessage pm = new PutMessage("aol2000", sessionId, toBeSent);
-      try {
-         rpc.call(pm);
-      } catch (Exception e) {
-         System.out.println("ChatClientRoom.doSend() GMI call failed.");
-         return;
-      }
-      sendText.setText("");
-   }
+    public void actionPerformed(ActionEvent e) {
+        String command;
+        command = e.getActionCommand();
+        if (command.equals("Send"))
+            doSend();
+    }
 
-   @SuppressWarnings("rawtypes")
-   public void run() {
-      while (keepPolling) {
-         /* sleep 1000 milliseconds; you may want to change this */
-         try {
-            Thread.sleep(2500);
-         } catch (Exception e) {
+    public void doSend() {
+        String toBeSent = sendText.getText();
+        PutMessage pm = new PutMessage("aol2000", sessionId, toBeSent);
+        try {
+            rpc.call(pm);
+        } catch (Exception e) {
+            System.out.println("ChatClientRoom.doSend() GMI call failed.");
             return;
-         }
+        }
+        sendText.setText("");
+    }
 
-         GetMessages gm = new GetMessages("aol2000", sessionId, 2);
-         Object result;
-         try {
-            result = rpc.call(gm);
-         } catch (Exception e) {
-            System.out.println("ChatClientRoom.run() failed GMI (1)");
-            return;
-         }
-
-         if (result instanceof Ok)
-            continue; /* probably an error but can be ignored for now */
-         else {
-            GetResults gr = (GetResults) result;
-            Vector messages = gr.getMessages();
-            Enumeration m = messages.elements();
-            while (m.hasMoreElements()) {
-               String lineOfText = (String) m.nextElement();
-               chatText.append(lineOfText + "\n");
+    @SuppressWarnings("rawtypes")
+    public void run() {
+        while (keepPolling) {
+            /* sleep 1000 milliseconds; you may want to change this */
+            try {
+                Thread.sleep(2500);
+            } catch (Exception e) {
+                return;
             }
-         }
-      }
-   }
 
-   @SuppressWarnings("unused")
-   public void goAway() {
-      if (dead)
-         return;
-      dead = true;
-      keepPolling = false;
-      try {
-         pollingThread.join();
-      } catch (Exception error) {
-      }
-      Logout logout = new Logout("aol2000", sessionId);
-      try {
-         Object logoutResult = rpc.call(logout);
-      } catch (Exception e) {
-         System.out.println("ChatClientRoom.goAway() failed GMI");
-      }
-      this.dispose();
-   }
+            GetMessages gm = new GetMessages("aol2000", sessionId, 2);
+            Object result;
+            try {
+                result = rpc.call(gm);
+            } catch (Exception e) {
+                System.out.println("ChatClientRoom.run() failed GMI (1)");
+                return;
+            }
 
-   public void windowClosing(WindowEvent e) {
-      goAway();
-   }
+            if (result instanceof Ok)
+                continue; /* probably an error but can be ignored for now */
+            else {
+                GetResults gr = (GetResults) result;
+                Vector messages = gr.getMessages();
+                Enumeration m = messages.elements();
+                while (m.hasMoreElements()) {
+                    String lineOfText = (String) m.nextElement();
+                    chatText.append(lineOfText + "\n");
+                }
+            }
+        }
+    }
 
-   public void windowActivated(WindowEvent e) {
-   }
+    @SuppressWarnings("unused")
+    public void goAway() {
+        if (dead)
+            return;
+        dead = true;
+        keepPolling = false;
+        try {
+            pollingThread.join();
+        } catch (Exception error) {
+        }
+        Logout logout = new Logout("aol2000", sessionId);
+        try {
+            Object logoutResult = rpc.call(logout);
+        } catch (Exception e) {
+            System.out.println("ChatClientRoom.goAway() failed GMI");
+        }
+        this.dispose();
+    }
 
-   public void windowClosed(WindowEvent e) {
-      goAway();
-   }
+    public void windowClosing(WindowEvent e) {
+        goAway();
+    }
 
-   public void windowDeactivated(WindowEvent e) {
-   }
+    public void windowActivated(WindowEvent e) {
+    }
 
-   public void windowDeiconified(WindowEvent e) {
-   }
+    public void windowClosed(WindowEvent e) {
+        goAway();
+    }
 
-   public void windowIconified(WindowEvent e) {
-   }
+    public void windowDeactivated(WindowEvent e) {
+    }
 
-   public void windowOpened(WindowEvent e) {
-   }
+    public void windowDeiconified(WindowEvent e) {
+    }
 
-   @SuppressWarnings("deprecation")
-   public static void main(String args[]) {
-      ChatClientRoom ccr = new ChatClientRoom(null, "AAA");
-      ccr.pack();
-      ccr.show();
-   }
+    public void windowIconified(WindowEvent e) {
+    }
+
+    public void windowOpened(WindowEvent e) {
+    }
 }

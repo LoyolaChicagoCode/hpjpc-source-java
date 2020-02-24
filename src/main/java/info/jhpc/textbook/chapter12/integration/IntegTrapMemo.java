@@ -29,148 +29,147 @@
  *
  * @author John Shafaee
  * Date: July 5, 1999
- *
  */
 
 package info.jhpc.textbook.chapter12.integration;
 
-import info.jhpc.memo.*;
+import info.jhpc.memo.MemoClient;
 
 public class IntegTrapMemo {
 
-   /**
-    * Variable used to track a running total of the area under the curve in a
-    * specified range
-    */
-   public static double totalArea = 0.0d;
+    /**
+     * Variable used to track a running total of the area under the curve in a
+     * specified range
+     */
+    public static double totalArea = 0.0d;
 
-   /**
-    * MAIN
-    */
+    /**
+     * MAIN
+     */
 
-   public static void main(String args[]) {
-      try {
-         if (args.length < 7) {
-            System.err
-                  .println("usage: ITM host port part# parts start end gran");
+    public static void main(String[] args) {
+        try {
+            if (args.length < 7) {
+                System.err
+                        .println("usage: ITM host port part# parts start end gran");
+                return;
+            }
+            String memoHost = args[0];
+            int memoPort = Integer.parseInt(args[1]);
+            int partNumber = Integer.parseInt(args[2]);
+            int num_t = Integer.parseInt(args[3]);
+            double start = new Double(args[4]).doubleValue();
+            double end = new Double(args[5]).doubleValue();
+            int gran = Integer.parseInt(args[6]);
+
+            MemoClient mc = new MemoClient(memoHost, memoPort, "memo");
+            if (partNumber == 0) {
+                System.out.println("master: Partitioning work.");
+                createWork(mc, num_t, start, end, gran);
+
+                System.out.println("master: doing some of the  work.");
+                doWork(mc, partNumber);
+
+                System.out.println("master: collating results.");
+                double result = mergeResults(mc, num_t);
+
+                System.out.println("Inner product = " + result);
+                mc.goodbye();
+            } else {
+                doWork(mc, partNumber);
+                mc.goodbye();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
             return;
-         }
-         String memoHost = args[0];
-         int memoPort = Integer.parseInt(args[1]);
-         int partNumber = Integer.parseInt(args[2]);
-         int num_t = Integer.parseInt(args[3]);
-         double start = new Double(args[4]).doubleValue();
-         double end = new Double(args[5]).doubleValue();
-         int gran = Integer.parseInt(args[6]);
+        }
+    }
 
-         MemoClient mc = new MemoClient(memoHost, memoPort, "memo");
-         if (partNumber == 0) {
-            System.out.println("master: Partitioning work.");
-            createWork(mc, num_t, start, end, gran);
+    public static void createWork(MemoClient mc, int num_t, double start,
+                                  double end, int gran) {
 
-            System.out.println("master: doing some of the  work.");
-            doWork(mc, partNumber);
+        /**
+         * Define the function to integrate as a class that implements F_of_x.
+         * This endures that the object will provide the proper method for
+         * computing the result of a true function.
+         */
+        function fn = new function();
 
-            System.out.println("master: collating results.");
-            double result = mergeResults(mc, num_t);
+        partition2(mc, num_t, start, end, gran, fn);
+    }
 
-            System.out.println("Inner product = " + result);
-            mc.goodbye();
-         } else {
-            doWork(mc, partNumber);
-            mc.goodbye();
-         }
-      } catch (Exception e) {
-         System.out.println(e);
-         e.printStackTrace();
-         return;
-      }
-   }
+    /**
+     * Constructor - creates and initiates child threads for performing the
+     * calculation.
+     */
+    public static void partition2(MemoClient space, int numThreads, double a,
+                                  double b, int granularity, F_of_x fn) {
 
-   public static void createWork(MemoClient mc, int num_t, double start,
-         double end, int gran) {
+        System.out.println("Partitioning regions...");
+        // check for invalid integration options
+        try {
+            if (numThreads < 1)
+                throw new BadThreadCountException();
 
-      /**
-       * Define the function to integrate as a class that implements F_of_x.
-       * This endures that the object will provide the proper method for
-       * computing the result of a true function.
-       */
-      function fn = new function();
+            if (a > b)
+                throw new BadRangeException();
 
-      partition2(mc, num_t, start, end, gran, fn);
-   }
+            if (a == b)
+                throw new NoRangeException();
 
-   /**
-    * Constructor - creates and initiates child threads for performing the
-    * calculation.
-    */
-   public static void partition2(MemoClient space, int numThreads, double a,
-         double b, int granularity, F_of_x fn) {
+            if (granularity < 1)
+                throw new BadGranularityException();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            System.exit(1);
+        }
 
-      System.out.println("Partitioning regions...");
-      // check for invalid integration options
-      try {
-         if (numThreads < 1)
-            throw new BadThreadCountException();
+        // initiate the array for managing child threads
+        // childThreads = new IntegTrapRegion[ numThreads ];
 
-         if (a > b)
-            throw new BadRangeException();
+        try {
+            double range = b - a;
+            double start = a;
+            double end = a + ((1.0d) / numThreads * range);
 
-         if (a == b)
-            throw new NoRangeException();
+            for (int i = 0; i < numThreads; i++) {
+                // create and start new child threads
+                // childThreads[i] = new IntegTrapRegion( start, end , granularity,
+                // fn );
+                // childThreads[i].start();
+                System.out.println("\tPutting a new IntegTrapRegion into space...");
+                space.put("region" + i, new IntegTrapRegion(start, end,
+                        granularity, fn));
+                System.out.println("\tNew IntegTrapRegion inserted!");
 
-         if (granularity < 1)
-            throw new BadGranularityException();
-      } catch (Exception e) {
-         System.out.println(e.toString());
-         System.exit(1);
-      }
+                // set the range for the next thhread
+                start = end;
+                end = a + ((i + 2.0d) / numThreads * range);
+            }
+        } catch (Exception e) {
+            System.out
+                    .println("Exception occured in creating and initializing thread.\n"
+                            + e.toString());
+        }
+    }
 
-      // initiate the array for managing child threads
-      // childThreads = new IntegTrapRegion[ numThreads ];
+    public static void doWork(MemoClient space, int partNumber) throws Exception {
+        IntegTrapRegion region = (IntegTrapRegion) space.get("region"
+                + partNumber);
+        region.run();
+        space.put("partial" + partNumber, region);
+    }
 
-      try {
-         double range = b - a;
-         double start = a;
-         double end = a + ((1.0d) / numThreads * range);
-
-         for (int i = 0; i < numThreads; i++) {
-            // create and start new child threads
-            // childThreads[i] = new IntegTrapRegion( start, end , granularity,
-            // fn );
-            // childThreads[i].start();
-            System.out.println("\tPutting a new IntegTrapRegion into space...");
-            space.put("region" + i, new IntegTrapRegion(start, end,
-                  granularity, fn));
-            System.out.println("\tNew IntegTrapRegion inserted!");
-
-            // set the range for the next thhread
-            start = end;
-            end = a + ((i + 2.0d) / numThreads * range);
-         }
-      } catch (Exception e) {
-         System.out
-               .println("Exception occured in creating and initializing thread.\n"
-                     + e.toString());
-      }
-   }
-
-   public static void doWork(MemoClient space, int partNumber) throws Exception {
-      IntegTrapRegion region = (IntegTrapRegion) space.get("region"
-            + partNumber);
-      region.run();
-      space.put("partial" + partNumber, region);
-   }
-
-   public static double mergeResults(MemoClient space, int num_t)
-         throws Exception {
-      double totalArea = 0.0;
-      for (int i = 0; i < num_t; i++) {
-         System.out.println("doing get on part " + i + " of " + num_t);
-         IntegTrapRegion partialArea = (IntegTrapRegion) space.get("partial"
-               + i);
-         totalArea += partialArea.getArea();
-      }
-      return totalArea;
-   }
+    public static double mergeResults(MemoClient space, int num_t)
+            throws Exception {
+        double totalArea = 0.0;
+        for (int i = 0; i < num_t; i++) {
+            System.out.println("doing get on part " + i + " of " + num_t);
+            IntegTrapRegion partialArea = (IntegTrapRegion) space.get("partial"
+                    + i);
+            totalArea += partialArea.getArea();
+        }
+        return totalArea;
+    }
 }

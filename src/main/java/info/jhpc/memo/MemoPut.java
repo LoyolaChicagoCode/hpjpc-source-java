@@ -46,21 +46,21 @@ import info.jhpc.thread.SharedTableOfQueues;
 
 import java.io.Serializable;
 
-class MemoPut extends MemoMessage {
-   /**
-    * 
-    */
-   private static final long serialVersionUID = -993232814998652143L;
-   Serializable key, value;
+public class MemoPut extends MemoMessage {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -993232814998652143L;
+    private Serializable key, value;
 
-   public MemoPut(String target, Serializable key, Serializable value) {
-      super(target);
-      this.key = key;
-      this.value = value;
-   }
+    public MemoPut(String target, Serializable key, Serializable value) {
+        super(target);
+        this.key = key;
+        this.value = value;
+    }
 
-   public Serializable go(SharedTableOfQueues stoq) {
-      stoq.put(key, value);
-      return new Ok(true);
-   }
+    public Serializable go(SharedTableOfQueues stoq) {
+        stoq.put(key, value);
+        return new Ok(true);
+    }
 }

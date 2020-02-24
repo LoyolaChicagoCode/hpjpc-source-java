@@ -44,20 +44,20 @@ package info.jhpc.gmi;
 import java.io.Serializable;
 
 public class CallMessageGeneralReply extends CallMessage implements
-      Serializable {
+        Serializable {
 
-   /**
-    * 
-    */
-   private static final long serialVersionUID = -6336239929527317340L;
-   Serializable reply;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -6336239929527317340L;
+    Serializable reply;
 
-   public CallMessageGeneralReply(Serializable reply) {
-      super(null);
-      this.reply = reply;
-   }
+    public CallMessageGeneralReply(Serializable reply) {
+        super(null);
+        this.reply = reply;
+    }
 
-   public Serializable getReply() {
-      return reply;
-   }
+    public Serializable getReply() {
+        return reply;
+    }
 }

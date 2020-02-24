@@ -53,111 +53,107 @@ import java.util.Stack;
 
 public class Future extends SimpleFuture implements RunDelayed {
 
-   /**
-    * The Stack containing waiting Runnables. (Stack so its quick and easy to
-    * have them wait and to remove them.)
-    */
+    /**
+     * The default queue into which to put (runDelayed) runnables that are
+     * waiting on any of these Futures. The limit on the number of threads that
+     * can be running the (runDelayed) objects is the amount of memory available.
+     * The (runDelayed) objects are placed in this queue by default when a Future
+     * is given a value.
+     */
 
-   protected Stack<Runnable> runnablesWaiting = null;
+    protected static RunQueue classRunQueue = new RunQueue();
+    /**
+     * The Stack containing waiting Runnables. (Stack so its quick and easy to
+     * have them wait and to remove them.)
+     */
 
-   /**
-    * The default queue into which to put (runDelayed) runnables that are
-    * waiting on any of these Futures. The limit on the number of threads that
-    * can be running the (runDelayed) objects is the amount of memory available.
-    * The (runDelayed) objects are placed in this queue by default when a Future
-    * is given a value.
-    */
+    protected Stack<Runnable> runnablesWaiting = null;
+    /**
+     * The queue into which to put (runDelayed) runnables that are waiting on
+     * this Future. The limit on the number of threads that can be running the
+     * (runDelayed) objects is the amount of memory available. They are placed in
+     * the queue when the Future is given a value.
+     */
 
-   protected static RunQueue classRunQueue = new RunQueue();
+    protected RunQueue runQueue = classRunQueue;
 
-   /**
-    * The queue into which to put (runDelayed) runnables that are waiting on
-    * this Future. The limit on the number of threads that can be running the
-    * (runDelayed) objects is the amount of memory available. They are placed in
-    * the queue when the Future is given a value.
-    */
+    /**
+     * Create a Future with no value yet assigned.
+     */
 
-   protected RunQueue runQueue = classRunQueue;
+    public Future() {
+        super();
+    }
 
-   /**
-    * Create a Future with no value yet assigned.
-    */
+    /**
+     * Create a Future with a value initially assigned.
+     *
+     * @param val The value the Future is to be initialized with.
+     */
 
-   public Future() {
-      super();
-   }
+    public Future(Object val) {
+        super(val);
+    }
 
-   /**
-    * Create a Future with a value initially assigned.
-    *
-    * @param val
-    *           The value the Future is to be initialized with.
-    */
+    /**
+     * Get the RunQueue for the Future class.
+     *
+     * @return The RunQueue that objects runDelayed on a pure Future will be
+     * placed in.
+     */
 
-   public Future(Object val) {
-      super(val);
-   }
+    public static RunQueue getClassRunQueue() {
+        return classRunQueue;
+    }
 
-   /**
-    * Assigns a value to the Future and notifies all waiting threads. Attempts
-    * to change a previously assigned value will be ignored.
-    *
-    * @param val
-    *           The value to be assigned to the Future.
-    */
+    /**
+     * Assigns a value to the Future and notifies all waiting threads. Attempts
+     * to change a previously assigned value will be ignored.
+     *
+     * @param val The value to be assigned to the Future.
+     */
 
-   public synchronized void setValue(Object val) {
-      super.setValue(val);
-      if (runnablesWaiting != null) {
-         while (!runnablesWaiting.empty()) {
-            getRunQueue().run(runnablesWaiting.pop());
-         }
-         runnablesWaiting = null;
-      }
-   }
+    public synchronized void setValue(Object val) {
+        super.setValue(val);
+        if (runnablesWaiting != null) {
+            while (!runnablesWaiting.empty()) {
+                getRunQueue().run(runnablesWaiting.pop());
+            }
+            runnablesWaiting = null;
+        }
+    }
 
-   /**
-    * Get the RunQueue for a Future object. The run queue should be changed with
-    * setRunQueue for more precise control.
-    *
-    * @return The RunQueue that objects runDelayed on a Future object will be
-    *         placed in.
-    */
+    /**
+     * Get the RunQueue for a Future object. The run queue should be changed with
+     * setRunQueue for more precise control.
+     *
+     * @return The RunQueue that objects runDelayed on a Future object will be
+     * placed in.
+     */
 
-   public RunQueue getRunQueue() {
-      return runQueue;
-   }
+    public RunQueue getRunQueue() {
+        return runQueue;
+    }
 
-   /**
-    * Set the RunQueue for a Future object.
-    */
+    /**
+     * Set the RunQueue for a Future object.
+     */
 
-   public void setRunQueue(RunQueue rq) {
-      runQueue = rq;
-   }
+    public void setRunQueue(RunQueue rq) {
+        runQueue = rq;
+    }
 
-   /**
-    * Get the RunQueue for the Future class.
-    *
-    * @return The RunQueue that objects runDelayed on a pure Future will be
-    *         placed in.
-    */
+    /**
+     * Schedule a runnable object to execute when the Future has its value set.
+     */
 
-   public static RunQueue getClassRunQueue() {
-      return classRunQueue;
-   }
-
-   /**
-    * Schedule a runnable object to execute when the Future has its value set.
-    */
-
-   public synchronized void runDelayed(Runnable r) {
-      if (value != this)
-         runQueue.run(r);
-      else {
-         if (runnablesWaiting == null)
-            runnablesWaiting = new Stack<Runnable>();
-         runnablesWaiting.push(r);
-      }
-   }
+    public synchronized void runDelayed(Runnable r) {
+        if (value != this)
+            runQueue.run(r);
+        else {
+            if (runnablesWaiting == null)
+                runnablesWaiting = new Stack<Runnable>();
+            runnablesWaiting.push(r);
+        }
+    }
 }

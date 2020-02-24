@@ -41,36 +41,36 @@ http://opensource.org.
 
 package info.jhpc.textbook.message;
 
-import info.jhpc.message.MessageService;
 import info.jhpc.message.Message;
 import info.jhpc.message.MessageServer;
+import info.jhpc.message.MessageService;
 
 import java.util.Date;
 
 //begin-class-DateService-Message
 public class DateService implements MessageService {
-   public static final int DATE_SERVICE_MESSAGE = 100;
-   public static final int DATE_SERVICE_PORT = 1999;
+    public static final int DATE_SERVICE_MESSAGE = 100;
+    public static final int DATE_SERVICE_PORT = 1999;
 
-   public Message process(Message m) {
-      Date today = new Date();
-      m.setParam("date", today.toString());
-      return m;
-   }
+    public static void main(String[] args) {
+        DateService ds = new DateService();
+        MessageServer ms;
+        try {
+            ms = new MessageServer(DATE_SERVICE_PORT);
+        } catch (Exception e) {
+            System.err.println("Could not start service " + e);
+            return;
+        }
+        Thread msThread = new Thread(ms);
+        ms.subscribe(DATE_SERVICE_MESSAGE, ds);
+        msThread.start();
+    }
 
-   public static void main(String args[]) {
-      DateService ds = new DateService();
-      MessageServer ms;
-      try {
-         ms = new MessageServer(DATE_SERVICE_PORT);
-      } catch (Exception e) {
-         System.err.println("Could not start service " + e);
-         return;
-      }
-      Thread msThread = new Thread(ms);
-      ms.subscribe(DATE_SERVICE_MESSAGE, ds);
-      msThread.start();
-   }
+    public Message process(Message m) {
+        Date today = new Date();
+        m.setParam("date", today.toString());
+        return m;
+    }
 }
 // end-class-DateService-Message
 

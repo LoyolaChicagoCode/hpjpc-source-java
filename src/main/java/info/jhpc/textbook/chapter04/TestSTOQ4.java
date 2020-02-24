@@ -27,44 +27,44 @@
 //another will remove them and check their order
 package info.jhpc.textbook.chapter04;
 
-class TestSTOQ4 extends Thread {
-   final static int maxMsg = 1000;
+public class TestSTOQ4 extends Thread {
+    final static int maxMsg = 1000;
 
-   static SharedTableOfQueues stoq = new SharedTableOfQueues();
+    static SharedTableOfQueues stoq = new SharedTableOfQueues();
 
-   int myId, next;
+    int myId, next;
 
-   boolean receiver;
+    boolean receiver;
 
-   public static void main(String[] x) {
-      System.out.println("one thread will write strings into a single queue");
-      System.out.println("another will remove them and check their order");
-      Thread worker = new TestSTOQ4(false);
-      worker.start();
-      worker = new TestSTOQ4(true);
-      worker.start();
-   }
+    TestSTOQ4(boolean Ireceive) {
+        receiver = Ireceive;
+    }
 
-   TestSTOQ4(boolean Ireceive) {
-      receiver = Ireceive;
-   }
+    public static void main(String[] x) {
+        System.out.println("one thread will write strings into a single queue");
+        System.out.println("another will remove them and check their order");
+        Thread worker = new TestSTOQ4(false);
+        worker.start();
+        worker = new TestSTOQ4(true);
+        worker.start();
+    }
 
-   public void run() {
-      try {
-         String s, nextstr;
-         next = 0;
-         while (next <= maxMsg) {
-            nextstr = "" + next;
-            if (receiver) {
-               s = (String) stoq.get("queue");
-               if (!s.equals(nextstr))
-                  System.out.println("received " + s + " not " + nextstr);
-            } else
-               stoq.put("queue", nextstr);
-            next++;
-         }
-         System.out.println((receiver ? "receiver " : "sender ") + " done");
-      } catch (InterruptedException ie) {
-      }
-   }
+    public void run() {
+        try {
+            String s, nextstr;
+            next = 0;
+            while (next <= maxMsg) {
+                nextstr = "" + next;
+                if (receiver) {
+                    s = (String) stoq.get("queue");
+                    if (!s.equals(nextstr))
+                        System.out.println("received " + s + " not " + nextstr);
+                } else
+                    stoq.put("queue", nextstr);
+                next++;
+            }
+            System.out.println((receiver ? "receiver " : "sender ") + " done");
+        } catch (InterruptedException ie) {
+        }
+    }
 }

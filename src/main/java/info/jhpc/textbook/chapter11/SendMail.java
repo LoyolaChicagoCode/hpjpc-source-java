@@ -66,160 +66,161 @@
 package info.jhpc.textbook.chapter11;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.Socket;
+import java.util.Date;
 
 public class SendMail extends Frame implements Runnable, ActionListener {
 
-   /**
-    *
-    */
-   private static final long serialVersionUID = 5601274884960479044L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 5601274884960479044L;
 
-   private TextField to, from, subject, smtpHost;
+    private TextField to, from, subject, smtpHost;
 
-   private TextArea message;
+    private TextArea message;
 
-   private Button send;
+    private Button send;
 
-   private Thread progressThread;
+    private Thread progressThread;
 
-   private Socket smtpConnection;
+    private Socket smtpConnection;
 
-   private PrintWriter out;
+    private PrintWriter out;
 
-   private BufferedReader in;
+    private BufferedReader in;
 
-   @SuppressWarnings("deprecation")
-   public SendMail() {
-      super("SendMail by Tools of Computing LLC");
-      setLayout(new GridBagLayout());
-      GridBagConstraints gbc0 = new GridBagConstraints();
-      GridBagConstraints gbc = new GridBagConstraints();
-      gbc0.gridwidth = 1;
-      gbc.gridwidth = GridBagConstraints.REMAINDER;
-      to = new TextField(40);
-      to.setText("gkt@gauss.jhpc.cs.depaul.edu");
-      from = new TextField(40);
-      from.setText("gkt@cs.depaul.edu");
-      subject = new TextField(40);
-      subject.setText("GEORGE MAIL: " + new Date().toString());
-      smtpHost = new TextField(40);
-      smtpHost.setText("gauss.jhpc.cs.depaul.edu");
-      add(new Label("To:"), gbc0);
-      add(to, gbc);
-      add(new Label("From:"), gbc0);
-      add(from, gbc);
-      add(new Label("Subject:"), gbc0);
-      add(subject, gbc);
-      add(new Label("SMTP Agent:"), gbc0);
-      add(smtpHost, gbc);
-      message = new TextArea(25, 40);
-      add(new Label("Message"), gbc);
-      add(message, gbc);
-      send = new Button("Send");
-      send.addActionListener(this);
-      add(send, gbc);
-      pack();
-      show();
-   }
+    @SuppressWarnings("deprecation")
+    public SendMail() {
+        super("SendMail by Tools of Computing LLC");
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc0 = new GridBagConstraints();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc0.gridwidth = 1;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        to = new TextField(40);
+        to.setText("gkt@gauss.jhpc.cs.depaul.edu");
+        from = new TextField(40);
+        from.setText("gkt@cs.depaul.edu");
+        subject = new TextField(40);
+        subject.setText("GEORGE MAIL: " + new Date().toString());
+        smtpHost = new TextField(40);
+        smtpHost.setText("gauss.jhpc.cs.depaul.edu");
+        add(new Label("To:"), gbc0);
+        add(to, gbc);
+        add(new Label("From:"), gbc0);
+        add(from, gbc);
+        add(new Label("Subject:"), gbc0);
+        add(subject, gbc);
+        add(new Label("SMTP Agent:"), gbc0);
+        add(smtpHost, gbc);
+        message = new TextArea(25, 40);
+        add(new Label("Message"), gbc);
+        add(message, gbc);
+        send = new Button("Send");
+        send.addActionListener(this);
+        add(send, gbc);
+        pack();
+        show();
+    }
 
-   public void actionPerformed(ActionEvent ae) {
-      if (ae.getSource() == send) {
-         if (progressThread != null)
-            return;
-         sendMail();
-         this.dispose();
-         System.exit(0);
-      }
-   }
+    @SuppressWarnings("unused")
+    public static void main(String[] args) {
+        SendMail sm = new SendMail();
+    }
 
-   private void sendMail() {
-      try {
-         smtpConnection = new Socket(smtpHost.getText(), 25);
-         System.out.println("<general> Connected to " + smtpHost.getText()
-               + "\n");
-         OutputStream os = smtpConnection.getOutputStream();
-         OutputStreamWriter osw = new OutputStreamWriter(os);
-         out = new PrintWriter(osw);
+    public void actionPerformed(ActionEvent ae) {
+        if (ae.getSource() == send) {
+            if (progressThread != null)
+                return;
+            sendMail();
+            this.dispose();
+            System.exit(0);
+        }
+    }
 
-         InputStream is = smtpConnection.getInputStream();
-         InputStreamReader isr = new InputStreamReader(is);
-         in = new BufferedReader(isr);
+    // This is used to monitor progress (asynchronously) of the
+    // send mail session.
 
-         progressThread = new Thread(this);
-         progressThread.start();
-         // Send the EHLO command.
-         String command;
+    private void sendMail() {
+        try {
+            smtpConnection = new Socket(smtpHost.getText(), 25);
+            System.out.println("<general> Connected to " + smtpHost.getText()
+                    + "\n");
+            OutputStream os = smtpConnection.getOutputStream();
+            OutputStreamWriter osw = new OutputStreamWriter(os);
+            out = new PrintWriter(osw);
 
-         command = "EHLO jhpc.cs.depaul.edu";
-         out.println(command);
-         System.out.println("<send>" + command);
-         out.flush();
-         // Send the MAIL FROM command.
+            InputStream is = smtpConnection.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            in = new BufferedReader(isr);
 
-         int msgLength = from.getText().length() + message.getText().length();
-         command = "MAIL FROM: <" + from.getText() + "> SIZE=" + msgLength;
-         out.println(command);
-         System.out.println("<send>" + command);
-         out.flush();
+            progressThread = new Thread(this);
+            progressThread.start();
+            // Send the EHLO command.
+            String command;
 
-         command = "RCPT TO: <" + to.getText() + ">";
-         out.println(command);
-         System.out.println("<send>" + command);
-         out.flush();
+            command = "EHLO jhpc.cs.depaul.edu";
+            out.println(command);
+            System.out.println("<send>" + command);
+            out.flush();
+            // Send the MAIL FROM command.
 
-         command = "DATA";
-         out.println(command);
-         System.out.println("<send>" + command);
+            int msgLength = from.getText().length() + message.getText().length();
+            command = "MAIL FROM: <" + from.getText() + "> SIZE=" + msgLength;
+            out.println(command);
+            System.out.println("<send>" + command);
+            out.flush();
 
-         command = message.getText() + "\n" + ".";
-         out.println(command);
-         out.flush();
-         System.out.println("<send>" + command);
+            command = "RCPT TO: <" + to.getText() + ">";
+            out.println(command);
+            System.out.println("<send>" + command);
+            out.flush();
 
-         command = "QUIT";
-         out.println(command);
-         out.flush();
-         System.out.println("<send>" + command);
+            command = "DATA";
+            out.println(command);
+            System.out.println("<send>" + command);
 
-         progressThread.join();
-         System.out.println("<general> We joined successfully.");
-         smtpConnection.close();
-         progressThread = null;
-      } catch (Exception e) {
-         System.out.println("<general> " + e.toString() + "\n");
-      }
+            command = message.getText() + "\n" + ".";
+            out.println(command);
+            out.flush();
+            System.out.println("<send>" + command);
 
-   }
+            command = "QUIT";
+            out.println(command);
+            out.flush();
+            System.out.println("<send>" + command);
 
-   // This is used to monitor progress (asynchronously) of the
-   // send mail session.
+            progressThread.join();
+            System.out.println("<general> We joined successfully.");
+            smtpConnection.close();
+            progressThread = null;
+        } catch (Exception e) {
+            System.out.println("<general> " + e.toString() + "\n");
+        }
 
-   public void run() {
-      try {
-         String input;
-         while (true) {
-            input = in.readLine();
-            if (input == null)
-               break;
-            System.out.println("<reply> " + input);
-            if (input.indexOf("accepted for delivery") >= 0) {
-               System.out.println("<general> Got termination response.");
-               break;
+    }
+
+    public void run() {
+        try {
+            String input;
+            while (true) {
+                input = in.readLine();
+                if (input == null)
+                    break;
+                System.out.println("<reply> " + input);
+                if (input.indexOf("accepted for delivery") >= 0) {
+                    System.out.println("<general> Got termination response.");
+                    break;
+                }
             }
-         }
-      } catch (Exception e) {
-         System.out.println("<general> " + e);
-      }
-      System.out.println("Leaving run() method normally.");
-   }
-
-   @SuppressWarnings("unused")
-   public static void main(String args[]) {
-      SendMail sm = new SendMail();
-   }
+        } catch (Exception e) {
+            System.out.println("<general> " + e);
+        }
+        System.out.println("Leaving run() method normally.");
+    }
 
 }

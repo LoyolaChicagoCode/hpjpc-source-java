@@ -43,20 +43,19 @@ package info.jhpc.thread;
 
 /**
  * Interface implemented by objects that provide method runDelayed.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public interface RunDelayed {
 
-   /**
-    * Delay the runnable r until some condition holds.
-    * 
-    * @param r
-    *           The runnable to be delayed.
-    */
+    /**
+     * Delay the runnable r until some condition holds.
+     *
+     * @param r The runnable to be delayed.
+     */
 
-   public void runDelayed(Runnable r);
+    void runDelayed(Runnable r);
 
 }

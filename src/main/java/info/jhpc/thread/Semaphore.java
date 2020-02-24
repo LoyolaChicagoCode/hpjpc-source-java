@@ -43,7 +43,7 @@ package info.jhpc.thread;
 
 /**
  * A counting semaphore.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
@@ -51,53 +51,50 @@ package info.jhpc.thread;
 // begin-class-Semaphore
 
 public class Semaphore {
-   /**
-    * The current count, which must be non-negative.
-    */
-   protected int count;
+    /**
+     * The current count, which must be non-negative.
+     */
+    protected int count;
 
-   /**
-    * Create a counting Semaphore with a specified initial count.
-    * 
-    * @param initCount
-    *           The initial value of count.
-    * @throws com.toolsofcomputing.thread.NegativeSemaphoreException
-    *            if initCount &lt; 0.
-    */
-   public Semaphore(int initCount) throws NegativeSemaphoreException {
-      if (initCount < 0)
-         throw new NegativeSemaphoreException();
-      count = initCount;
-   }
+    /**
+     * Create a counting Semaphore with a specified initial count.
+     *
+     * @param initCount The initial value of count.
+     * @throws com.toolsofcomputing.thread.NegativeSemaphoreException if initCount &lt; 0.
+     */
+    public Semaphore(int initCount) throws NegativeSemaphoreException {
+        if (initCount < 0)
+            throw new NegativeSemaphoreException();
+        count = initCount;
+    }
 
-   /**
-    * Create a counting Semaphore with an initial count of zero.
-    */
-   public Semaphore() {
-      count = 0;
-   }
+    /**
+     * Create a counting Semaphore with an initial count of zero.
+     */
+    public Semaphore() {
+        count = 0;
+    }
 
-   /**
-    * Subtract one from the count. Since count must be non-negative, wait until
-    * count is positive before decrementing it.
-    * 
-    * @throws InterruptedException
-    *            if thread is interrupted while waiting.
-    */
-   public synchronized void down() throws InterruptedException {
-      while (count == 0)
-         wait();
-      count--;
-   }
+    /**
+     * Subtract one from the count. Since count must be non-negative, wait until
+     * count is positive before decrementing it.
+     *
+     * @throws InterruptedException if thread is interrupted while waiting.
+     */
+    public synchronized void down() throws InterruptedException {
+        while (count == 0)
+            wait();
+        count--;
+    }
 
-   /**
-    * Add one to the count. Wake up a thread waiting to "down" the semaphore, if
-    * any.
-    */
-   public synchronized void up() {
-      count++;
-      notify();
-   }
+    /**
+     * Add one to the count. Wake up a thread waiting to "down" the semaphore, if
+     * any.
+     */
+    public synchronized void up() {
+        count++;
+        notify();
+    }
 }
 
 // end-class-Semaphore

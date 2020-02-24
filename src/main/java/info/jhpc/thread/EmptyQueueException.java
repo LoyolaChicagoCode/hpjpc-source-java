@@ -49,7 +49,7 @@ package info.jhpc.thread;
  */
 @SuppressWarnings("serial")
 public class EmptyQueueException extends RuntimeException {
-   public EmptyQueueException() {
-      super("get() from an empty queue");
-   }
+    public EmptyQueueException() {
+        super("get() from an empty queue");
+    }
 }

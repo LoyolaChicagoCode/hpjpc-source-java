@@ -47,38 +47,38 @@ import java.net.Socket;
 import java.util.Hashtable;
 
 public class RemoteCallServer extends Thread {
-   private Hashtable<String, Callable> registeredObjects = new Hashtable<String, Callable>();
-   private ServerSocket callListener;
+    private Hashtable<String, Callable> registeredObjects = new Hashtable<String, Callable>();
+    private ServerSocket callListener;
 
-   public RemoteCallServer(int port) throws IOException {
-      callListener = new ServerSocket(port);
-      /* user must .start() thread explicitly */
-   }
+    public RemoteCallServer(int port) throws IOException {
+        callListener = new ServerSocket(port);
+        /* user must .start() thread explicitly */
+    }
 
-   public synchronized void bind(String target, Callable callable) {
-      registeredObjects.put(target, callable);
-   }
+    public synchronized void bind(String target, Callable callable) {
+        registeredObjects.put(target, callable);
+    }
 
-   public synchronized void unbind(String target) {
-      registeredObjects.remove(target);
-   }
+    public synchronized void unbind(String target) {
+        registeredObjects.remove(target);
+    }
 
-   public synchronized Callable lookup(String target) {
-      return registeredObjects.get(target);
-   }
+    public synchronized Callable lookup(String target) {
+        return registeredObjects.get(target);
+    }
 
-   /* currently every call will be dispatched as a thread */
+    /* currently every call will be dispatched as a thread */
 
-   public void run() {
-      while (true) {
-         try {
-            Socket s = callListener.accept();
-            RemoteCallServerDispatcher csd = new RemoteCallServerDispatcher(this, s);
-            csd.setDaemon(false);
-            csd.start();
-         } catch (Exception e) {
-            System.err.println("RemoteCallServer: Exception " + e);
-         }
-      }
-   }
+    public void run() {
+        while (true) {
+            try {
+                Socket s = callListener.accept();
+                RemoteCallServerDispatcher csd = new RemoteCallServerDispatcher(this, s);
+                csd.setDaemon(false);
+                csd.start();
+            } catch (Exception e) {
+                System.err.println("RemoteCallServer: Exception " + e);
+            }
+        }
+    }
 }

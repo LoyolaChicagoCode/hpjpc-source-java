@@ -44,70 +44,68 @@ package info.jhpc.textbook.concurrency;
 /**
  * Implementation of MultipleReadersWritersMonitor that gives no preference to
  * either readers or writers. This is equivalent to a Semaphore.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class SingleReaderWriter implements MultipleReadersWritersMonitor {
-   /**
-    * Number readers reading and writers writing, 0 or 1.
-    */
-   protected int n = 0;
+    /**
+     * Number readers reading and writers writing, 0 or 1.
+     */
+    protected int n = 0;
 
-   /**
-    * Reset the monitor.
-    */
-   public void reset() {
-      n = 0;
-   }
+    /**
+     * Reset the monitor.
+     */
+    public void reset() {
+        n = 0;
+    }
 
-   /**
-    * Called to begin reading the shared data structure.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public synchronized void startReading() throws InterruptedException {
-      while (n != 0)
-         wait();
-      n = 1;
-   }
+    /**
+     * Called to begin reading the shared data structure.
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public synchronized void startReading() throws InterruptedException {
+        while (n != 0)
+            wait();
+        n = 1;
+    }
 
-   /**
-    * Called when the thread is finished reading the shared data structure.
-    */
-   public synchronized void stopReading() {
-      n = 0;
-      notify();
-   }
+    /**
+     * Called when the thread is finished reading the shared data structure.
+     */
+    public synchronized void stopReading() {
+        n = 0;
+        notify();
+    }
 
-   /**
-    * Called to begin writing the shared data structure.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public synchronized void startWriting() throws InterruptedException {
-      while (n != 0)
-         wait();
-      n = 1;
-   }
+    /**
+     * Called to begin writing the shared data structure.
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public synchronized void startWriting() throws InterruptedException {
+        while (n != 0)
+            wait();
+        n = 1;
+    }
 
-   /**
-    * Called when the thread is finished writing the shared data structure.
-    */
-   public synchronized void stopWriting() {
-      n = 0;
-      notify();
-   }
+    /**
+     * Called when the thread is finished writing the shared data structure.
+     */
+    public synchronized void stopWriting() {
+        n = 0;
+        notify();
+    }
 
-   /**
-    * Get legible information about the identity of the monitor.
-    * 
-    * @return "Single Reader Writer Monitor"
-    */
-   public String getMonitorInfo() {
-      return "Single Reader Writer Monitor";
-   }
+    /**
+     * Get legible information about the identity of the monitor.
+     *
+     * @return "Single Reader Writer Monitor"
+     */
+    public String getMonitorInfo() {
+        return "Single Reader Writer Monitor";
+    }
 }

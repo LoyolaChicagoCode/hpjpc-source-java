@@ -35,63 +35,63 @@ package info.jhpc.textbook.chapter05.integration.threaded;
 
 class IntegTrap1Region extends Thread {
 
-   // Private variables used in calculating a specified region
-   private double x_start, x_end;
+    // Private variables used in calculating a specified region
+    private double x_start, x_end;
 
-   private int granularity;
+    private int granularity;
 
-   private double areaOfRegion = 0;
+    private double areaOfRegion = 0;
 
-   private F_of_x f;
+    private F_of_x f;
 
-   /**
-    * Constructor
-    */
-   public IntegTrap1Region(double x_start, double x_end, int granularity,
-         F_of_x f) {
+    /**
+     * Constructor
+     */
+    public IntegTrap1Region(double x_start, double x_end, int granularity,
+                            F_of_x f) {
 
-      super(new String(x_start + "-" + x_end));
+        super(x_start + "-" + x_end);
 
-      this.x_start = x_start;
-      this.x_end = x_end;
-      this.granularity = granularity;
-      this.f = f;
+        this.x_start = x_start;
+        this.x_end = x_end;
+        this.granularity = granularity;
+        this.f = f;
 
-   }
+    }
 
-   /**
-    * This is the method that is overloaded from the Thread class. The code
-    * within this method is called when the thread is started. All of the
-    * calculations that the thread will perform are defined within this method.
-    * The equation used to calculate the area of the trapazoid is defined as a
-    * seperate provate method.
-    */
-   public void run() {
+    /**
+     * This is the method that is overloaded from the Thread class. The code
+     * within this method is called when the thread is started. All of the
+     * calculations that the thread will perform are defined within this method.
+     * The equation used to calculate the area of the trapazoid is defined as a
+     * seperate provate method.
+     */
+    public void run() {
 
-      System.out.println("Thread: " + this.getName() + " started!");
+        System.out.println("Thread: " + this.getName() + " started!");
 
-      double area = 0.0d;
-      double range = x_end - x_start;
-      double g = granularity;
+        double area = 0.0d;
+        double range = x_end - x_start;
+        double g = granularity;
 
-      for (int i = granularity - 1; i > 0; i--) {
-         area += f.f((i / g) * range + x_start);
-      }
-      area += (f.f(x_start) + f.f(x_end)) / 2.0;
-      area = area * (range / g);
+        for (int i = granularity - 1; i > 0; i--) {
+            area += f.f((i / g) * range + x_start);
+        }
+        area += (f.f(x_start) + f.f(x_end)) / 2.0;
+        area = area * (range / g);
 
-      areaOfRegion = area;
+        areaOfRegion = area;
 
-      // indicate to the user that the thread is done
-      System.out.println("Thread: " + this.getName() + " completed!");
-   }
+        // indicate to the user that the thread is done
+        System.out.println("Thread: " + this.getName() + " completed!");
+    }
 
-   /**
-    * Method that returns the final computed region size. Implemented to avoid
-    * the dependency on other classes.
-    */
-   public double getArea() {
-      return areaOfRegion;
-   }
+    /**
+     * Method that returns the final computed region size. Implemented to avoid
+     * the dependency on other classes.
+     */
+    public double getArea() {
+        return areaOfRegion;
+    }
 
 }

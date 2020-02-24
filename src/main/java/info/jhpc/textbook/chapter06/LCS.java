@@ -25,131 +25,132 @@
 
 package info.jhpc.textbook.chapter06;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Accumulator;
+import info.jhpc.thread.Semaphore;
 
 public class LCS {
 
-   // begin-LCS-vars
-   int numThreads;
-   char[] c0;
-   char[] c1;
-   int[][] a;
-   Accumulator done;
+    // begin-LCS-vars
+    int numThreads;
+    char[] c0;
+    char[] c1;
+    int[][] a;
+    Accumulator done;
 
-   // end-LCS-vars
+    // end-LCS-vars
 
-   // begin-LCS-constructor1
-   public LCS(char[] c0, char[] c1, int numThreads) {
-      this.numThreads = numThreads;
-      this.c0 = c0;
-      this.c1 = c1;
-      int i;
-      done = new Accumulator(numThreads);
+    // begin-LCS-constructor1
+    public LCS(char[] c0, char[] c1, int numThreads) {
+        this.numThreads = numThreads;
+        this.c0 = c0;
+        this.c1 = c1;
+        int i;
+        done = new Accumulator(numThreads);
 
-      a = new int[c0.length + 1][c1.length + 1];
+        a = new int[c0.length + 1][c1.length + 1];
 
-      Semaphore left = new Semaphore(c0.length), right;
-      for (i = 0; i < numThreads; i++) {
-         right = new Semaphore();
-         new Band(startOfBand(i, numThreads, c1.length), startOfBand(i + 1,
-               numThreads, c1.length) - 1, left, right).start();
-         left = right;
-      }
-   }
+        Semaphore left = new Semaphore(c0.length), right;
+        for (i = 0; i < numThreads; i++) {
+            right = new Semaphore();
+            new Band(startOfBand(i, numThreads, c1.length), startOfBand(i + 1,
+                    numThreads, c1.length) - 1, left, right).start();
+            left = right;
+        }
+    }
 
-   // end-LCS-constructor1
+    // end-LCS-constructor1
 
-   // begin-LCS-constructor2
-   public LCS(String s0, String s1, int numThreads) {
-      this(s0.toCharArray(), s1.toCharArray(), numThreads);
-   }
+    // begin-LCS-constructor2
+    public LCS(String s0, String s1, int numThreads) {
+        this(s0.toCharArray(), s1.toCharArray(), numThreads);
+    }
 
-   // end-LCS-constructor2
+    // end-LCS-constructor2
 
-   private class Band extends Thread {
-      // begin-Band-vars
-      int low;
-      int high;
-      Semaphore left, right;
+    // begin-LCS-startOfBand
+    int startOfBand(int i, int nb, int N) {
+        return 1 + i * (N / nb) + Math.min(i, N % nb);
+    }
 
-      // end-Band-vars
+    // begin-LCS-getLength
+    public int getLength() {
+        try {
+            done.getFuture().getValue();
+        } catch (InterruptedException ex) {
+        }
+        return a[c0.length][c1.length];
+    }
 
-      // begin-Band-constructor
-      Band(int low, int high, Semaphore left, Semaphore right) {
-         this.low = low;
-         this.high = high;
-         this.left = left;
-         this.right = right;
-      }
+    // end-LCS-startOfBand
 
-      // end-Band-constructor
+    public int[][] getArray() {
+        try {
+            done.getFuture().getValue();
+        } catch (InterruptedException ex) {
+        }
+        return a;
+    }
 
-      // begin-Band-run
-      public void run() {
-         try {
-            int i, j;
-            for (i = 1; i < a.length; i++) {
-               left.down();
-               for (j = low; j <= high; j++) {
-                  if (c0[i - 1] == c1[j - 1])
-                     a[i][j] = a[i - 1][j - 1] + 1;
-                  else
-                     a[i][j] = Math.max(a[i - 1][j], a[i][j - 1]);
-               }
-               right.up();
+    // end-LCS-getLength
+
+    public static class Test1 {
+        // begin-LCS-main
+        public static void main(String[] args) {
+            if (args.length < 2) {
+                System.out.println("Usage: java LCS$Test1 string0 string1");
+                System.exit(0);
             }
-            done.signal();
-         } catch (InterruptedException ex) {
-         }
-      }
-      // end-Band-run
+            int nt = 3;
+            String s0 = args[0];
+            String s1 = args[1];
+            System.out.println(s0);
+            System.out.println(s1);
+            long t0 = System.currentTimeMillis();
+            LCS w = new LCS(s0, s1, nt);
+            long t1 = System.currentTimeMillis() - t0;
+            System.out.println(w.getLength());
+            System.out.println("Elapsed time " + t1 + " milliseconds");
+        }
+        // end-LCS-main
+    }
 
-   }
+    private class Band extends Thread {
+        // begin-Band-vars
+        int low;
+        int high;
+        Semaphore left, right;
 
-   // begin-LCS-startOfBand
-   int startOfBand(int i, int nb, int N) {
-      return 1 + i * (N / nb) + Math.min(i, N % nb);
-   }
+        // end-Band-vars
 
-   // end-LCS-startOfBand
+        // begin-Band-constructor
+        Band(int low, int high, Semaphore left, Semaphore right) {
+            this.low = low;
+            this.high = high;
+            this.left = left;
+            this.right = right;
+        }
 
-   // begin-LCS-getLength
-   public int getLength() {
-      try {
-         done.getFuture().getValue();
-      } catch (InterruptedException ex) {
-      }
-      return a[c0.length][c1.length];
-   }
+        // end-Band-constructor
 
-   // end-LCS-getLength
+        // begin-Band-run
+        public void run() {
+            try {
+                int i, j;
+                for (i = 1; i < a.length; i++) {
+                    left.down();
+                    for (j = low; j <= high; j++) {
+                        if (c0[i - 1] == c1[j - 1])
+                            a[i][j] = a[i - 1][j - 1] + 1;
+                        else
+                            a[i][j] = Math.max(a[i - 1][j], a[i][j - 1]);
+                    }
+                    right.up();
+                }
+                done.signal();
+            } catch (InterruptedException ex) {
+            }
+        }
+        // end-Band-run
 
-   public int[][] getArray() {
-      try {
-         done.getFuture().getValue();
-      } catch (InterruptedException ex) {
-      }
-      return a;
-   }
-
-   public static class Test1 {
-      // begin-LCS-main
-      public static void main(String[] args) {
-         if (args.length < 2) {
-            System.out.println("Usage: java LCS$Test1 string0 string1");
-            System.exit(0);
-         }
-         int nt = 3;
-         String s0 = args[0];
-         String s1 = args[1];
-         System.out.println(s0);
-         System.out.println(s1);
-         long t0 = System.currentTimeMillis();
-         LCS w = new LCS(s0, s1, nt);
-         long t1 = System.currentTimeMillis() - t0;
-         System.out.println(w.getLength());
-         System.out.println("Elapsed time " + t1 + " milliseconds");
-      }
-      // end-LCS-main
-   }
+    }
 }

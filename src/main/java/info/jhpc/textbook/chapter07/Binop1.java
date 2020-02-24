@@ -24,28 +24,28 @@
  */
 package info.jhpc.textbook.chapter07;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Future;
 
 class Binop1 implements Runnable {
-   Future lopnd, ropnd;
+    Future lopnd, ropnd;
 
-   Op2 continuation;
+    Op2 continuation;
 
-   public Binop1(Future lopnd, Future ropnd, Op2 continuation) {
-      this.lopnd = lopnd;
-      this.ropnd = ropnd;
-      this.continuation = continuation;
-   }
+    public Binop1(Future lopnd, Future ropnd, Op2 continuation) {
+        this.lopnd = lopnd;
+        this.ropnd = ropnd;
+        this.continuation = continuation;
+    }
 
-   public void run() {
-      try {
-         if (!lopnd.isSet())
-            lopnd.runDelayed(this);
-         if (!ropnd.isSet())
-            ropnd.runDelayed(this);
-         continuation.op(lopnd.getValue(), ropnd.getValue());
-      } catch (InterruptedException e) {
-         continuation.op(e, e);
-      }
-   }
+    public void run() {
+        try {
+            if (!lopnd.isSet())
+                lopnd.runDelayed(this);
+            if (!ropnd.isSet())
+                ropnd.runDelayed(this);
+            continuation.op(lopnd.getValue(), ropnd.getValue());
+        } catch (InterruptedException e) {
+            continuation.op(e, e);
+        }
+    }
 }

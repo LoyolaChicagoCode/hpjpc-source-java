@@ -44,55 +44,54 @@ package info.jhpc.thread;
 /**
  * Factory to create Barriers. Barriers allows multiple threads and runnables to
  * gather at a point before proceeding.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 public class BarrierFactory {
 
-   /**
-    * The RunQueue for the Barriers created.
-    */
+    /**
+     * The RunQueue for the Barriers created.
+     */
 
-   protected RunQueue rq = null;
+    protected RunQueue rq = null;
 
-   /**
-    * Create a BarrierFactory.
-    * 
-    * @param rq
-    *           The RunQueue to run any synchronized Runnables in.
-    */
+    /**
+     * Create a BarrierFactory.
+     *
+     * @param rq The RunQueue to run any synchronized Runnables in.
+     */
 
-   public BarrierFactory(RunQueue rq) {
-      super();
-      this.rq = rq;
-   }
+    public BarrierFactory(RunQueue rq) {
+        super();
+        this.rq = rq;
+    }
 
-   /**
-    * Get the RunQueue for a BarrierFactory object.
-    * 
-    * @return The RunQueue where runDelayed Runnables will be run.
-    */
+    /**
+     * Get the RunQueue for a BarrierFactory object.
+     *
+     * @return The RunQueue where runDelayed Runnables will be run.
+     */
 
-   public RunQueue getRunQueue() {
-      return rq;
-   }
+    public RunQueue getRunQueue() {
+        return rq;
+    }
 
-   /**
-    * Set the RunQueue for a BarrierFactory object.
-    */
+    /**
+     * Set the RunQueue for a BarrierFactory object.
+     */
 
-   public void setRunQueue(RunQueue rq) {
-      this.rq = rq;
-   }
+    public void setRunQueue(RunQueue rq) {
+        this.rq = rq;
+    }
 
-   /**
-    * Create a Barrier.
-    */
+    /**
+     * Create a Barrier.
+     */
 
-   public Barrier make(int n) {
-      Barrier b = new Barrier(n);
-      b.setRunQueue(rq);
-      return b;
-   }
+    public Barrier make(int n) {
+        Barrier b = new Barrier(n);
+        b.setRunQueue(rq);
+        return b;
+    }
 }

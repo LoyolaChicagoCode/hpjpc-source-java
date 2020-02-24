@@ -48,15 +48,15 @@ import java.io.Serializable;
 
 public abstract class MemoMessage extends CallMessage {
 
-   /**
-    * 
-    */
-   private static final long serialVersionUID = 3738168583187802310L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 3738168583187802310L;
 
-   public MemoMessage(String target) {
-      super(target);
-   }
+    public MemoMessage(String target) {
+        super(target);
+    }
 
-   public abstract Serializable go(SharedTableOfQueues stoq) throws Exception;
+    public abstract Serializable go(SharedTableOfQueues stoq) throws Exception;
 
 }

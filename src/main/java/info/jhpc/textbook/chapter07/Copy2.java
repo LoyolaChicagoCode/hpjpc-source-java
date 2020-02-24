@@ -24,28 +24,28 @@
  */
 package info.jhpc.textbook.chapter07;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Future;
 
 class Copy2 implements Runnable {
-   Future src;
+    Future src;
 
-   StoreOp dst;
+    StoreOp dst;
 
-   int dstx;
+    int dstx;
 
-   public Copy2(Future src, StoreOp dst, int dstx) {
-      this.src = src;
-      this.dst = dst;
-      this.dstx = dstx;
-   }
+    public Copy2(Future src, StoreOp dst, int dstx) {
+        this.src = src;
+        this.dst = dst;
+        this.dstx = dstx;
+    }
 
-   public void run() {
-      try {
-         if (!src.isSet())
-            src.runDelayed(this);
-         dst.store(dstx, src.getValue());
-      } catch (InterruptedException e) {
-         dst.store(dstx, e);
-      }
-   }
+    public void run() {
+        try {
+            if (!src.isSet())
+                src.runDelayed(this);
+            dst.store(dstx, src.getValue());
+        } catch (InterruptedException e) {
+            dst.store(dstx, e);
+        }
+    }
 }

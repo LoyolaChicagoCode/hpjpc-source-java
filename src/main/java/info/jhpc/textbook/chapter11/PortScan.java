@@ -65,78 +65,76 @@
 
 package info.jhpc.textbook.chapter11;
 
-import info.jhpc.text.*;
+import info.jhpc.text.Splitter;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.net.Socket;
+import java.util.Hashtable;
 
 public class PortScan {
-   private Hashtable<String, String> services;
+    public static String[] serviceLabels = {"service", "portinfo"};
+    public static String[] portInfoLabels = {"port", "protocol"};
+    private Hashtable<String, String> services;
+    private Splitter lineSplitter;
 
-   public static String[] serviceLabels = { "service", "portinfo" };
+    private Splitter portInfoSplitter;
 
-   public static String[] portInfoLabels = { "port", "protocol" };
+    public PortScan(String servicesFile) throws Exception {
+        FileReader fr = new FileReader(servicesFile);
+        @SuppressWarnings("resource")
+        BufferedReader br = new BufferedReader(fr);
+        String inLine;
+        lineSplitter = new Splitter(serviceLabels, " \t\n");
+        portInfoSplitter = new Splitter(portInfoLabels, "/");
+        services = new Hashtable<String, String>();
 
-   private Splitter lineSplitter;
+        while (true) {
+            inLine = br.readLine();
+            if (inLine == null)
+                break;
+            if (inLine.startsWith("#"))
+                continue;
+            lineSplitter.setText(inLine);
+            String service = lineSplitter.getTokenAt("service");
+            String portinfo = lineSplitter.getTokenAt("portinfo");
+            if (portinfo == null)
+                continue;
+            portInfoSplitter.setText(portinfo);
+            String port = portInfoSplitter.getTokenAt("port");
+            String protocol = portInfoSplitter.getTokenAt("protocol");
+            if (protocol.equals("tcp"))
+                services.put(port, service);
+        }
+    }
 
-   private Splitter portInfoSplitter;
+    public static void main(String[] args) {
+        try {
+            PortScan ps = new PortScan("/etc/services");
+            ps.scan(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
+    }
 
-   public PortScan(String servicesFile) throws Exception {
-      FileReader fr = new FileReader(servicesFile);
-      @SuppressWarnings("resource")
-      BufferedReader br = new BufferedReader(fr);
-      String inLine;
-      lineSplitter = new Splitter(serviceLabels, " \t\n");
-      portInfoSplitter = new Splitter(portInfoLabels, "/");
-      services = new Hashtable<String, String>();
-
-      while (true) {
-         inLine = br.readLine();
-         if (inLine == null)
-            break;
-         if (inLine.startsWith("#"))
-            continue;
-         lineSplitter.setText(inLine);
-         String service = lineSplitter.getTokenAt("service");
-         String portinfo = lineSplitter.getTokenAt("portinfo");
-         if (portinfo == null)
-            continue;
-         portInfoSplitter.setText(portinfo);
-         String port = portInfoSplitter.getTokenAt("port");
-         String protocol = portInfoSplitter.getTokenAt("protocol");
-         if (protocol.equals("tcp"))
-            services.put(port, service);
-      }
-   }
-
-   public void scan(String host, int lo, int hi) {
-      int count = 0;
-      for (int port = lo; port <= hi; port++) {
-         count++;
-         if (count % 1000 == 0)
-            System.out.println("Tested " + count + " ports.");
-         try {
-            Socket s = new Socket(host, port);
-            String service = services.get(port + "");
-            if (service != null)
-               System.out.println(port + " -> " + service);
-            else
-               System.out.println(port + " found but unknown service");
-            s.close();
-         } catch (Exception e) {
-         }
-      }
-   }
-
-   public static void main(String args[]) {
-      try {
-         PortScan ps = new PortScan("/etc/services");
-         ps.scan(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-      } catch (Exception e) {
-         System.out.println(e);
-         e.printStackTrace();
-      }
-   }
+    public void scan(String host, int lo, int hi) {
+        int count = 0;
+        for (int port = lo; port <= hi; port++) {
+            count++;
+            if (count % 1000 == 0)
+                System.out.println("Tested " + count + " ports.");
+            try {
+                Socket s = new Socket(host, port);
+                String service = services.get(port + "");
+                if (service != null)
+                    System.out.println(port + " -> " + service);
+                else
+                    System.out.println(port + " found but unknown service");
+                s.close();
+            } catch (Exception e) {
+            }
+        }
+    }
 
 }

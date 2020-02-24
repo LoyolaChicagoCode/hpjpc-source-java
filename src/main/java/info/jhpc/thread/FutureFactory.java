@@ -44,80 +44,79 @@ package info.jhpc.thread;
 /**
  * A factory to create assign-once variables that allows consumers to wait for a
  * value to be produced.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class FutureFactory {
 
-   /**
-    * The queue into which to put (runDelayed) runnables that are waiting on
-    * this Future. The limit on the number of threads that can be running the
-    * (runDelayed) objects is the amount of memory available. They are placed in
-    * the queue when the Future is given a value.
-    */
+    /**
+     * The queue into which to put (runDelayed) runnables that are waiting on
+     * this Future. The limit on the number of threads that can be running the
+     * (runDelayed) objects is the amount of memory available. They are placed in
+     * the queue when the Future is given a value.
+     */
 
-   protected RunQueue runQueue = null;
+    protected RunQueue runQueue = null;
 
-   /**
-    * Create a FutureFactory.
-    * 
-    * @param runQueue
-    *           The run queue into which all created futures will deposit
-    *           Runnables.
-    */
+    /**
+     * Create a FutureFactory.
+     *
+     * @param runQueue The run queue into which all created futures will deposit
+     *                 Runnables.
+     */
 
-   public FutureFactory(RunQueue runQueue) {
-      super();
-      this.runQueue = runQueue;
-   }
+    public FutureFactory(RunQueue runQueue) {
+        super();
+        this.runQueue = runQueue;
+    }
 
-   /**
-    * Create a FutureFactory. Use Future's default RunQueue.
-    */
+    /**
+     * Create a FutureFactory. Use Future's default RunQueue.
+     */
 
-   public FutureFactory() {
-      super();
-      runQueue = Future.getClassRunQueue();
-   }
+    public FutureFactory() {
+        super();
+        runQueue = Future.getClassRunQueue();
+    }
 
-   /**
-    * Get the RunQueue for a FutureFactory object.
-    * 
-    * @return The RunQueue that objects runDelayed on a Future object created by
-    *         this factory will be placed in.
-    */
+    /**
+     * Get the RunQueue for a FutureFactory object.
+     *
+     * @return The RunQueue that objects runDelayed on a Future object created by
+     * this factory will be placed in.
+     */
 
-   public RunQueue getRunQueue() {
-      return runQueue;
-   }
+    public RunQueue getRunQueue() {
+        return runQueue;
+    }
 
-   /**
-    * Set the RunQueue for a FutureFactory object.
-    */
+    /**
+     * Set the RunQueue for a FutureFactory object.
+     */
 
-   public void setRunQueue(RunQueue rq) {
-      runQueue = rq;
-   }
+    public void setRunQueue(RunQueue rq) {
+        runQueue = rq;
+    }
 
-   /**
-    * Create a Future.
-    */
+    /**
+     * Create a Future.
+     */
 
-   public Future make() {
-      Future f = new Future();
-      f.setRunQueue(runQueue);
-      return f;
-   }
+    public Future make() {
+        Future f = new Future();
+        f.setRunQueue(runQueue);
+        return f;
+    }
 
-   /**
-    * Create a Future with a value already assigned.
-    */
+    /**
+     * Create a Future with a value already assigned.
+     */
 
-   public Future make(Object val) {
-      Future f = new Future(val);
-      f.setRunQueue(runQueue);
-      return f;
-   }
+    public Future make(Object val) {
+        Future f = new Future(val);
+        f.setRunQueue(runQueue);
+        return f;
+    }
 }

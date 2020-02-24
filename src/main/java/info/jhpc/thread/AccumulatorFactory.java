@@ -43,73 +43,69 @@ package info.jhpc.thread;
 
 /**
  * Factory to create Accumulator objects for a shared memory system.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class AccumulatorFactory {
 
-   /**
-    * The FutureFactory to create Futures for Accumulators.
-    */
+    /**
+     * The FutureFactory to create Futures for Accumulators.
+     */
 
-   protected FutureFactory futureFactory = null;
+    protected FutureFactory futureFactory = null;
 
-   /**
-    * Create a AccumulatorFactory.
-    * 
-    * @param futureFactory
-    *           The FutureFactory to create futures.
-    */
+    /**
+     * Create a AccumulatorFactory.
+     *
+     * @param futureFactory The FutureFactory to create futures.
+     */
 
-   public AccumulatorFactory(FutureFactory futureFactory) {
-      super();
-      this.futureFactory = futureFactory;
-   }
+    public AccumulatorFactory(FutureFactory futureFactory) {
+        super();
+        this.futureFactory = futureFactory;
+    }
 
-   /**
-    * Get the FutureFactory for a AccumulatorFactory object.
-    * 
-    * @return The FutureFactory that will create a Future object for aa
-    *         Accumulator.
-    */
+    /**
+     * Get the FutureFactory for a AccumulatorFactory object.
+     *
+     * @return The FutureFactory that will create a Future object for aa
+     * Accumulator.
+     */
 
-   public FutureFactory getFutureFactory() {
-      return futureFactory;
-   }
+    public FutureFactory getFutureFactory() {
+        return futureFactory;
+    }
 
-   /**
-    * Set the FutureFactory for a AccumulatorFactory object.
-    */
+    /**
+     * Set the FutureFactory for a AccumulatorFactory object.
+     */
 
-   public void setFutureFactory(FutureFactory futureFactory) {
-      this.futureFactory = futureFactory;
-   }
+    public void setFutureFactory(FutureFactory futureFactory) {
+        this.futureFactory = futureFactory;
+    }
 
-   /**
-    * Create a Accumulator awaiting n signals.
-    * 
-    * @param n
-    *           The number of signals expected.
-    * @return The Accumulator.
-    */
+    /**
+     * Create a Accumulator awaiting n signals.
+     *
+     * @param n The number of signals expected.
+     * @return The Accumulator.
+     */
 
-   public Accumulator make(int n) {
-      return new Accumulator(n, null, futureFactory.make());
-   }
+    public Accumulator make(int n) {
+        return new Accumulator(n, null, futureFactory.make());
+    }
 
-   /**
-    * Create a Accumulator awaiting n signals.
-    * 
-    * @param n
-    *           The number of signals expected.
-    * @param data
-    *           The initial value for accumulation.
-    * @return The Accumulator.
-    */
+    /**
+     * Create a Accumulator awaiting n signals.
+     *
+     * @param n    The number of signals expected.
+     * @param data The initial value for accumulation.
+     * @return The Accumulator.
+     */
 
-   public Accumulator make(int n, Object data) {
-      return new Accumulator(n, data, futureFactory.make());
-   }
+    public Accumulator make(int n, Object data) {
+        return new Accumulator(n, data, futureFactory.make());
+    }
 }

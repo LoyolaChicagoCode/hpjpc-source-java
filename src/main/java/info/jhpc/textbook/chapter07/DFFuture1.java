@@ -24,10 +24,10 @@
  */
 package info.jhpc.textbook.chapter07;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Future;
 
 class DFFuture1 extends Future implements Op1 {
-   public void op(Object opnd) {
-      setValue(opnd);
-   }
+    public void op(Object opnd) {
+        setValue(opnd);
+    }
 }

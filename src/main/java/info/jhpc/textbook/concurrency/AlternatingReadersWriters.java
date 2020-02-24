@@ -44,103 +44,101 @@ package info.jhpc.textbook.concurrency;
 /**
  * Implementation of MultipleReadersWritersMonitor that alternatively gives
  * preference to readers and writers.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 public class AlternatingReadersWriters implements MultipleReadersWritersMonitor {
-   /**
-    * Index in nr of batch of number of readers currently reading.
-    */
-   protected int thisBatch = 0;
-   /**
-    * Index in nr of batch of number of readers waiting to read. Always equal to
-    * 1-thisBatch.
-    */
-   protected int nextBatch = 1;
-   /**
-    * Number readers reading and waiting to read in this batch or the next
-    * batch.
-    */
-   protected int nr[] = { 0, 0 };
-   /**
-    * Number writers writing, 0 or 1
-    */
-   protected int nw = 0;
-   /**
-    * Number of writers total.
-    */
-   protected int nwtotal = 0;
+    /**
+     * Index in nr of batch of number of readers currently reading.
+     */
+    protected int thisBatch = 0;
+    /**
+     * Index in nr of batch of number of readers waiting to read. Always equal to
+     * 1-thisBatch.
+     */
+    protected int nextBatch = 1;
+    /**
+     * Number readers reading and waiting to read in this batch or the next
+     * batch.
+     */
+    protected int[] nr = {0, 0};
+    /**
+     * Number writers writing, 0 or 1
+     */
+    protected int nw = 0;
+    /**
+     * Number of writers total.
+     */
+    protected int nwtotal = 0;
 
-   /**
-    * Reset the monitor.
-    */
-   public void reset() {
-      thisBatch = 0;
-      nextBatch = 1;
-      nr[0] = nr[1] = 0;
-      nw = 0;
-      nwtotal = 0;
-   }
+    /**
+     * Reset the monitor.
+     */
+    public void reset() {
+        thisBatch = 0;
+        nextBatch = 1;
+        nr[0] = nr[1] = 0;
+        nw = 0;
+        nwtotal = 0;
+    }
 
-   /**
-    * Called to begin reading the shared data structure.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public synchronized void startReading() throws InterruptedException {
-      if (nwtotal == 0)
-         nr[thisBatch]++;
-      else {
-         nr[nextBatch]++;
-         int myBatch = nextBatch;
-         while (thisBatch != myBatch)
+    /**
+     * Called to begin reading the shared data structure.
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public synchronized void startReading() throws InterruptedException {
+        if (nwtotal == 0)
+            nr[thisBatch]++;
+        else {
+            nr[nextBatch]++;
+            int myBatch = nextBatch;
+            while (thisBatch != myBatch)
+                wait();
+        }
+    }
+
+    /**
+     * Called when the thread is finished reading the shared data structure.
+     */
+    public synchronized void stopReading() {
+        nr[thisBatch]--;
+        if (nr[thisBatch] == 0) {
+            notifyAll();
+        }
+    }
+
+    /**
+     * Called to begin writing the shared data structure.
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public synchronized void startWriting() throws InterruptedException {
+        nwtotal++;
+        while (nr[thisBatch] + nw != 0)
             wait();
-      }
-   }
+        nw = 1;
+    }
 
-   /**
-    * Called when the thread is finished reading the shared data structure.
-    */
-   public synchronized void stopReading() {
-      nr[thisBatch]--;
-      if (nr[thisBatch] == 0) {
-         notifyAll();
-      }
-   }
+    /**
+     * Called when the thread is finished writing the shared data structure.
+     */
+    public synchronized void stopWriting() {
+        nw = 0;
+        nwtotal--;
+        int tmp = thisBatch;
+        thisBatch = nextBatch;
+        nextBatch = tmp;
+        notifyAll();
+    }
 
-   /**
-    * Called to begin writing the shared data structure.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public synchronized void startWriting() throws InterruptedException {
-      nwtotal++;
-      while (nr[thisBatch] + nw != 0)
-         wait();
-      nw = 1;
-   }
-
-   /**
-    * Called when the thread is finished writing the shared data structure.
-    */
-   public synchronized void stopWriting() {
-      nw = 0;
-      nwtotal--;
-      int tmp = thisBatch;
-      thisBatch = nextBatch;
-      nextBatch = tmp;
-      notifyAll();
-   }
-
-   /**
-    * Get legible information about the identity of the monitor.
-    * 
-    * @return "Alternating Readers/Writers Monitor"
-    */
-   public String getMonitorInfo() {
-      return "Alternating Readers/Writers Monitor";
-   }
+    /**
+     * Get legible information about the identity of the monitor.
+     *
+     * @return "Alternating Readers/Writers Monitor"
+     */
+    public String getMonitorInfo() {
+        return "Alternating Readers/Writers Monitor";
+    }
 }

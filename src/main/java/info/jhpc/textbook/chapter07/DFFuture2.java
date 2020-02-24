@@ -24,14 +24,14 @@
  */
 package info.jhpc.textbook.chapter07;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Future;
 
 class DFFuture2 extends Future implements Op1, StoreOp {
-   public void op(Object opnd) {
-      setValue(opnd);
-   }
+    public void op(Object opnd) {
+        setValue(opnd);
+    }
 
-   public void store(int i, Object value) {
-      setValue(value);
-   }
+    public void store(int i, Object value) {
+        setValue(value);
+    }
 }

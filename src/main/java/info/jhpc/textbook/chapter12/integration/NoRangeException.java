@@ -25,23 +25,23 @@
 /**
  * Defines the exception thrown when the supplied range
  * doen not contain a calulatable distance.
- *
+ * <p>
  * Written by: John Shafaee
  * Date: July 5, 1999
  */
 package info.jhpc.textbook.chapter12.integration;
 
-import java.io.*;
+import java.io.Serializable;
 
 public class NoRangeException extends IllegalArgumentException implements
-      Serializable {
+        Serializable {
 
-   /**
-    *
-    */
-   private static final long serialVersionUID = -3630621438432276710L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3630621438432276710L;
 
-   public NoRangeException() {
-      super("No range specified: x_begin == x_end.");
-   }
+    public NoRangeException() {
+        super("No range specified: x_begin == x_end.");
+    }
 }

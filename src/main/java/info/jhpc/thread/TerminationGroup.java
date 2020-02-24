@@ -43,39 +43,38 @@ package info.jhpc.thread;
 
 /**
  * Interface implemented by Termination Groups.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public interface TerminationGroup extends RunDelayed {
 
-   /**
-    * Adds another element to a termination group.
-    */
+    /**
+     * Adds another element to a termination group.
+     */
 
-   public TerminationGroup fork();
+    TerminationGroup fork();
 
-   /**
-    * Terminate this element of the termination group.
-    */
+    /**
+     * Terminate this element of the termination group.
+     */
 
-   public void terminate();
+    void terminate();
 
-   /**
-    * Waits for all elements of a termination group to terminate. Blocks a
-    * thread.
-    */
+    /**
+     * Waits for all elements of a termination group to terminate. Blocks a
+     * thread.
+     */
 
-   public void awaitTermination() throws InterruptedException;
+    void awaitTermination() throws InterruptedException;
 
-   /**
-    * Delay the runnable r until all elements of the group have terminated.
-    * 
-    * @param r
-    *           The runnable to be delayed.
-    */
+    /**
+     * Delay the runnable r until all elements of the group have terminated.
+     *
+     * @param r The runnable to be delayed.
+     */
 
-   public void runDelayed(Runnable r);
+    void runDelayed(Runnable r);
 
 }

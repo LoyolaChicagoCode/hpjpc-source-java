@@ -25,23 +25,23 @@
 /**
  * Defines the exception thrown when the granularity supplied
  * does not define a caluculatable situation.
- *
+ * <p>
  * Written by: John Shafaee
  * Date: July 5, 1999
  */
 
 package info.jhpc.textbook.chapter12.integration;
 
-import java.io.*;
+import java.io.Serializable;
 
 public class BadGranularityException extends IllegalArgumentException implements
-      Serializable {
-   /**
-    *
-    */
-   private static final long serialVersionUID = 280261353940199229L;
+        Serializable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 280261353940199229L;
 
-   public BadGranularityException() {
-      super("Granularity must be at least 1.");
-   }
+    public BadGranularityException() {
+        super("Granularity must be at least 1.");
+    }
 }

@@ -43,55 +43,54 @@ package info.jhpc.thread;
 
 /**
  * Factory to create TerminationGroup objects for a shared memory system.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class SharedTerminationGroupFactory implements TerminationGroupFactory {
 
-   /**
-    * The FutureFactory to create Futures for SharedTerminationGroups.
-    */
+    /**
+     * The FutureFactory to create Futures for SharedTerminationGroups.
+     */
 
-   protected FutureFactory futureFactory = null;
+    protected FutureFactory futureFactory = null;
 
-   /**
-    * Create a SharedTerminationGroupFactory.
-    * 
-    * @param futureFactory
-    *           The FutureFactory to create futures.
-    */
+    /**
+     * Create a SharedTerminationGroupFactory.
+     *
+     * @param futureFactory The FutureFactory to create futures.
+     */
 
-   public SharedTerminationGroupFactory(FutureFactory futureFactory) {
-      super();
-      this.futureFactory = futureFactory;
-   }
+    public SharedTerminationGroupFactory(FutureFactory futureFactory) {
+        super();
+        this.futureFactory = futureFactory;
+    }
 
-   /**
-    * Get the FutureFactory for a SharedTerminationGroupFactory object.
-    * 
-    * @return The FutureFactory that will create a Future object for a
-    *         termination group.
-    */
+    /**
+     * Get the FutureFactory for a SharedTerminationGroupFactory object.
+     *
+     * @return The FutureFactory that will create a Future object for a
+     * termination group.
+     */
 
-   public FutureFactory getFutureFactory() {
-      return futureFactory;
-   }
+    public FutureFactory getFutureFactory() {
+        return futureFactory;
+    }
 
-   /**
-    * Set the FutureFactory for a SharedTerminationGroupFactory object.
-    */
+    /**
+     * Set the FutureFactory for a SharedTerminationGroupFactory object.
+     */
 
-   public void setFutureFactory(FutureFactory futureFactory) {
-      this.futureFactory = futureFactory;
-   }
+    public void setFutureFactory(FutureFactory futureFactory) {
+        this.futureFactory = futureFactory;
+    }
 
-   /**
-    * Create a SharedTerminationGroup.
-    */
+    /**
+     * Create a SharedTerminationGroup.
+     */
 
-   public SharedTerminationGroup make() {
-      return new SharedTerminationGroup(futureFactory.make());
-   }
+    public SharedTerminationGroup make() {
+        return new SharedTerminationGroup(futureFactory.make());
+    }
 }

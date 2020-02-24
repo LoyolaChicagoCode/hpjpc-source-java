@@ -53,150 +53,149 @@ import java.util.Hashtable;
 
 public class ChatServer implements Callable {
 
-   private static String nextSessionId = "";
+    private static String nextSessionId = "";
 
-   /*
-    * Each session will be maintained in Hashtable. There is a supporting class,
-    * ChatSession, that keeps various details for each login and correspondence
-    * bound for it.
-    */
+    /*
+     * Each session will be maintained in Hashtable. There is a supporting class,
+     * ChatSession, that keeps various details for each login and correspondence
+     * bound for it.
+     */
+    private Hashtable<String, ChatUserData> sessions = new Hashtable<String, ChatUserData>();
 
-   private static String getNextSessionId() {
-      nextSessionId += "A";
-      return nextSessionId;
-   }
+    private static String getNextSessionId() {
+        nextSessionId += "A";
+        return nextSessionId;
+    }
 
-   private Hashtable<String, ChatUserData> sessions = new Hashtable<String, ChatUserData>();
+    /*
+     * GKT: You should provide a file that maintains the list of users and
+     * passwords. I would be impressed if someone supported basic password
+     * scrambling and encryption.
+     *
+     * Right now, anyone can login and participate.
+     */
 
-   /*
-    * GKT: You should provide a file that maintains the list of users and
-    * passwords. I would be impressed if someone supported basic password
-    * scrambling and encryption.
-    *
-    * Right now, anyone can login and participate.
-    */
+    private boolean authenticate(String userId, String password) {
+        /* This needs to be filled in by students. */
+        return true;
+    }
 
-   private boolean authenticate(String userId, String password) {
-      /* This needs to be filled in by students. */
-      return true;
-   }
+    /*
+     * the chat login process (a) performs authentication, (b) allocates a
+     * session id, and (c) creates chat state.
+     */
+    private CallMessage doChatLogin(ChatLogin in) {
+        if (!authenticate(in.getUserId(), in.getPassword()))
+            return new ChatSession(null, false);
+        String sessionId = getNextSessionId();
+        sessions.put(sessionId, new ChatUserData(in.getUserId()));
+        return new ChatSession(sessionId, true);
+    }
 
-   /*
-    * the chat login process (a) performs authentication, (b) allocates a
-    * session id, and (c) creates chat state.
-    */
-   private CallMessage doChatLogin(ChatLogin in) {
-      if (!authenticate(in.getUserId(), in.getPassword()))
-         return new ChatSession(null, false);
-      String sessionId = getNextSessionId();
-      sessions.put(sessionId, new ChatUserData(in.getUserId()));
-      return new ChatSession(sessionId, true);
-   }
+    private void showRoom() {
+        System.out.println("--- Chat Room State ---");
+        Enumeration<String> e = sessions.keys();
+        while (e.hasMoreElements()) {
+            String key = e.nextElement();
+            System.out.println("Session " + key + " " + sessions.get(key));
+        }
+        System.out.println("-----------------------");
+    }
 
-   private void showRoom() {
-      System.out.println("--- Chat Room State ---");
-      Enumeration<String> e = sessions.keys();
-      while (e.hasMoreElements()) {
-         String key = e.nextElement();
-         System.out.println("Session " + key + " " + sessions.get(key));
-      }
-      System.out.println("-----------------------");
-   }
+    private CallMessage doPutMessage(PutMessage in) {
+        ChatUserData originatingUser = sessions.get(in
+                .getSessionId());
+        if (originatingUser == null)
+            return new Ok(false);
+        Enumeration<String> e = sessions.keys();
+        while (e.hasMoreElements()) {
+            Object sessionId = e.nextElement();
+            ChatUserData cud = sessions.get(sessionId);
+            String text = "<" + originatingUser.getUserName() + "> "
+                    + in.getMessage();
+            cud.appendMessage(text);
+        }
+        showRoom();
+        return new Ok();
+    }
 
-   private CallMessage doPutMessage(PutMessage in) {
-      ChatUserData originatingUser = sessions.get(in
-            .getSessionId());
-      if (originatingUser == null)
-         return new Ok(false);
-      Enumeration<String> e = sessions.keys();
-      while (e.hasMoreElements()) {
-         Object sessionId = e.nextElement();
-         ChatUserData cud = sessions.get(sessionId);
-         String text = "<" + originatingUser.getUserName() + "> "
-               + in.getMessage();
-         cud.appendMessage(text);
-      }
-      showRoom();
-      return new Ok();
-   }
+    /*
+     * GKT: You need to implement this to display messages in the ChatClientRoom
+     * window
+     */
 
-   /*
-    * GKT: You need to implement this to display messages in the ChatClientRoom
-    * window
-    */
+    private CallMessage doGetMessages(GetMessages in) {
+        ChatUserData cud = sessions.get(in.getSessionId());
+        if (cud == null)
+            return new Ok(false);
+        return new GetResults(cud.getSomeMessages(in.getMax()));
+    }
 
-   private CallMessage doGetMessages(GetMessages in) {
-      ChatUserData cud = sessions.get(in.getSessionId());
-      if (cud == null)
-         return new Ok(false);
-      return new GetResults(cud.getSomeMessages(in.getMax()));
-   }
+    /*
+     * GKT: Right now, this doesn't do much. Ideally, you would remove a user
+     * from the Hashtable (sessions).
+     */
+    private CallMessage doLogout(Logout in) {
+        System.out.println("Removing Session " + in.getSessionId());
+        sessions.remove(in.getSessionId());
+        showRoom();
+        return new Ok();
+    }
 
-   /*
-    * GKT: Right now, this doesn't do much. Ideally, you would remove a user
-    * from the Hashtable (sessions).
-    */
-   private CallMessage doLogout(Logout in) {
-      System.out.println("Removing Session " + in.getSessionId());
-      sessions.remove(in.getSessionId());
-      showRoom();
-      return new Ok();
-   }
+    /*
+     * Basically, I am going to show the gist of how this is implemented. You
+     * will fill in the remaining details and functionality.
+     */
 
-   /*
-    * Basically, I am going to show the gist of how this is implemented. You
-    * will fill in the remaining details and functionality.
-    */
+    public synchronized Serializable call(CallMessage message) throws Exception {
+        if (message instanceof ChatLogin) {
+            return doChatLogin((ChatLogin) message);
+        } else if (message instanceof PutMessage) {
+            return doPutMessage((PutMessage) message);
+        } else if (message instanceof GetMessages) {
+            return doGetMessages((GetMessages) message);
+        } else if (message instanceof Logout) {
+            return doLogout((Logout) message);
+        } else
+            return new Ok(false);
+    }
 
-   public synchronized Serializable call(CallMessage message) throws Exception {
-      if (message instanceof ChatLogin) {
-         return doChatLogin((ChatLogin) message);
-      } else if (message instanceof PutMessage) {
-         return doPutMessage((PutMessage) message);
-      } else if (message instanceof GetMessages) {
-         return doGetMessages((GetMessages) message);
-      } else if (message instanceof Logout) {
-         return doLogout((Logout) message);
-      } else
-         return new Ok(false);
-   }
+    public static class Go {
+        public static int chatPort = 1999;
 
-   public static class Go {
-      public static int chatPort = 1999;
+        public static void main(String[] args) {
+            System.out.println("ChatServer version 1.0");
+            System.out.println("Copyright (c) 1999, George K. Thiruvathukal");
+            System.out
+                    .println("If you like it, please support the homeless with a donation.");
+            RemoteCallServer cs;
 
-      public static void main(String args[]) {
-         System.out.println("ChatServer version 1.0");
-         System.out.println("Copyright (c) 1999, George K. Thiruvathukal");
-         System.out
-               .println("If you like it, please support the homeless with a donation.");
-         RemoteCallServer cs;
+            try {
+                chatPort = Integer.parseInt(args[0]);
+            } catch (Exception e) {
+            }
 
-         try {
-            chatPort = Integer.parseInt(args[0]);
-         } catch (Exception e) {
-         }
+            System.out.println("ChatServer.Go: Launching on port " + chatPort);
+            try {
+                cs = new RemoteCallServer(chatPort);
+            } catch (Exception e) {
+                System.err.println();
+                return;
+            }
 
-         System.out.println("ChatServer.Go: Launching on port " + chatPort);
-         try {
-            cs = new RemoteCallServer(chatPort);
-         } catch (Exception e) {
-            System.err.println("");
-            return;
-         }
+            System.out.println("ChatServer.Go: Binding ChatServer instance.");
+            /* create some callables. */
+            cs.bind("aol2000", new ChatServer());
 
-         System.out.println("ChatServer.Go: Binding ChatServer instance.");
-         /* create some callables. */
-         cs.bind("aol2000", new ChatServer());
+            /* listen for remote calls */
+            System.out.println("ChatServer.Go: Starting RMI-Lite Listener");
+            cs.start();
+            try {
+                cs.join();
+            } catch (Exception e) {
+                System.err.println("ChatServer.Go: Unlikely Error Encountered");
+            }
+        }
 
-         /* listen for remote calls */
-         System.out.println("ChatServer.Go: Starting RMI-Lite Listener");
-         cs.start();
-         try {
-            cs.join();
-         } catch (Exception e) {
-            System.err.println("ChatServer.Go: Unlikely Error Encountered");
-         }
-      }
-
-   }
+    }
 }

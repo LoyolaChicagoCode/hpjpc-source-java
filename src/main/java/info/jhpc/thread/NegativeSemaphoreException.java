@@ -50,12 +50,12 @@ package info.jhpc.thread;
  */
 
 public class NegativeSemaphoreException extends RuntimeException {
-   /**
-    *
-    */
-   private static final long serialVersionUID = 4726476179030918777L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 4726476179030918777L;
 
-   public NegativeSemaphoreException() {
-      super("Semaphore given a negative count");
-   }
+    public NegativeSemaphoreException() {
+        super("Semaphore given a negative count");
+    }
 }

@@ -27,17 +27,17 @@
  * defined function, f(x).  Any function passed to IntegTrapRegion must
  * implement this interface in order to insure that the function exists
  * and it takes a double and returns a do9uble.
- *
+ * <p>
  * Written by: John Shafaee
  * Date: jul 21, 1999
  */
 
 package info.jhpc.textbook.chapter12.integration;
 
-import java.io.*;
+import java.io.Serializable;
 
 public interface F_of_x extends Serializable {
 
-   public double f(double x);
+    double f(double x);
 
 }

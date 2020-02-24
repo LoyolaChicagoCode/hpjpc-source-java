@@ -31,144 +31,146 @@ package info.jhpc.textbook.chapter08;
 import info.jhpc.thread.*;
 
 public class ParQuickSort2 {
-   int numThreads;
-   int minDivisible = 8;
+    int numThreads;
+    int minDivisible = 8;
 
-   class QuickSortThread2 implements Runnable {
-      int ary[], m, n;
-      TerminationGroup tg;
-      RunQueue rq;
+    public ParQuickSort2(int numThreads) {
+        this.numThreads = numThreads;
+    }
 
-      public QuickSortThread2(int ary[], int mm, int nn, TerminationGroup t,
-            RunQueue rq) {
-         this.ary = ary;
-         m = mm;
-         n = nn;
-         tg = t;
-         this.rq = rq;
-      }
+    public void sort(int[] ary) {
+        int N = ary.length;
+        // System.out.println("sort()");
+        TerminationGroup terminationGroup;
+        RunQueue rq = new RunQueue();
+        FutureFactory ff = new FutureFactory(rq);
+        TerminationGroupFactory tgf = new SharedTerminationGroupFactory(ff);
+        Runnable subsort;
+        rq.setMaxThreadsCreated(numThreads);
+        terminationGroup = tgf.make();
+        subsort = new QuickSortThread2(ary, 0, N, terminationGroup, rq);
+        rq.run(subsort);
+        try {
+            terminationGroup.awaitTermination();
+        } catch (InterruptedException e) {
+        }
+        rq.setMaxThreadsWaiting(0);
+    }
 
-      public void run() {
-         quicksort(m, n);
-         tg.terminate();
-      }
-
-      void quicksort(int m, int n) {
-         // System.out.println("quicksort("+m+","+n+")");
-         int i, j, pivot, tmp;
-         if (n - m < minDivisible) {
-            for (j = m + 1; j < n; j++) {
-               for (i = j; i > m && ary[i] < ary[i - 1]; i--) {
-                  tmp = ary[i];
-                  ary[i] = ary[i - 1];
-                  ary[i - 1] = tmp;
-               }
+    public static class Test1 {
+        public static void main(String[] args) {
+            int[] a = new int[25];
+            int i;
+            for (i = a.length - 1; i >= 0; i--) {
+                a[i] = (int) (Math.random() * 100);
             }
-            return;
-         }
-         i = m;
-         j = n;
-         pivot = ary[i];
-         while (i < j) {
-            j--;
-            while (pivot < ary[j])
-               j--;
-            if (j <= i)
-               break;
-            tmp = ary[i];
-            ary[i] = ary[j];
-            ary[j] = tmp;
-            i++;
-            while (pivot > ary[i])
-               i++;
-            tmp = ary[i];
-            ary[i] = ary[j];
-            ary[j] = tmp;
-         }
-         Runnable subsort;
-         if (i - m > n - i) {
-            subsort = new QuickSortThread2(ary, m, i, tg.fork(), rq);
-            rq.run(subsort);
-            quicksort(i + 1, n);
-         } else {
-            subsort = new QuickSortThread2(ary, i + 1, n, tg.fork(), rq);
-            rq.run(subsort);
-            quicksort(m, i);
-         }
-      }
-   }
+            for (i = 0; i < a.length - 1; i++) {
+                System.out.print(" " + a[i]);
+            }
+            System.out.println();
+            ParQuickSort2 s = new ParQuickSort2(3);
+            s.sort(a);
+            for (i = 0; i < a.length - 1; i++) {
+                System.out.print(" " + a[i]);
+            }
+            System.out.println();
+        }
+    }
 
-   public ParQuickSort2(int numThreads) {
-      this.numThreads = numThreads;
-   }
+    public static class TestTime1 {
+        public static void main(String[] args) {
+            if (args.length < 2) {
+                System.out.println("Usage: java ParQuickSort2$TestTime1 n nt");
+                System.exit(0);
+            }
+            int N = Integer.parseInt(args[0]);
+            int T = Integer.parseInt(args[1]);
+            int[] a = new int[N];
+            int i;
+            long time;
+            for (i = a.length - 1; i >= 0; i--) {
+                a[i] = (int) (Math.random() * N);
+            }
+            // for (i=a.length-1;i>=0;i--) {
+            // System.out.print(" "+a[i]);
+            // }
+            // System.out.println();
+            ParQuickSort2 s = new ParQuickSort2(T);
+            time = System.currentTimeMillis();
+            s.sort(a);
+            time = System.currentTimeMillis() - time;
+            // for (i=a.length-1;i>=0;i--) {
+            // System.out.print(" "+a[i]);
+            // }
+            // System.out.println();
+            System.out.println("ParQuickSort2\t" + N + "\t" + T + "\t" + time);
+        }
+    }
 
-   public void sort(int[] ary) {
-      int N = ary.length;
-      // System.out.println("sort()");
-      TerminationGroup terminationGroup;
-      RunQueue rq = new RunQueue();
-      FutureFactory ff = new FutureFactory(rq);
-      TerminationGroupFactory tgf = new SharedTerminationGroupFactory(ff);
-      Runnable subsort;
-      rq.setMaxThreadsCreated(numThreads);
-      terminationGroup = tgf.make();
-      subsort = new QuickSortThread2(ary, 0, N, terminationGroup, rq);
-      rq.run(subsort);
-      try {
-         terminationGroup.awaitTermination();
-      } catch (InterruptedException e) {
-      }
-      rq.setMaxThreadsWaiting(0);
-   }
+    class QuickSortThread2 implements Runnable {
+        int[] ary;
+        int m;
+        int n;
+        TerminationGroup tg;
+        RunQueue rq;
 
-   public static class Test1 {
-      public static void main(String[] args) {
-         int[] a = new int[25];
-         int i;
-         for (i = a.length - 1; i >= 0; i--) {
-            a[i] = (int) (Math.random() * 100);
-         }
-         for (i = 0; i < a.length - 1; i++) {
-            System.out.print(" " + a[i]);
-         }
-         System.out.println();
-         ParQuickSort2 s = new ParQuickSort2(3);
-         s.sort(a);
-         for (i = 0; i < a.length - 1; i++) {
-            System.out.print(" " + a[i]);
-         }
-         System.out.println();
-      }
-   }
+        public QuickSortThread2(int[] ary, int mm, int nn, TerminationGroup t,
+                                RunQueue rq) {
+            this.ary = ary;
+            m = mm;
+            n = nn;
+            tg = t;
+            this.rq = rq;
+        }
 
-   public static class TestTime1 {
-      public static void main(String[] args) {
-         if (args.length < 2) {
-            System.out.println("Usage: java ParQuickSort2$TestTime1 n nt");
-            System.exit(0);
-         }
-         int N = Integer.parseInt(args[0]);
-         int T = Integer.parseInt(args[1]);
-         int[] a = new int[N];
-         int i;
-         long time;
-         for (i = a.length - 1; i >= 0; i--) {
-            a[i] = (int) (Math.random() * N);
-         }
-         // for (i=a.length-1;i>=0;i--) {
-         // System.out.print(" "+a[i]);
-         // }
-         // System.out.println();
-         ParQuickSort2 s = new ParQuickSort2(T);
-         time = System.currentTimeMillis();
-         s.sort(a);
-         time = System.currentTimeMillis() - time;
-         // for (i=a.length-1;i>=0;i--) {
-         // System.out.print(" "+a[i]);
-         // }
-         // System.out.println();
-         System.out.println("ParQuickSort2\t" + N + "\t" + T + "\t" + time);
-      }
-   }
+        public void run() {
+            quicksort(m, n);
+            tg.terminate();
+        }
+
+        void quicksort(int m, int n) {
+            // System.out.println("quicksort("+m+","+n+")");
+            int i, j, pivot, tmp;
+            if (n - m < minDivisible) {
+                for (j = m + 1; j < n; j++) {
+                    for (i = j; i > m && ary[i] < ary[i - 1]; i--) {
+                        tmp = ary[i];
+                        ary[i] = ary[i - 1];
+                        ary[i - 1] = tmp;
+                    }
+                }
+                return;
+            }
+            i = m;
+            j = n;
+            pivot = ary[i];
+            while (i < j) {
+                j--;
+                while (pivot < ary[j])
+                    j--;
+                if (j <= i)
+                    break;
+                tmp = ary[i];
+                ary[i] = ary[j];
+                ary[j] = tmp;
+                i++;
+                while (pivot > ary[i])
+                    i++;
+                tmp = ary[i];
+                ary[i] = ary[j];
+                ary[j] = tmp;
+            }
+            Runnable subsort;
+            if (i - m > n - i) {
+                subsort = new QuickSortThread2(ary, m, i, tg.fork(), rq);
+                rq.run(subsort);
+                quicksort(i + 1, n);
+            } else {
+                subsort = new QuickSortThread2(ary, i + 1, n, tg.fork(), rq);
+                rq.run(subsort);
+                quicksort(m, i);
+            }
+        }
+    }
 
 }

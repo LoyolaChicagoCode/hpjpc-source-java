@@ -49,21 +49,21 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class ChatSession extends CallMessage implements Serializable {
-   private String sessionId;
-   private boolean success;
+    private String sessionId;
+    private boolean success;
 
-   ChatSession(String sessionId, boolean success) {
-      super(null);
-      this.sessionId = sessionId;
-      this.success = success;
-   }
+    ChatSession(String sessionId, boolean success) {
+        super(null);
+        this.sessionId = sessionId;
+        this.success = success;
+    }
 
-   public String getSessionId() {
-      return sessionId;
-   }
+    public String getSessionId() {
+        return sessionId;
+    }
 
-   public boolean getSuccess() {
-      return success;
-   }
+    public boolean getSuccess() {
+        return success;
+    }
 
 }

@@ -49,64 +49,64 @@ import java.net.Socket;
 
 // begin-class-MessageServerDispatcher
 public class MessageServerDispatcher extends Thread {
-   MessageServer callServer;
-   Socket socket;
-   DataInputStream in;
-   DataOutputStream out;
-   public static final boolean logging = true;
+    public static final boolean logging = true;
+    private MessageServer callServer;
+    private Socket socket;
+    private DataInputStream in;
+    private DataOutputStream out;
 
-   public MessageServerDispatcher(MessageServer callServer, Socket socket)
-         throws IOException {
-      this.callServer = callServer;
-      this.socket = socket;
-      this.in = new DataInputStream(socket.getInputStream());
-      this.out = new DataOutputStream(socket.getOutputStream());
-   }
+    public MessageServerDispatcher(MessageServer callServer, Socket socket)
+            throws IOException {
+        this.callServer = callServer;
+        this.socket = socket;
+        this.in = new DataInputStream(socket.getInputStream());
+        this.out = new DataOutputStream(socket.getOutputStream());
+    }
 
-   public void log(String s) {
-      if (!logging)
-         return;
-      System.err.println("MessageServerDispatcher: " + s);
-   }
+    public void log(String s) {
+        if (!logging)
+            return;
+        System.err.println("MessageServerDispatcher: " + s);
+    }
 
-   public void run() {
-      log("Beginning of dispatch run() method.");
-      try {
-         while (true) {
-            Message m = new Message();
-            m.decode(in);
-            Message result = null;
-            log("Received Message " + m + ".");
-            if (m.getType() == 0 && m.getParam("$disconnect") != null) {
-               log("Message found with reserved $disconnect parameter.");
-               System.err.println("-> Disconnect received by server.");
-               Message ack = new Message();
-               ack.encode(out);
-               socket.close();
-               return;
+    public void run() {
+        log("Beginning of dispatch run() method.");
+        try {
+            while (true) {
+                Message m = new Message();
+                m.decode(in);
+                Message result = null;
+                log("Received Message " + m + ".");
+                if (m.getType() == 0 && m.getParam("$disconnect") != null) {
+                    log("Message found with reserved $disconnect parameter.");
+                    System.err.println("-> Disconnect received by server.");
+                    Message ack = new Message();
+                    ack.encode(out);
+                    socket.close();
+                    return;
+                }
+                MessageService d = callServer.getSubscriber(m.getType());
+                if (d != null)
+                    result = d.process(m);
+                else {
+                    System.err.println("-> No subscribers for this message.");
+                    result = new Message();
+                }
+                result.encode(out);
             }
-            MessageService d = callServer.getSubscriber(m.getType());
-            if (d != null)
-               result = d.process(m);
-            else {
-               System.err.println("-> No subscribers for this message.");
-               result = new Message();
+        } catch (EOFException e1) {
+            try {
+                log("End of file exception." + e1);
+                out.close();
+                socket.close();
+            } catch (Exception e2) {
+                log("Unable to free open resources " + e2);
+                e2.printStackTrace();
             }
-            result.encode(out);
-         }
-      } catch (EOFException e1) {
-         try {
-            log("End of file exception." + e1);
-            out.close();
-            socket.close();
-         } catch (Exception e2) {
-            log("Unable to free open resources " + e2);
-            e2.printStackTrace();
-         }
-      } catch (Exception e) {
-         log("Unknown exception of unknown origin. Possibly a bug: " + e);
-         e.printStackTrace();
-      }
-   }
+        } catch (Exception e) {
+            log("Unknown exception of unknown origin. Possibly a bug: " + e);
+            e.printStackTrace();
+        }
+    }
 }
 // end-class-MessageServerDispatcher

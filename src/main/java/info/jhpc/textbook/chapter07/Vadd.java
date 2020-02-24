@@ -26,27 +26,27 @@
 package info.jhpc.textbook.chapter07;
 
 class Vadd implements Op2 {
-   Op1 continuation;
+    Op1 continuation;
 
-   Vadd(Op1 contin) {
-      continuation = contin;
-   }
+    Vadd(Op1 contin) {
+        continuation = contin;
+    }
 
-   public void op(Object lopnd, Object ropnd) {
-      double[] x, y, z;
-      if (lopnd instanceof Exception)
-         continuation.op(lopnd);
-      if (ropnd instanceof Exception)
-         continuation.op(ropnd);
-      try {
-         x = (double[]) lopnd;
-         y = (double[]) ropnd;
-         z = new double[x.length];
-         for (int i = 0; i < z.length; ++i)
-            z[i] = x[i] + y[i];
-         continuation.op(z);
-      } catch (Exception e) {
-         continuation.op(e);
-      }
-   }
+    public void op(Object lopnd, Object ropnd) {
+        double[] x, y, z;
+        if (lopnd instanceof Exception)
+            continuation.op(lopnd);
+        if (ropnd instanceof Exception)
+            continuation.op(ropnd);
+        try {
+            x = (double[]) lopnd;
+            y = (double[]) ropnd;
+            z = new double[x.length];
+            for (int i = 0; i < z.length; ++i)
+                z[i] = x[i] + y[i];
+            continuation.op(z);
+        } catch (Exception e) {
+            continuation.op(e);
+        }
+    }
 }

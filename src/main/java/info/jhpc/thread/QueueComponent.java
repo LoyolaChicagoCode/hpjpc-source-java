@@ -53,108 +53,105 @@ import java.util.Stack;
  */
 
 public class QueueComponent {
-   Stack<Object> hd = new Stack<Object>(), tl = new Stack<Object>();
+    Stack<Object> hd = new Stack<Object>(), tl = new Stack<Object>();
 
-   /**
-    * Removes and returns the first element in the queue.
-    *
-    * @throws EmptyQueueException
-    *            if the queue is empty.
-    */
-   public Object get() throws EmptyQueueException {
-      if (!hd.empty())
-         return hd.pop();
-      while (!tl.empty())
-         hd.push(tl.pop());
-      if (hd.empty())
-         throw new EmptyQueueException();
-      return hd.pop();
-   }
+    /**
+     * Tests the queue.
+     */
+    public static void main(String[] args) throws NumberFormatException {
+        int total, init;
+        int i;
+        QueueComponent q = new QueueComponent();
+        String s = "abc";
+        for (i = 0; i < s.length(); i++) {
+            q.put(s.substring(i, i + 1));
+        }
+        String t = "";
+        while (!q.isEmpty()) {
+            t += (String) q.get();
+        }
+        if (!s.equals(t)) {
+            System.out.println("Bug. Put in \"" + s + "\", got \"" + t + "\"");
+        } else {
+            System.out.println("Tests okay.");
+        }
+        if (args.length < 1) {
+            System.out.println("usage: java QueueComponent total [init]");
+            System.exit(0);
+        }
+        total = Integer.parseInt(args[0]);
+        init = args.length < 2 ? 0 : Integer.parseInt(args[1]);
+        if (total < init) {
+            System.out
+                    .println("total elements to enqueue must be greater than initial");
+            System.exit(0);
+        }
 
-   /**
-    * Returns a reference to the first element in the queue without removing it.
-    *
-    * @throws EmptyQueueException
-    *            if the queue is empty.
-    */
-   public Object firstElement() throws EmptyQueueException {
-      if (!hd.empty())
-         return hd.peek();
-      while (!tl.empty())
-         hd.push(tl.pop());
-      if (hd.empty())
-         throw new EmptyQueueException();
-      return hd.peek();
-   }
+        q = new QueueComponent();
 
-   /**
-    * Enqueues its parameter.
-    *
-    * @param elem
-    *           the value to be enqueued.
-    */
-   public void put(Object elem) {
-      tl.push(elem);
-   }
+        long startTime = System.currentTimeMillis();
+        for (i = 0; i < init; i++)
+            q.put("X");
+        for (; i < total; i++) {
+            q.put("X");
+            q.get();
+        }
+        while (!q.isEmpty())
+            q.get();
+        System.out.println(System.currentTimeMillis() - startTime);
+    }
 
-   /**
-    * Returns true if the queue is empty; false, if it is not empty.
-    */
-   public boolean isEmpty() {
-      return hd.empty() && tl.empty();
-   }
+    /**
+     * Removes and returns the first element in the queue.
+     *
+     * @throws EmptyQueueException if the queue is empty.
+     */
+    public Object get() throws EmptyQueueException {
+        if (!hd.empty())
+            return hd.pop();
+        while (!tl.empty())
+            hd.push(tl.pop());
+        if (hd.empty())
+            throw new EmptyQueueException();
+        return hd.pop();
+    }
 
-   /**
-    * Removes all elements from the queue, leaving it empty.
-    */
-   public void clear() {
-      hd.setSize(0);
-      tl.setSize(0);
-   }
+    /**
+     * Returns a reference to the first element in the queue without removing it.
+     *
+     * @throws EmptyQueueException if the queue is empty.
+     */
+    public Object firstElement() throws EmptyQueueException {
+        if (!hd.empty())
+            return hd.peek();
+        while (!tl.empty())
+            hd.push(tl.pop());
+        if (hd.empty())
+            throw new EmptyQueueException();
+        return hd.peek();
+    }
 
-   /**
-    * Tests the queue.
-    */
-   public static void main(String[] args) throws NumberFormatException {
-      int total, init;
-      int i;
-      QueueComponent q = new QueueComponent();
-      String s = "abc";
-      for (i = 0; i < s.length(); i++) {
-         q.put(s.substring(i, i + 1));
-      }
-      String t = "";
-      while (!q.isEmpty()) {
-         t += (String) q.get();
-      }
-      if (!s.equals(t)) {
-         System.out.println("Bug. Put in \"" + s + "\", got \"" + t + "\"");
-      } else {
-         System.out.println("Tests okay.");
-      }
-      if (args.length < 1) {
-         System.out.println("usage: java QueueComponent total [init]");
-         System.exit(0);
-      }
-      total = Integer.parseInt(args[0]);
-      init = args.length < 2 ? 0 : Integer.parseInt(args[1]);
-      if (total < init) {
-         System.out
-               .println("total elements to enqueue must be greater than initial");
-         System.exit(0);
-      }
+    /**
+     * Enqueues its parameter.
+     *
+     * @param elem the value to be enqueued.
+     */
+    public void put(Object elem) {
+        tl.push(elem);
+    }
 
-      q = new QueueComponent();
+    /**
+     * Returns true if the queue is empty; false, if it is not empty.
+     */
+    public boolean isEmpty() {
+        return hd.empty() && tl.empty();
+    }
 
-      long startTime = System.currentTimeMillis();
-      for (i = 0; i < init; i++)
-         q.put("X");
-      for (; i < total; i++) {
-         q.put("X");
-         q.get();
-      }
-      while (!q.isEmpty())
-         q.get();
-      System.out.println(System.currentTimeMillis() - startTime);
-   }
+    /**
+     * Removes all elements from the queue, leaving it empty.
+     */
+    public void clear() {
+        hd.setSize(0);
+        tl.setSize(0);
+    }
 }

@@ -44,70 +44,67 @@ package info.jhpc.thread;
 /**
  * An assign-once variable that allows consumers to wait for a value to be
  * produced.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class SimpleFuture {
-   /**
-    * The assign-once variable.
-    */
-   protected Object value;
+    /**
+     * The assign-once variable.
+     */
+    protected Object value;
 
-   /**
-    * Create a SimpleFuture with no value yet assigned.
-    */
-   public SimpleFuture() {
-      value = this;
-   }
+    /**
+     * Create a SimpleFuture with no value yet assigned.
+     */
+    public SimpleFuture() {
+        value = this;
+    }
 
-   /**
-    * Create a SimpleFuture with a value initially assigned.
-    * 
-    * @param val
-    *           The value the SimpleFuture is to be initialized with.
-    */
-   public SimpleFuture(Object val) {
-      value = val;
-   }
+    /**
+     * Create a SimpleFuture with a value initially assigned.
+     *
+     * @param val The value the SimpleFuture is to be initialized with.
+     */
+    public SimpleFuture(Object val) {
+        value = val;
+    }
 
-   /**
-    * Waits until a value has been assigned to the SimpleFuture, then returns
-    * it.
-    * 
-    * @return The value assigned.
-    * @throws InterruptedException
-    *            if the thread is interrupted while waiting for a value to be
-    *            assigned.
-    */
-   public synchronized Object getValue() throws InterruptedException {
-      while (value == this)
-         wait();
-      return value;
-   }
+    /**
+     * Waits until a value has been assigned to the SimpleFuture, then returns
+     * it.
+     *
+     * @return The value assigned.
+     * @throws InterruptedException if the thread is interrupted while waiting for a value to be
+     *                              assigned.
+     */
+    public synchronized Object getValue() throws InterruptedException {
+        while (value == this)
+            wait();
+        return value;
+    }
 
-   /**
-    * Checks to see if a value has been assigned to the SimpleFuture yet.
-    * 
-    * @return true if value has been assigned, false otherwise.
-    */
-   public synchronized boolean isSet() {
-      return (value != this);
-   }
+    /**
+     * Assigns a value to the SimpleFuture and notifies all waiting threads.
+     * Attempts to change a previously assigned value will be ignored.
+     *
+     * @param val The value to be assigned to the SimpleFuture.
+     */
+    public synchronized void setValue(Object val) {
+        if (value != this)
+            return;
+        value = val;
+        notifyAll();
+    }
 
-   /**
-    * Assigns a value to the SimpleFuture and notifies all waiting threads.
-    * Attempts to change a previously assigned value will be ignored.
-    * 
-    * @param val
-    *           The value to be assigned to the SimpleFuture.
-    */
-   public synchronized void setValue(Object val) {
-      if (value != this)
-         return;
-      value = val;
-      notifyAll();
-   }
+    /**
+     * Checks to see if a value has been assigned to the SimpleFuture yet.
+     *
+     * @return true if value has been assigned, false otherwise.
+     */
+    public synchronized boolean isSet() {
+        return (value != this);
+    }
 
 }

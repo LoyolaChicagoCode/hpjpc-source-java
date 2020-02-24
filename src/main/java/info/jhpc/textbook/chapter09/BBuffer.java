@@ -24,56 +24,57 @@
  */
 package info.jhpc.textbook.chapter09;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.IndexedKey;
+import info.jhpc.thread.SharedTableOfQueues;
 
 class BBuffer {
-   private IndexedKey fulls = IndexedKey.unique(0);
+    private IndexedKey fulls = IndexedKey.unique(0);
 
-   private IndexedKey empties = fulls.at(1);
+    private IndexedKey empties = fulls.at(1);
 
-   private SharedTableOfQueues stoq = new SharedTableOfQueues();
+    private SharedTableOfQueues stoq = new SharedTableOfQueues();
 
-   public BBuffer(int num) {
-      for (int i = num; i > 0; i--)
-         stoq.put(empties, "X");
-   }
+    public BBuffer(int num) {
+        for (int i = num; i > 0; i--)
+            stoq.put(empties, "X");
+    }
 
-   public void put(Object x) {
-      try {
-         stoq.get(empties);
-         stoq.put(fulls, x);
-      } catch (InterruptedException e) {
-      }
-   }
+    public void put(Object x) {
+        try {
+            stoq.get(empties);
+            stoq.put(fulls, x);
+        } catch (InterruptedException e) {
+        }
+    }
 
-   public Object get() {
-      Object x = null;
-      try {
-         x = stoq.get(fulls);
-         stoq.put(empties, "X");
-      } catch (InterruptedException e) {
-      }
-      return x;
-   }
+    public Object get() {
+        Object x = null;
+        try {
+            x = stoq.get(fulls);
+            stoq.put(empties, "X");
+        } catch (InterruptedException e) {
+        }
+        return x;
+    }
 
-   public String toString() {
-      return "BBuffer(" + fulls + ")";
-   }
+    public String toString() {
+        return "BBuffer(" + fulls + ")";
+    }
 
-   public static class Test1 extends Thread {
-      static BBuffer b = new BBuffer(5);
+    public static class Test1 extends Thread {
+        static BBuffer b = new BBuffer(5);
 
-      public static void main(String[] args) {
-         new Test1().start();
-         Object o;
-         while ((o = b.get()) != null)
-            System.out.println(o);
-      }
+        public static void main(String[] args) {
+            new Test1().start();
+            Object o;
+            while ((o = b.get()) != null)
+                System.out.println(o);
+        }
 
-      public void run() {
-         for (int i = 1; i <= 10; i++)
-            b.put(new Integer(i));
-         b.put(null);
-      }
-   }
+        public void run() {
+            for (int i = 1; i <= 10; i++)
+                b.put(new Integer(i));
+            b.put(null);
+        }
+    }
 }

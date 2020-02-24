@@ -48,14 +48,14 @@ import java.util.Vector;
 
 @SuppressWarnings("serial")
 public class GetResults extends CallMessage implements Serializable {
-   Vector<String> messages;
+    Vector<String> messages;
 
-   public GetResults(Vector<String> vector) {
-      super(null);
-      this.messages = vector;
-   }
+    public GetResults(Vector<String> vector) {
+        super(null);
+        this.messages = vector;
+    }
 
-   public Vector<String> getMessages() {
-      return messages;
-   }
+    public Vector<String> getMessages() {
+        return messages;
+    }
 }

@@ -48,90 +48,88 @@ import info.jhpc.thread.FutureQueue;
  * Implementation of MultipleReadersWritersMonitor that serves readers and
  * writers in the order of arrival. If several readers arrive in a cluster, they
  * will be allowed to read at the same time.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class QueuedReadersWriters implements MultipleReadersWritersMonitor {
-   /**
-    * Number readers reading
-    */
-   protected int nr = 0;
-   /**
-    * Queueing for access.
-    */
-   protected FutureQueue fq;
+    /**
+     * Number readers reading
+     */
+    protected int nr = 0;
+    /**
+     * Queueing for access.
+     */
+    protected FutureQueue fq;
 
-   /**
-    * Set up the monitor.
-    */
-   public QueuedReadersWriters() {
-      fq = new FutureQueue();
-      fq.put(null);
-   }
+    /**
+     * Set up the monitor.
+     */
+    public QueuedReadersWriters() {
+        fq = new FutureQueue();
+        fq.put(null);
+    }
 
-   /**
-    * Reset the monitor.
-    */
-   public void reset() {
-      nr = 0;
-      fq = new FutureQueue();
-      fq.put(null);
-   }
+    /**
+     * Reset the monitor.
+     */
+    public void reset() {
+        nr = 0;
+        fq = new FutureQueue();
+        fq.put(null);
+    }
 
-   /**
-    * Called to begin reading the shared data structure.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public void startReading() throws InterruptedException {
-      Future f = fq.get();
-      f.getValue();
-      synchronized (this) {
-         nr++;
-      }
-      fq.put(null);
-   }
+    /**
+     * Called to begin reading the shared data structure.
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public void startReading() throws InterruptedException {
+        Future f = fq.get();
+        f.getValue();
+        synchronized (this) {
+            nr++;
+        }
+        fq.put(null);
+    }
 
-   /**
-    * Called when the thread is finished reading the shared data structure.
-    */
-   public synchronized void stopReading() {
-      nr--;
-      if (nr == 0)
-         notify();
-   }
+    /**
+     * Called when the thread is finished reading the shared data structure.
+     */
+    public synchronized void stopReading() {
+        nr--;
+        if (nr == 0)
+            notify();
+    }
 
-   /**
-    * Called to begin writing the shared data structure.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public void startWriting() throws InterruptedException {
-      Future f = fq.get();
-      f.getValue();
-      synchronized (this) {
-         while (nr > 0)
-            wait();
-      }
-   }
+    /**
+     * Called to begin writing the shared data structure.
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public void startWriting() throws InterruptedException {
+        Future f = fq.get();
+        f.getValue();
+        synchronized (this) {
+            while (nr > 0)
+                wait();
+        }
+    }
 
-   /**
-    * Called when the thread is finished writing the shared data structure.
-    */
-   public synchronized void stopWriting() {
-      fq.put(null);
-   }
+    /**
+     * Called when the thread is finished writing the shared data structure.
+     */
+    public synchronized void stopWriting() {
+        fq.put(null);
+    }
 
-   /**
-    * Get legible information about the identity of the monitor.
-    * 
-    * @return "Queued-Readers-Writers Monitor"
-    */
-   public String getMonitorInfo() {
-      return "Queued-Readers-Writers Monitor";
-   }
+    /**
+     * Get legible information about the identity of the monitor.
+     *
+     * @return "Queued-Readers-Writers Monitor"
+     */
+    public String getMonitorInfo() {
+        return "Queued-Readers-Writers Monitor";
+    }
 }

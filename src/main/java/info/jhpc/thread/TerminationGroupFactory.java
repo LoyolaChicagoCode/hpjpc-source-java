@@ -43,16 +43,16 @@ package info.jhpc.thread;
 
 /**
  * An factory to create termination groups.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public interface TerminationGroupFactory {
 
-   /**
-    * Create a SharedTerminationGroup.
-    */
+    /**
+     * Create a SharedTerminationGroup.
+     */
 
-   public SharedTerminationGroup make();
+    SharedTerminationGroup make();
 }

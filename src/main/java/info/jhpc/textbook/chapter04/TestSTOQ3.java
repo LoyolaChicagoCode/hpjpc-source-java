@@ -27,47 +27,47 @@
 // use SharedTableOfQueues.getSkip to receive
 package info.jhpc.textbook.chapter04;
 
-class TestSTOQ3 extends Thread {
-   final static int numSenders = 2, numReceivers = 3, maxMsg = 1000;
+public class TestSTOQ3 extends Thread {
+    final static int numSenders = 2, numReceivers = 3, maxMsg = 1000;
 
-   static SharedTableOfQueues stoq = new SharedTableOfQueues();
+    static SharedTableOfQueues stoq = new SharedTableOfQueues();
 
-   int myId, next, step;
+    int myId, next, step;
 
-   boolean receiver;
+    boolean receiver;
 
-   public static void main(String[] x) {
-      int i;
-      System.out.println("Hi!");
-      System.out.println("create a bunch of threads to put strings into");
-      System.out.println(" and take them out of an array");
-      System.out.println(" one queue per array element");
-      System.out.println(" use getSkip to receive");
-      for (i = 0; i < numSenders; i++) {
-         Thread worker = new TestSTOQ3(i, numSenders, false);
-         worker.start();
-      }
-      for (i = 0; i < numReceivers; i++) {
-         Thread worker = new TestSTOQ3(i, numReceivers, true);
-         worker.start();
-      }
-   }
+    public TestSTOQ3(int me, int stride, boolean Ireceive) {
+        myId = next = me;
+        step = stride;
+        receiver = Ireceive;
+    }
 
-   public TestSTOQ3(int me, int stride, boolean Ireceive) {
-      myId = next = me;
-      step = stride;
-      receiver = Ireceive;
-   }
+    public static void main(String[] x) {
+        int i;
+        System.out.println("Hi!");
+        System.out.println("create a bunch of threads to put strings into");
+        System.out.println(" and take them out of an array");
+        System.out.println(" one queue per array element");
+        System.out.println(" use getSkip to receive");
+        for (i = 0; i < numSenders; i++) {
+            Thread worker = new TestSTOQ3(i, numSenders, false);
+            worker.start();
+        }
+        for (i = 0; i < numReceivers; i++) {
+            Thread worker = new TestSTOQ3(i, numReceivers, true);
+            worker.start();
+        }
+    }
 
-   public void run() {
-      while (next <= maxMsg) {
-         if (receiver)
-            while (stoq.getSkip("" + next) == null)
-               yield();
-         else
-            stoq.put("" + next, "" + next);
-         next += step;
-      }
-      System.out.println((receiver ? "receiver " : "sender ") + myId + " done");
-   }
+    public void run() {
+        while (next <= maxMsg) {
+            if (receiver)
+                while (stoq.getSkip("" + next) == null)
+                    yield();
+            else
+                stoq.put("" + next, "" + next);
+            next += step;
+        }
+        System.out.println((receiver ? "receiver " : "sender ") + myId + " done");
+    }
 }

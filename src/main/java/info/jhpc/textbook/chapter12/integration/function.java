@@ -24,14 +24,14 @@
  */
 package info.jhpc.textbook.chapter12.integration;
 
-import java.io.*;
+import java.io.Serializable;
 
 @SuppressWarnings("serial")
 class function implements F_of_x, Serializable {
-   public function() {
-   }
+    public function() {
+    }
 
-   public double f(double x) {
-      return x * x; // a parabola F(x) = x^2
-   }
+    public double f(double x) {
+        return x * x; // a parabola F(x) = x^2
+    }
 }

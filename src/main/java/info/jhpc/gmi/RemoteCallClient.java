@@ -51,68 +51,68 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public final class RemoteCallClient {
-   private Socket socket;
-   private ObjectOutputStream out;
-   private ObjectInputStream in;
-   private RemoteCallAgent callAgent;
-   private RemoteReplyAgent replyAgent;
-   private SharedTableOfQueues callStore = new SharedTableOfQueues();
-   private TicketGenerator ticketGenerator = new TicketGenerator("gmi");
-   private ErrorLog e = new ErrorLog("RemoteCallClient", false);
+    private Socket socket;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
+    private RemoteCallAgent callAgent;
+    private RemoteReplyAgent replyAgent;
+    private SharedTableOfQueues callStore = new SharedTableOfQueues();
+    private TicketGenerator ticketGenerator = new TicketGenerator("gmi");
+    private ErrorLog e = new ErrorLog("RemoteCallClient", false);
 
-   public RemoteCallClient(String host, int port) throws IOException {
-      socket = new Socket(host, port);
-      out = new ObjectOutputStream(socket.getOutputStream());
-      in = new ObjectInputStream(socket.getInputStream());
-      e.setFunction("RemoteCallClient");
-      e.setTag("1");
-      e.information("created RemoteCallAgent");
-      callAgent = new RemoteCallAgent(socket, out, callStore);
-      e.information("created RemoteReplyAgent");
-      replyAgent = new RemoteReplyAgent(socket, in, callStore);
-   }
+    public RemoteCallClient(String host, int port) throws IOException {
+        socket = new Socket(host, port);
+        out = new ObjectOutputStream(socket.getOutputStream());
+        in = new ObjectInputStream(socket.getInputStream());
+        e.setFunction("RemoteCallClient");
+        e.setTag("1");
+        e.information("created RemoteCallAgent");
+        callAgent = new RemoteCallAgent(socket, out, callStore);
+        e.information("created RemoteReplyAgent");
+        replyAgent = new RemoteReplyAgent(socket, in, callStore);
+    }
 
-   public void setDebug(OutputStream debug) {
-   }
+    public void setDebug(OutputStream debug) {
+    }
 
-   public Object call(CallMessage message) throws Exception {
+    public Object call(CallMessage message) throws Exception {
 
-      e.setFunction("call");
-      e.setTag("2");
-      String callTicket = ticketGenerator.nextTicket();
-      e.information("ticket generated " + callTicket);
-      message.setTicket(callTicket);
+        e.setFunction("call");
+        e.setTag("2");
+        String callTicket = ticketGenerator.nextTicket();
+        e.information("ticket generated " + callTicket);
+        message.setTicket(callTicket);
 
-      e.information("added ticket to wait list " + callTicket);
-      /* inform the reply agent that there is a call about to be made */
-      replyAgent.addWaitingTicket(callTicket);
+        e.information("added ticket to wait list " + callTicket);
+        /* inform the reply agent that there is a call about to be made */
+        replyAgent.addWaitingTicket(callTicket);
 
-      e.information("issuing GMI call " + callTicket);
-      /* Make the call. */
-      callAgent.call(message);
+        e.information("issuing GMI call " + callTicket);
+        /* Make the call. */
+        callAgent.call(message);
 
-      e.information("waiting for result of GMI call " + callTicket);
-      /*
-       * await the reply. This could re-throw a remote exception, hence the
-       * "throws Exception" above.
-       */
-      return replyAgent.getReply(message);
-   }
+        e.information("waiting for result of GMI call " + callTicket);
+        /*
+         * await the reply. This could re-throw a remote exception, hence the
+         * "throws Exception" above.
+         */
+        return replyAgent.getReply(message);
+    }
 
-   public Object call(String altTarget, CallMessage message) throws Exception {
-      message.setTarget(altTarget);
-      return call(message);
-   }
+    public Object call(String altTarget, CallMessage message) throws Exception {
+        message.setTarget(altTarget);
+        return call(message);
+    }
 
-   public void disconnect() throws GMIDisconnectException {
-      try {
-         callAgent.disconnect();
-         replyAgent.disconnect();
-         out.close();
-         in.close();
-         socket.close();
-      } catch (Exception e) {
-         throw new GMIDisconnectException();
-      }
-   }
+    public void disconnect() throws GMIDisconnectException {
+        try {
+            callAgent.disconnect();
+            replyAgent.disconnect();
+            out.close();
+            in.close();
+            socket.close();
+        } catch (Exception e) {
+            throw new GMIDisconnectException();
+        }
+    }
 }

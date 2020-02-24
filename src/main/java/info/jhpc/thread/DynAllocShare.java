@@ -45,77 +45,73 @@ package info.jhpc.thread;
  * A DynAlloc subclass to dynamicly allocate blocks of numbers out of a
  * contiguous range. This is used by shared-memory parallel threads to allocate
  * loop indices to use, e.g. for processing elements of an array in parallel.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2
  */
 public class DynAllocShare extends DynAlloc {
-   int range;
-   int nt;
-   int min;
-   int zc;
-   int current;
+    int range;
+    int nt;
+    int min;
+    int zc;
+    int current;
 
-   /**
-    * Create a DynAllocShare object that will allocate blocks of numbers in the
-    * range [0..range) for nt parallel threads. It will allocate no fewer than
-    * min numbers in a block until the last allocation. It tries to allocate
-    * max(remaining/nt,min) numbers to each thread. After nt threads have been
-    * told that there are no numbers left to allocate, the DynAllocShare object
-    * will automatically reset and start allocating blocks of numbers out of the
-    * full range again. This is to tell each of the threads that they are done
-    * with one iteration of a loop so they can gather at a barrier and start the
-    * next iteration without having to create or explicitly reset the
-    * DynAllocShare object.
-    * 
-    * @param range
-    *           Non-inclusive upper bound. Numbers [0,range) are allocated.
-    * @param nt
-    *           The number of threads allocating ranges from this DynAllocShare
-    *           object.
-    * @param min
-    *           The minimum number of numbers to allocate at a time, except the
-    *           last allocation.
-    */
-   public DynAllocShare(int range, int nt, int min) {
-      this.range = range;
-      this.nt = nt;
-      this.min = min;
-      zc = 0;
-      current = 0;
-   }
+    /**
+     * Create a DynAllocShare object that will allocate blocks of numbers in the
+     * range [0..range) for nt parallel threads. It will allocate no fewer than
+     * min numbers in a block until the last allocation. It tries to allocate
+     * max(remaining/nt,min) numbers to each thread. After nt threads have been
+     * told that there are no numbers left to allocate, the DynAllocShare object
+     * will automatically reset and start allocating blocks of numbers out of the
+     * full range again. This is to tell each of the threads that they are done
+     * with one iteration of a loop so they can gather at a barrier and start the
+     * next iteration without having to create or explicitly reset the
+     * DynAllocShare object.
+     *
+     * @param range Non-inclusive upper bound. Numbers [0,range) are allocated.
+     * @param nt    The number of threads allocating ranges from this DynAllocShare
+     *              object.
+     * @param min   The minimum number of numbers to allocate at a time, except the
+     *              last allocation.
+     */
+    public DynAllocShare(int range, int nt, int min) {
+        this.range = range;
+        this.nt = nt;
+        this.min = min;
+        zc = 0;
+        current = 0;
+    }
 
-   /**
-    * Allocate a new range. The information on the range of values is filled
-    * into the range parameter, r.
-    * 
-    * @param r
-    *           The Range object that has the bounds of the allocated range
-    *           filled in.
-    * @return true if the range is non-empty, false if all the range has been
-    *         allocated.
-    */
-   public synchronized boolean alloc(Range r) {
-      if (current >= range) {
-         zc++;
-         if (zc >= nt) {
-            current = 0;
-            zc = 0;
-         }
-         r.start = r.end = range;
-         r.num = 0;
-         return false;
-      }
-      r.start = current;
-      int rem = range - current;
-      int num = (rem + nt - 1) / nt;// ceiling(rem/nt)
-      if (num < min)
-         num = min;
-      if (num > rem)
-         num = rem;
-      current += num;
-      r.end = current;
-      r.num = num;
-      return true;
-   }
+    /**
+     * Allocate a new range. The information on the range of values is filled
+     * into the range parameter, r.
+     *
+     * @param r The Range object that has the bounds of the allocated range
+     *          filled in.
+     * @return true if the range is non-empty, false if all the range has been
+     * allocated.
+     */
+    public synchronized boolean alloc(Range r) {
+        if (current >= range) {
+            zc++;
+            if (zc >= nt) {
+                current = 0;
+                zc = 0;
+            }
+            r.start = r.end = range;
+            r.num = 0;
+            return false;
+        }
+        r.start = current;
+        int rem = range - current;
+        int num = (rem + nt - 1) / nt;// ceiling(rem/nt)
+        if (num < min)
+            num = min;
+        if (num > rem)
+            num = rem;
+        current += num;
+        r.end = current;
+        r.num = num;
+        return true;
+    }
 }

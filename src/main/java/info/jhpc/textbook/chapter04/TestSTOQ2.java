@@ -26,49 +26,49 @@
 //create a bunch of threads to put strings into and take them out of queues
 package info.jhpc.textbook.chapter04;
 
-class TestSTOQ2 extends Thread {
-   final static int numSenders = 2, numReceivers = 3, maxMsg = 1000;
+public class TestSTOQ2 extends Thread {
+    final static int numSenders = 2, numReceivers = 3, maxMsg = 1000;
 
-   static SharedTableOfQueues stoq = new SharedTableOfQueues();
+    static SharedTableOfQueues stoq = new SharedTableOfQueues();
 
-   int myId, next, step;
+    int myId, next, step;
 
-   boolean receiver;
+    boolean receiver;
 
-   public static void main(String[] x) {
-      int i;
-      System.out.println("create a bunch of threads to put strings into");
-      System.out.println(" and take them out of an array");
-      System.out.println(" one queue per array element");
-      System.out.println(" use get to receive");
-      for (i = 0; i < numSenders; i++) {
-         Thread worker = new TestSTOQ2(i, numSenders, false);
-         worker.start();
-      }
-      for (i = 0; i < numReceivers; i++) {
-         Thread worker = new TestSTOQ2(i, numReceivers, true);
-         worker.start();
-      }
-   }
+    TestSTOQ2(int me, int stride, boolean Ireceive) {
+        myId = next = me;
+        step = stride;
+        receiver = Ireceive;
+    }
 
-   TestSTOQ2(int me, int stride, boolean Ireceive) {
-      myId = next = me;
-      step = stride;
-      receiver = Ireceive;
-   }
+    public static void main(String[] x) {
+        int i;
+        System.out.println("create a bunch of threads to put strings into");
+        System.out.println(" and take them out of an array");
+        System.out.println(" one queue per array element");
+        System.out.println(" use get to receive");
+        for (i = 0; i < numSenders; i++) {
+            Thread worker = new TestSTOQ2(i, numSenders, false);
+            worker.start();
+        }
+        for (i = 0; i < numReceivers; i++) {
+            Thread worker = new TestSTOQ2(i, numReceivers, true);
+            worker.start();
+        }
+    }
 
-   public void run() {
-      try {
-         while (next <= maxMsg) {
-            if (receiver)
-               stoq.get("" + next);
-            else
-               stoq.put("" + next, "" + next);
-            next += step;
-         }
-         System.out.println((receiver ? "receiver " : "sender ") + myId
-               + " done");
-      } catch (InterruptedException ie) {
-      }
-   }
+    public void run() {
+        try {
+            while (next <= maxMsg) {
+                if (receiver)
+                    stoq.get("" + next);
+                else
+                    stoq.put("" + next, "" + next);
+                next += step;
+            }
+            System.out.println((receiver ? "receiver " : "sender ") + myId
+                    + " done");
+        } catch (InterruptedException ie) {
+        }
+    }
 }

@@ -30,12 +30,12 @@
 package info.jhpc.textbook.chapter05.integration.accumulator;
 
 public class BadRangeException extends IllegalArgumentException {
-   /**
-    *
-    */
-   private static final long serialVersionUID = -7035812226928385362L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7035812226928385362L;
 
-   public BadRangeException() {
-      super("Bad specified range: x_start < x_end.");
-   }
+    public BadRangeException() {
+        super("Bad specified range: x_start < x_end.");
+    }
 }

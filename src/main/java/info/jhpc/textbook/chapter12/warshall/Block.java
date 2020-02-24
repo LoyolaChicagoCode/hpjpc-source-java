@@ -28,117 +28,114 @@
 
 package info.jhpc.textbook.chapter12.warshall;
 
-import java.io.*;
+import info.jhpc.memo.MemoClient;
+import info.jhpc.thread.Barrier;
 
-import info.jhpc.memo.*;
-import info.jhpc.thread.*;
+import java.io.Serializable;
 
 public class Block extends Thread implements Serializable {
-   /**
-    *
-    */
-   private static final long serialVersionUID = 7904913209018671293L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 7904913209018671293L;
+    public int r, c; // upperleft
+    boolean[][] block;
+    int nr, nc;
 
-   boolean[][] block;
+    int N;
 
-   public int r, c; // upperleft
+    int blkSize;
 
-   int nr, nc;
+    IndexedKey rows, cols;
 
-   int N;
+    transient Barrier done;
 
-   int blkSize;
+    transient MemoClient space;
 
-   IndexedKey rows, cols;
+    Block(boolean[][] a, int r, int c, IndexedKey rows, IndexedKey cols,
+          int blkSize) {
+        this.r = r;
+        this.c = c;
+        N = a.length;
+        this.rows = rows;
+        this.cols = cols;
+        this.done = null;
+        this.space = null;
+        this.blkSize = blkSize;
 
-   transient Barrier done;
+        nr = Math.min(blkSize, a.length - r);
+        nc = Math.min(blkSize, a[0].length - c);
+        this.block = new boolean[nr][nc];
+        for (int i = 0; i < nr; i++)
+            for (int j = 0; j < nc; j++)
+                block[i][j] = a[r + i][c + j];
+    }
 
-   transient MemoClient space;
+    public void setBarrier(Barrier done) {
+        this.done = done;
+    }
 
-   Block(boolean[][] a, int r, int c, IndexedKey rows, IndexedKey cols,
-         int blkSize) {
-      this.r = r;
-      this.c = c;
-      N = a.length;
-      this.rows = rows;
-      this.cols = cols;
-      this.done = null;
-      this.space = null;
-      this.blkSize = blkSize;
+    public void setMemoClient(MemoClient space) {
+        this.space = space;
+    }
 
-      nr = Math.min(blkSize, a.length - r);
-      nc = Math.min(blkSize, a[0].length - c);
-      this.block = new boolean[nr][nc];
-      for (int i = 0; i < nr; i++)
-         for (int j = 0; j < nc; j++)
-            block[i][j] = a[r + i][c + j];
-   }
+    public void run() {
+        int i, j;
+        int k;
+        boolean IHaveRow, IHaveColumn;
+        boolean[] row = null, col = null;
+        try {
+            for (k = 0; k < N; k++) {
+                IHaveRow = k - r >= 0 && k - r < nr;
+                IHaveColumn = k - c >= 0 && k - c < nc;
+                if (IHaveRow) {
+                    space.put(rows.at(k + c * N), new BooleanArray(block[k - r]));
+                    row = block[k - r];
+                }
+                if (IHaveColumn) {
+                    col = new boolean[nr];
+                    for (j = 0; j < nr; j++)
+                        col[j] = block[j][k - c];
+                    space.put(cols.at(k + r * N), new BooleanArray(col));
+                }
+                if (!IHaveRow) {
+                    BooleanArray brow = (BooleanArray) space.get(rows.at(k + c * N));
+                    System.out.println("got row " + brow.getClass().getName());
+                    row = brow.getData();
+                    if (row == null)
+                        System.out.println("Got null row. Oops.");
 
-   public void setBarrier(Barrier done) {
-      this.done = done;
-   }
+                }
+                if (!IHaveColumn) {
+                    BooleanArray bcol;
+                    bcol = (BooleanArray) space.get(cols.at(k + r * N));
+                    System.out.println("got col " + bcol.getClass().getName());
+                    col = bcol.getData();
+                    if (col == null)
+                        System.out.println("Got null column. Oops.");
+                }
+                if (row == null || col == null) {
+                    System.out.println("Row null? " + (row == null));
+                    System.out.println("Col null? " + (col == null));
+                }
+                for (i = 0; i < nr; i++)
+                    if (col[i])
+                        for (j = 0; j < nc; j++)
+                            block[i][j] |= row[j];
+            }// end for k
 
-   public void setMemoClient(MemoClient space) {
-      this.space = space;
-   }
+            System.out.println("Writing partial result of closure. r=" + r
+                    + " c = " + c);
+            space.put("blockClosure", this);
+        } catch (Exception e) {
+            // In the event that this happens, even a prayer won't help.
+        }
+    }
 
-   public void run() {
-      int i, j;
-      int k;
-      boolean IHaveRow, IHaveColumn;
-      boolean[] row = null, col = null;
-      try {
-         for (k = 0; k < N; k++) {
-            IHaveRow = k - r >= 0 && k - r < nr;
-            IHaveColumn = k - c >= 0 && k - c < nc;
-            if (IHaveRow) {
-               space.put(rows.at(k + c * N), new BooleanArray(block[k - r]));
-               row = block[k - r];
-            }
-            if (IHaveColumn) {
-               col = new boolean[nr];
-               for (j = 0; j < nr; j++)
-                  col[j] = block[j][k - c];
-               space.put(cols.at(k + r * N), new BooleanArray(col));
-            }
-            if (!IHaveRow) {
-               BooleanArray brow = (BooleanArray) space.get(rows.at(k + c * N));
-               System.out.println("got row " + brow.getClass().getName());
-               row = brow.getData();
-               if (row == null)
-                  System.out.println("Got null row. Oops.");
-
-            }
-            if (!IHaveColumn) {
-               BooleanArray bcol;
-               bcol = (BooleanArray) space.get(cols.at(k + r * N));
-               System.out.println("got col " + bcol.getClass().getName());
-               col = bcol.getData();
-               if (col == null)
-                  System.out.println("Got null column. Oops.");
-            }
-            if (row == null || col == null) {
-               System.out.println("Row null? " + (row == null));
-               System.out.println("Col null? " + (col == null));
-            }
-            for (i = 0; i < nr; i++)
-               if (col[i])
-                  for (j = 0; j < nc; j++)
-                     block[i][j] |= row[j];
-         }// end for k
-
-         System.out.println("Writing partial result of closure. r=" + r
-               + " c = " + c);
-         space.put("blockClosure", this);
-      } catch (Exception e) {
-         // In the event that this happens, even a prayer won't help.
-      }
-   }
-
-   /* This must be done to put the result back together. In the master. */
-   public void merge(boolean[][] a) {
-      for (int i = 0; i < nr; i++)
-         for (int j = 0; j < nc; j++)
-            a[r + i][c + j] = block[i][j];
-   }
+    /* This must be done to put the result back together. In the master. */
+    public void merge(boolean[][] a) {
+        for (int i = 0; i < nr; i++)
+            for (int j = 0; j < nc; j++)
+                a[r + i][c + j] = block[i][j];
+    }
 }

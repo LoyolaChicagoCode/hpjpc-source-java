@@ -24,18 +24,18 @@ Boston, MA  02111-1307, USA.
  */
 package info.jhpc.textbook.chapter12.warshall;
 
-import java.io.*;
+import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class BooleanArray implements Serializable {
 
-   private boolean[] data;
+    private boolean[] data;
 
-   public BooleanArray(boolean[] data) {
-      this.data = data;
-   }
+    public BooleanArray(boolean[] data) {
+        this.data = data;
+    }
 
-   public boolean[] getData() {
-      return data;
-   }
+    public boolean[] getData() {
+        return data;
+    }
 }

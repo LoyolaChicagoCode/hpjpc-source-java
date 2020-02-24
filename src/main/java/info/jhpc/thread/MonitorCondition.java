@@ -43,51 +43,45 @@ package info.jhpc.thread;
 
 /**
  * Interface implemented by Monitor.Condition.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public interface MonitorCondition {
 
-   /**
-    * Wait for the condition to hold. Another thread will signal when this
-    * happens.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting.
-    * @throws MonitorException
-    *            If the thread executing this is not inside the Monitor.
-    */
-   public void await() throws InterruptedException, MonitorException;
+    /**
+     * Wait for the condition to hold. Another thread will signal when this
+     * happens.
+     *
+     * @throws InterruptedException If interrupted while waiting.
+     * @throws MonitorException     If the thread executing this is not inside the Monitor.
+     */
+    void await() throws InterruptedException, MonitorException;
 
-   /**
-    * Signal the condition has occurred. If there are any waiting threads, it
-    * signals one of them to resume execution, hands over the monitor to it, and
-    * waits to reenter the monitor.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while trying to reenter the monitor.
-    * @throws MonitorException
-    *            If the thread executing this is not inside the Monitor.
-    */
-   public void signal() throws InterruptedException, MonitorException;
+    /**
+     * Signal the condition has occurred. If there are any waiting threads, it
+     * signals one of them to resume execution, hands over the monitor to it, and
+     * waits to reenter the monitor.
+     *
+     * @throws InterruptedException If interrupted while trying to reenter the monitor.
+     * @throws MonitorException     If the thread executing this is not inside the Monitor.
+     */
+    void signal() throws InterruptedException, MonitorException;
 
-   /**
-    * Signal the condition has occurred and leaves the monitor. Equivalent to
-    * <blockquote> cond.signal(); mon.leave(); </blockquote> If there are any
-    * waiting threads, it signals one of them to resume execution and hands over
-    * the monitor to it.
-    * <p>
-    * If this thread has entered the monitor more than once, leaveWithSignal()
-    * behaves like signal(). After the signaled thread has run, the signaling
-    * thread will reenter the monitor to complete its execution.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while trying to reenter the monitor.
-    * @throws MonitorException
-    *            If the thread executing this is not inside the Monitor.
-    */
-   public void leaveWithSignal() throws InterruptedException, MonitorException;
+    /**
+     * Signal the condition has occurred and leaves the monitor. Equivalent to
+     * <blockquote> cond.signal(); mon.leave(); </blockquote> If there are any
+     * waiting threads, it signals one of them to resume execution and hands over
+     * the monitor to it.
+     * <p>
+     * If this thread has entered the monitor more than once, leaveWithSignal()
+     * behaves like signal(). After the signaled thread has run, the signaling
+     * thread will reenter the monitor to complete its execution.
+     *
+     * @throws InterruptedException If interrupted while trying to reenter the monitor.
+     * @throws MonitorException     If the thread executing this is not inside the Monitor.
+     */
+    void leaveWithSignal() throws InterruptedException, MonitorException;
 
 }

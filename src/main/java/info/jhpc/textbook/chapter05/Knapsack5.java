@@ -24,287 +24,283 @@
  */
 package info.jhpc.textbook.chapter05;
 
-import info.jhpc.thread.*;
-import java.util.*;
+import info.jhpc.thread.Future;
+import info.jhpc.thread.PriorityRunQueue;
+import info.jhpc.thread.SharedTerminationGroup;
+import info.jhpc.thread.TerminationGroup;
+
+import java.util.BitSet;
+import java.util.Stack;
 
 class Knapsack5 {
-   private static class Item {
-      int profit, weight, pos;
+    int DFSLEVELS = 20;
+    int LEVELS = 5;
+    BitSet selected;
+    int capacity;
+    volatile float bestProfit = 0;
+    Item[] item;
+    PriorityRunQueue prq = new PriorityRunQueue();
+    Future done = new Future();
+    TerminationGroup tg = new SharedTerminationGroup(done);
+    SearchFactory searchFactory = new SearchFactory();
 
-      float profitPerWeight;
-   }
+    public Knapsack5(int[] weights, int[] profits, int capacity, int DFSLEVELS) {
+        this.DFSLEVELS = DFSLEVELS;
+        if (weights.length != profits.length)
+            throw new IllegalArgumentException(
+                    "0/1 Knapsack: differing numbers of weights and profits");
+        if (capacity <= 0)
+            throw new IllegalArgumentException("0/1 Knapsack: capacity<=0");
+        item = new Item[weights.length];
+        int i;
+        for (i = 0; i < weights.length; i++) {
+            item[i] = new Item();
+            item[i].profit = profits[i];
+            item[i].weight = weights[i];
+            item[i].pos = i;
+            item[i].profitPerWeight = ((float) profits[i]) / weights[i];
+        }
+        int j;
+        for (j = 1; j < item.length; j++) {
+            for (i = j; i > 0
+                    && item[i].profitPerWeight > item[i - 1].profitPerWeight; i--) {
+                Item tmp = item[i];
+                item[i] = item[i - 1];
+                item[i - 1] = tmp;
+            }
+        }
+        LEVELS = Math.max(1, item.length - DFSLEVELS);
+        // ****************************
+        prq.setWaitTime(10000);
+        prq.setMaxThreadsCreated(4);
+        // ****************************
+        prq.run(searchFactory.make(0, capacity, 0, new BitSet(item.length), tg),
+                0);
+    }
 
-   int DFSLEVELS = 20;
+    public BitSet getSelected() throws InterruptedException {
+        done.getValue();
+        prq.setMaxThreadsWaiting(0);
+        searchFactory.terminate();
+        BitSet s = new BitSet(item.length);
+        for (int i = 0; i < item.length; i++) {
+            if (selected.get(i))
+                s.set(item[i].pos);
+        }
+        return s;
+    }
 
-   int LEVELS = 5;
+    public int getProfit() throws InterruptedException {
+        done.getValue();
+        prq.setMaxThreadsWaiting(0);
+        searchFactory.terminate();
+        return (int) bestProfit;
+    }
 
-   BitSet selected;
+    private static class Item {
+        int profit, weight, pos;
 
-   int capacity;
+        float profitPerWeight;
+    }
 
-   volatile float bestProfit = 0;
+    public static class Test1 {
+        public static void main(String[] args) {
+            try {
+                int num = 20;
+                int max = 100;
+                int dfslevels = 10;
+                int[] p = new int[num];
+                int[] w = new int[num];
+                int capacity = (int) (num * (max / 2.0) * 0.5);
+                int i;
+                for (i = p.length - 1; i >= 0; i--) {
+                    p[i] = 1 + (int) (Math.random() * (max - 1));
+                    w[i] = 1 + (int) (Math.random() * (max - 1));
+                }
+                System.out.print("p:");
+                for (i = 0; i < p.length; i++) {
+                    System.out.print(" " + p[i]);
+                }
+                System.out.println();
+                System.out.print("w:");
+                for (i = 0; i < p.length; i++) {
+                    System.out.print(" " + w[i]);
+                }
+                System.out.println();
+                Knapsack5 ks = new Knapsack5(w, p, capacity, dfslevels);
+                BitSet s = ks.getSelected();
+                System.out.print("s:");
+                for (i = 0; i < p.length; i++) {
+                    System.out.print(" " + (s.get(i) ? "1" : "0") + " ");
+                }
+                System.out.println();
+                System.out.println("Profit: " + ks.getProfit());
+            } catch (Exception exc) {
+                exc.printStackTrace();
+            }
+        }
+    }
 
-   Item[] item;
+    public static class Test2 {
+        public static void main(String[] args) {
+            try {
+                int num = 50;
+                int max = 100;
+                int dfslevels = 10;
+                int[] p = new int[num];
+                int[] w = new int[num];
+                int capacity = (int) (num * (max / 2.0) * 0.25);
+                int i;
+                for (i = p.length - 1; i >= 0; i--) {
+                    p[i] = 1 + (int) (Math.random() * (max - 1));
+                    w[i] = 1 + (int) (Math.random() * (max - 1));
+                }
+                long starttime = System.currentTimeMillis();
+                Knapsack5 ks = new Knapsack5(w, p, capacity, dfslevels);
+                ks.getProfit();
+                System.out.println("levels: " + num + "  time: "
+                        + (System.currentTimeMillis() - starttime));
+            } catch (Exception exc) {
+                System.out.println(exc);
+            }
+        }
+    }
 
-   PriorityRunQueue prq = new PriorityRunQueue();
+    public static class Test3 {
+        public static void main(String[] args) {
+            try {
+                if (args.length < 2) {
+                    System.out.println("usage: java Knapsack5 length dfslevels");
+                    System.exit(0);
+                }
+                int num = Integer.parseInt(args[0]);
+                int max = 100;
+                int DFSLVLS = Integer.parseInt(args[1]);
+                // System.out.println("Knapsack2\t"+num+"\t"+LVLS);
 
-   Future done = new Future();
+                int[] p = new int[num];
+                int[] w = new int[num];
+                int capacity = (int) (num * (max / 2.0) * 0.25);
+                int i;
+                for (i = p.length - 1; i >= 0; i--) {
+                    p[i] = 1 + (int) (Math.random() * (max - 1));
+                    w[i] = 1 + (int) (Math.random() * (max - 1));
+                }
+                long starttime = System.currentTimeMillis();
+                Knapsack5 ks = new Knapsack5(w, p, capacity, DFSLVLS);
+                ks.getProfit();
+                System.out.println("Knapsack5\t" + num + "\t" + DFSLVLS + "\t"
+                        + (System.currentTimeMillis() - starttime));
+            } catch (Exception exc) {
+                System.out.println(exc);
+            }
+        }
+    }
 
-   TerminationGroup tg = new SharedTerminationGroup(done);
+    class SearchFactory {
+        Stack<Search> prev = new Stack<Search>();
 
-   public BitSet getSelected() throws InterruptedException {
-      done.getValue();
-      prq.setMaxThreadsWaiting(0);
-      searchFactory.terminate();
-      BitSet s = new BitSet(item.length);
-      for (int i = 0; i < item.length; i++) {
-         if (selected.get(i))
-            s.set(item[i].pos);
-      }
-      return s;
-   }
+        Search make(int i, int rw, int p, BitSet b, TerminationGroup tg) {
+            Search g = null;
+            synchronized (this) {
+                if (!prev.isEmpty())
+                    g = prev.pop();
+            }
+            if (g == null)
+                return new Search(i, rw, p, b, tg);
+            else {
+                g.i = i;
+                g.rw = rw;
+                g.p = p;
+                g.b = b;
+                g.tg = tg;
+                return g;
+            }
+        }
 
-   public int getProfit() throws InterruptedException {
-      done.getValue();
-      prq.setMaxThreadsWaiting(0);
-      searchFactory.terminate();
-      return (int) bestProfit;
-   }
+        synchronized void recycle(Search g) {
+            if (prev != null)
+                prev.push(g);
+        }
 
-   class SearchFactory {
-      Stack<Search> prev = new Stack<Search>();
+        synchronized void terminate() {
+            prev = null;
+        }
+    }
 
-      Search make(int i, int rw, int p, BitSet b, TerminationGroup tg) {
-         Search g = null;
-         synchronized (this) {
-            if (!prev.isEmpty())
-               g = prev.pop();
-         }
-         if (g == null)
-            return new Search(i, rw, p, b, tg);
-         else {
-            g.i = i;
-            g.rw = rw;
-            g.p = p;
-            g.b = b;
-            g.tg = tg;
-            return g;
-         }
-      }
+    class Search implements Runnable {
+        int i;
 
-      synchronized void recycle(Search g) {
-         if (prev != null)
-            prev.push(g);
-      }
+        int rw;
 
-      synchronized void terminate() {
-         prev = null;
-      }
-   }
+        int p;
 
-   SearchFactory searchFactory = new SearchFactory();
+        BitSet b;
 
-   class Search implements Runnable {
-      int i;
+        TerminationGroup tg;
 
-      int rw;
+        Search(int i, int rw, int p, BitSet b, TerminationGroup tg) {
+            this.i = i;
+            this.rw = rw;
+            this.p = p;
+            this.b = b;
+            this.tg = tg;
+        }
 
-      int p;
+        public void run() {
+            for (; ; ) {
+                if (p + rw * item[i].profitPerWeight < bestProfit)
+                    break;// return;
+                if (i >= LEVELS) {
+                    dfs(i, rw, p);
+                    break;
+                }
+                if (rw - item[i].weight >= 0) {
+                    // first, start zero's subtree
+                    b.clear(i);
+                    prq.run(
+                            searchFactory.make(i + 1, rw, p, (BitSet) b.clone(),
+                                    tg.fork()), p + rw * item[i + 1].profitPerWeight);
+                    // then recursively search the one's subtree
+                    b.set(i);
+                    // gen(i+1,rw-item[i].weight,p+item[i].profit,b,tg);
+                    rw -= item[i].weight;
+                    p += item[i].profit;
+                    ++i;
+                } else { // just recursively search zero subtree
+                    b.clear(i);
+                    ++i; // gen(i+1,rw,p,b,tg);
+                    prq.run(this, p + rw * item[i].profitPerWeight);
+                    return;
+                }
+            }
+            tg.terminate();
+            searchFactory.recycle(this);
+        }
 
-      BitSet b;
-
-      TerminationGroup tg;
-
-      Search(int i, int rw, int p, BitSet b, TerminationGroup tg) {
-         this.i = i;
-         this.rw = rw;
-         this.p = p;
-         this.b = b;
-         this.tg = tg;
-      }
-
-      public void run() {
-         for (;;) {
+        void dfs(int i, int rw, int p) {
+            if (i >= item.length) {
+                if (p > bestProfit) {
+                    synchronized (Knapsack5.this) {
+                        if (p > bestProfit) {
+                            bestProfit = p;
+                            Knapsack5.this.selected = (BitSet) b.clone();
+                            // System.out.println("new best: "+p);
+                        }
+                    }
+                }
+                return;
+            }
             if (p + rw * item[i].profitPerWeight < bestProfit)
-               break;// return;
-            if (i >= LEVELS) {
-               dfs(i, rw, p);
-               break;
-            }
+                return;
             if (rw - item[i].weight >= 0) {
-               // first, start zero's subtree
-               b.clear(i);
-               prq.run(
-                     searchFactory.make(i + 1, rw, p, (BitSet) b.clone(),
-                           tg.fork()), p + rw * item[i + 1].profitPerWeight);
-               // then recursively search the one's subtree
-               b.set(i);
-               // gen(i+1,rw-item[i].weight,p+item[i].profit,b,tg);
-               rw -= item[i].weight;
-               p += item[i].profit;
-               ++i;
-            } else { // just recursively search zero subtree
-               b.clear(i);
-               ++i; // gen(i+1,rw,p,b,tg);
-               prq.run(this, p + rw * item[i].profitPerWeight);
-               return;
+                b.set(i);
+                dfs(i + 1, rw - item[i].weight, p + item[i].profit);
             }
-         }
-         tg.terminate();
-         searchFactory.recycle(this);
-      }
-
-      void dfs(int i, int rw, int p) {
-         if (i >= item.length) {
-            if (p > bestProfit) {
-               synchronized (Knapsack5.this) {
-                  if (p > bestProfit) {
-                     bestProfit = p;
-                     Knapsack5.this.selected = (BitSet) b.clone();
-                     // System.out.println("new best: "+p);
-                  }
-               }
-            }
+            b.clear(i);
+            dfs(i + 1, rw, p);
             return;
-         }
-         if (p + rw * item[i].profitPerWeight < bestProfit)
-            return;
-         if (rw - item[i].weight >= 0) {
-            b.set(i);
-            dfs(i + 1, rw - item[i].weight, p + item[i].profit);
-         }
-         b.clear(i);
-         dfs(i + 1, rw, p);
-         return;
-      }
-   }
-
-   public Knapsack5(int[] weights, int[] profits, int capacity, int DFSLEVELS) {
-      this.DFSLEVELS = DFSLEVELS;
-      if (weights.length != profits.length)
-         throw new IllegalArgumentException(
-               "0/1 Knapsack: differing numbers of weights and profits");
-      if (capacity <= 0)
-         throw new IllegalArgumentException("0/1 Knapsack: capacity<=0");
-      item = new Item[weights.length];
-      int i;
-      for (i = 0; i < weights.length; i++) {
-         item[i] = new Item();
-         item[i].profit = profits[i];
-         item[i].weight = weights[i];
-         item[i].pos = i;
-         item[i].profitPerWeight = ((float) profits[i]) / weights[i];
-      }
-      int j;
-      for (j = 1; j < item.length; j++) {
-         for (i = j; i > 0
-               && item[i].profitPerWeight > item[i - 1].profitPerWeight; i--) {
-            Item tmp = item[i];
-            item[i] = item[i - 1];
-            item[i - 1] = tmp;
-         }
-      }
-      LEVELS = Math.max(1, item.length - DFSLEVELS);
-      // ****************************
-      prq.setWaitTime(10000);
-      prq.setMaxThreadsCreated(4);
-      // ****************************
-      prq.run(searchFactory.make(0, capacity, 0, new BitSet(item.length), tg),
-            0);
-   }
-
-   public static class Test1 {
-      public static void main(String[] args) {
-         try {
-            int num = 20;
-            int max = 100;
-            int dfslevels = 10;
-            int[] p = new int[num];
-            int[] w = new int[num];
-            int capacity = (int) (num * (max / 2.0) * 0.5);
-            int i;
-            for (i = p.length - 1; i >= 0; i--) {
-               p[i] = 1 + (int) (Math.random() * (max - 1));
-               w[i] = 1 + (int) (Math.random() * (max - 1));
-            }
-            System.out.print("p:");
-            for (i = 0; i < p.length; i++) {
-               System.out.print(" " + p[i]);
-            }
-            System.out.println();
-            System.out.print("w:");
-            for (i = 0; i < p.length; i++) {
-               System.out.print(" " + w[i]);
-            }
-            System.out.println();
-            Knapsack5 ks = new Knapsack5(w, p, capacity, dfslevels);
-            BitSet s = ks.getSelected();
-            System.out.print("s:");
-            for (i = 0; i < p.length; i++) {
-               System.out.print(" " + (s.get(i) ? "1" : "0") + " ");
-            }
-            System.out.println();
-            System.out.println("Profit: " + ks.getProfit());
-         } catch (Exception exc) {
-            exc.printStackTrace();
-         }
-      }
-   }
-
-   public static class Test2 {
-      public static void main(String[] args) {
-         try {
-            int num = 50;
-            int max = 100;
-            int dfslevels = 10;
-            int[] p = new int[num];
-            int[] w = new int[num];
-            int capacity = (int) (num * (max / 2.0) * 0.25);
-            int i;
-            for (i = p.length - 1; i >= 0; i--) {
-               p[i] = 1 + (int) (Math.random() * (max - 1));
-               w[i] = 1 + (int) (Math.random() * (max - 1));
-            }
-            long starttime = System.currentTimeMillis();
-            Knapsack5 ks = new Knapsack5(w, p, capacity, dfslevels);
-            ks.getProfit();
-            System.out.println("levels: " + num + "  time: "
-                  + (System.currentTimeMillis() - starttime));
-         } catch (Exception exc) {
-            System.out.println(exc);
-         }
-      }
-   }
-
-   public static class Test3 {
-      public static void main(String[] args) {
-         try {
-            if (args.length < 2) {
-               System.out.println("usage: java Knapsack5 length dfslevels");
-               System.exit(0);
-            }
-            int num = Integer.parseInt(args[0]);
-            int max = 100;
-            int DFSLVLS = Integer.parseInt(args[1]);
-            // System.out.println("Knapsack2\t"+num+"\t"+LVLS);
-
-            int[] p = new int[num];
-            int[] w = new int[num];
-            int capacity = (int) (num * (max / 2.0) * 0.25);
-            int i;
-            for (i = p.length - 1; i >= 0; i--) {
-               p[i] = 1 + (int) (Math.random() * (max - 1));
-               w[i] = 1 + (int) (Math.random() * (max - 1));
-            }
-            long starttime = System.currentTimeMillis();
-            Knapsack5 ks = new Knapsack5(w, p, capacity, DFSLVLS);
-            ks.getProfit();
-            System.out.println("Knapsack5\t" + num + "\t" + DFSLVLS + "\t"
-                  + (System.currentTimeMillis() - starttime));
-         } catch (Exception exc) {
-            System.out.println(exc);
-         }
-      }
-   }
+        }
+    }
 
 }

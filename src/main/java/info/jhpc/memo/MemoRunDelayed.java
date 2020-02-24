@@ -46,36 +46,36 @@ import info.jhpc.thread.SharedTableOfQueues;
 
 import java.io.Serializable;
 
-/* I am going to insist that anything being runDelayed is in fact 
- * serializable. At least I will do this when I am about to run the 
+/* I am going to insist that anything being runDelayed is in fact
+ * serializable. At least I will do this when I am about to run the
  * runnable.
  */
 
-class MemoRunDelayed extends MemoMessage implements Runnable {
-   /**
-    * 
-    */
-   private static final long serialVersionUID = -2729006700678257257L;
-   Serializable key;
-   Serializable runnable;
+public class MemoRunDelayed extends MemoMessage implements Runnable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -2729006700678257257L;
+    private Serializable key;
+    private Serializable runnable;
 
-   public MemoRunDelayed(String target, Serializable key, Serializable runnable) {
-      super(target);
-      this.key = key;
-      this.runnable = runnable;
+    public MemoRunDelayed(String target, Serializable key, Serializable runnable) {
+        super(target);
+        this.key = key;
+        this.runnable = runnable;
 
-   }
+    }
 
-   public Serializable go(SharedTableOfQueues stoq) {
-      stoq.runDelayed(key, this);
-      return new Ok(true);
-   }
+    public Serializable go(SharedTableOfQueues stoq) {
+        stoq.runDelayed(key, this);
+        return new Ok(true);
+    }
 
-   public void run() {
-      if (runnable instanceof Runnable) {
-         Runnable r = (Runnable) runnable;
-         r.run();
-      }
-      // else Exception...
-   }
+    public void run() {
+        if (runnable instanceof Runnable) {
+            Runnable r = (Runnable) runnable;
+            r.run();
+        }
+        // else Exception...
+    }
 }

@@ -45,21 +45,21 @@ import java.io.Serializable;
 
 public class CallMessageException extends CallMessage implements Serializable {
 
-   /**
-    * 
-    */
-   private static final long serialVersionUID = 7146326613732084298L;
-   Serializable exception;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 7146326613732084298L;
+    Serializable exception;
 
-   public CallMessageException(Exception e) {
-      super(null);
-      if (e instanceof Serializable)
-         this.exception = e;
-      else
-         this.exception = new Exception("GMI Remote Exception " + e.toString());
-   }
+    public CallMessageException(Exception e) {
+        super(null);
+        if (e instanceof Serializable)
+            this.exception = e;
+        else
+            this.exception = new Exception("GMI Remote Exception " + e.toString());
+    }
 
-   public Exception getException() {
-      return (Exception) exception;
-   }
+    public Exception getException() {
+        return (Exception) exception;
+    }
 }

@@ -46,90 +46,88 @@ package info.jhpc.textbook.concurrency;
  * writers. A reader may not begin reading if there is a writer writing or
  * waiting to write; otherwise, it may begin immediately. A writer may not begin
  * writing if there are any readers reading or if another writer is writing.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class WritersPreferred implements MultipleReadersWritersMonitor {
-   /**
-    * Number readers reading
-    */
-   protected int nr = 0;
-   /**
-    * Number of readers total (reading or waiting to read)
-    */
-   protected int nrtotal = 0;
-   /**
-    * Number writers writing, 0 or 1
-    */
-   protected int nw = 0;
-   /**
-    * Number of writers total (writing or waiting to write)
-    */
-   protected int nwtotal = 0;
+    /**
+     * Number readers reading
+     */
+    protected int nr = 0;
+    /**
+     * Number of readers total (reading or waiting to read)
+     */
+    protected int nrtotal = 0;
+    /**
+     * Number writers writing, 0 or 1
+     */
+    protected int nw = 0;
+    /**
+     * Number of writers total (writing or waiting to write)
+     */
+    protected int nwtotal = 0;
 
-   /**
-    * Reset the monitor.
-    */
-   public void reset() {
-      nr = 0;
-      nrtotal = 0;
-      nw = 0;
-      nwtotal = 0;
-   }
+    /**
+     * Reset the monitor.
+     */
+    public void reset() {
+        nr = 0;
+        nrtotal = 0;
+        nw = 0;
+        nwtotal = 0;
+    }
 
-   /**
-    * Called to begin reading the shared data structure.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public synchronized void startReading() throws InterruptedException {
-      nrtotal++;
-      while (nwtotal != 0)
-         wait();
-      nr++;
-   }
+    /**
+     * Called to begin reading the shared data structure.
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public synchronized void startReading() throws InterruptedException {
+        nrtotal++;
+        while (nwtotal != 0)
+            wait();
+        nr++;
+    }
 
-   /**
-    * Called when the thread is finished reading the shared data structure.
-    */
-   public synchronized void stopReading() {
-      nr--;
-      nrtotal--;
-      if (nr == 0)
-         notifyAll();
-   }
+    /**
+     * Called when the thread is finished reading the shared data structure.
+     */
+    public synchronized void stopReading() {
+        nr--;
+        nrtotal--;
+        if (nr == 0)
+            notifyAll();
+    }
 
-   /**
-    * Called to begin writing the shared data structure.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public synchronized void startWriting() throws InterruptedException {
-      nwtotal++;
-      while (nr + nw != 0)
-         wait();
-      nw = 1;
-   }
+    /**
+     * Called to begin writing the shared data structure.
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public synchronized void startWriting() throws InterruptedException {
+        nwtotal++;
+        while (nr + nw != 0)
+            wait();
+        nw = 1;
+    }
 
-   /**
-    * Called when the thread is finished writing the shared data structure.
-    */
-   public synchronized void stopWriting() {
-      nw = 0;
-      nwtotal--;
-      notifyAll();
-   }
+    /**
+     * Called when the thread is finished writing the shared data structure.
+     */
+    public synchronized void stopWriting() {
+        nw = 0;
+        nwtotal--;
+        notifyAll();
+    }
 
-   /**
-    * Get legible information about the identity of the monitor.
-    * 
-    * @return "Writers-Preferred Monitor"
-    */
-   public String getMonitorInfo() {
-      return "Writers-Preferred Monitor";
-   }
+    /**
+     * Get legible information about the identity of the monitor.
+     *
+     * @return "Writers-Preferred Monitor"
+     */
+    public String getMonitorInfo() {
+        return "Writers-Preferred Monitor";
+    }
 }

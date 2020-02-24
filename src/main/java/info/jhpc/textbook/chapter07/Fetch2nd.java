@@ -24,32 +24,32 @@
  */
 package info.jhpc.textbook.chapter07;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Future;
 
 class Fetch2nd implements Runnable, Op1 {
-   Object lopnd;
+    Object lopnd;
 
-   Future src;
+    Future src;
 
-   Op2 continuation;
+    Op2 continuation;
 
-   public Fetch2nd(Future src, Op2 continuation) {
-      this.src = src;
-      this.continuation = continuation;
-   }
+    public Fetch2nd(Future src, Op2 continuation) {
+        this.src = src;
+        this.continuation = continuation;
+    }
 
-   public void op(Object value) {
-      lopnd = value;
-      run();
-   }
+    public void op(Object value) {
+        lopnd = value;
+        run();
+    }
 
-   public void run() {
-      try {
-         if (!src.isSet())
-            src.runDelayed(this);
-         continuation.op(lopnd, src.getValue());
-      } catch (InterruptedException e) {
-         continuation.op(lopnd, e);
-      }
-   }
+    public void run() {
+        try {
+            if (!src.isSet())
+                src.runDelayed(this);
+            continuation.op(lopnd, src.getValue());
+        } catch (InterruptedException e) {
+            continuation.op(lopnd, e);
+        }
+    }
 }

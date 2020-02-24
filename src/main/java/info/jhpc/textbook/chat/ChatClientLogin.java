@@ -61,148 +61,147 @@ import java.util.Vector;
  */
 
 public class ChatClientLogin extends Frame implements ActionListener,
-      WindowListener {
+        WindowListener {
 
-   /**
-    *
-    */
-   private static final long serialVersionUID = -7907738610923357381L;
-   TextField username;
-   TextField password;
-   RemoteCallClient rpc;
-   Vector<ChatClientRoom> clientSessionList = new Vector<ChatClientRoom>();
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7907738610923357381L;
+    public static String host = "127.0.0.1";
+    public static int port = 1999;
+    TextField username;
+    TextField password;
+    RemoteCallClient rpc;
+    Vector<ChatClientRoom> clientSessionList = new Vector<ChatClientRoom>();
 
-   ChatClientLogin(RemoteCallClient rpc) {
-      super("Login");
-      setLayout(new GridBagLayout());
-      GridBagConstraints gbc = new GridBagConstraints();
-      gbc.gridwidth = GridBagConstraints.REMAINDER;
+    ChatClientLogin(RemoteCallClient rpc) {
+        super("Login");
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
 
-      Panel p = new Panel();
-      p.setLayout(new FlowLayout());
-      p.add(new Label("Login: "));
-      username = new TextField(10);
-      p.add(username);
-      add(p, gbc);
+        Panel p = new Panel();
+        p.setLayout(new FlowLayout());
+        p.add(new Label("Login: "));
+        username = new TextField(10);
+        p.add(username);
+        add(p, gbc);
 
-      p = new Panel();
-      p.setLayout(new FlowLayout());
-      p.add(new Label("Password: "));
-      password = new TextField(10);
-      password.setEchoChar('*');
-      p.add(password);
-      add(p, gbc);
+        p = new Panel();
+        p.setLayout(new FlowLayout());
+        p.add(new Label("Password: "));
+        password = new TextField(10);
+        password.setEchoChar('*');
+        p.add(password);
+        add(p, gbc);
 
-      Button b = new Button("Login");
-      b.addActionListener(this);
-      add(b, gbc);
+        Button b = new Button("Login");
+        b.addActionListener(this);
+        add(b, gbc);
 
-      this.rpc = rpc;
-      addWindowListener(this);
-   }
+        this.rpc = rpc;
+        addWindowListener(this);
+    }
 
-   public void actionPerformed(ActionEvent e) {
-      String cmd = e.getActionCommand();
-      if (cmd.equals("Login"))
-         doLogin();
-   }
+    @SuppressWarnings("deprecation")
+    public static void main(String[] args) {
 
-   @SuppressWarnings("deprecation")
-   public void doLogin() {
-      ChatLogin cl = new ChatLogin("aol2000", username.getText(),
-            password.getText());
-      ChatSession cs;
-      try {
-         cs = (ChatSession) rpc.call(cl);
-      } catch (Exception e) {
-         System.err.println("ChatClientLogin.doLogin(): remote call failed");
-         System.err.println(e);
-         e.printStackTrace();
-         return;
-      }
-      String sessionId = cs.getSessionId();
+        try {
+            InetAddress ia = InetAddress.getByName(args[0]);
+            host = ia.getHostAddress();
+        } catch (Exception e) {
+            System.out.println("usage: ChatClientLogin host [port=1999]");
+            System.exit(0);
+        }
 
-      if (sessionId != null) {
-         ChatClientRoom ccr = new ChatClientRoom(rpc, sessionId);
-         clientSessionList.addElement(ccr);
-         ccr.pack();
-         ccr.show();
-      }
-   }
+        try {
+            port = Integer.parseInt(args[1]);
+        } catch (Exception e) {
+            System.out.println("warning: either no args[1] or invalid integer");
+            port = 1999;
+        }
 
-   public void goAway() {
-      /* need to cleanup here */
-      Enumeration<ChatClientRoom> cc = clientSessionList.elements();
-      while (cc.hasMoreElements()) {
-         ChatClientRoom ccr = cc.nextElement();
-         ccr.goAway();
-      }
-      this.dispose();
-      try {
-         rpc.disconnect();
-      } catch (Exception e) {
-         System.err.println("ChatClientLogin could not disconnect from GMI");
-      }
-      System.exit(0);
-   }
+        try {
+            RemoteCallClient rc = new RemoteCallClient(host, port);
+            ChatClientLogin cl = new ChatClientLogin(rc);
+            cl.pack();
+            cl.show();
+        } catch (Exception e) {
+            System.err.println(e);
+        }
 
-   public void windowClosing(WindowEvent e) {
-      goAway();
-   }
+    }
 
-   // All NOP
-   public void windowActivated(WindowEvent e) {
-      System.out.println("unhandled windowActivated");
-   }
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        if (cmd.equals("Login"))
+            doLogin();
+    }
 
-   public void windowClosed(WindowEvent e) {
-      System.out.println("unhandled windowClosed");
-   }
+    @SuppressWarnings("deprecation")
+    public void doLogin() {
+        ChatLogin cl = new ChatLogin("aol2000", username.getText(),
+                password.getText());
+        ChatSession cs;
+        try {
+            cs = (ChatSession) rpc.call(cl);
+        } catch (Exception e) {
+            System.err.println("ChatClientLogin.doLogin(): remote call failed");
+            System.err.println(e);
+            e.printStackTrace();
+            return;
+        }
+        String sessionId = cs.getSessionId();
 
-   public void windowDeactivated(WindowEvent e) {
-   }
+        if (sessionId != null) {
+            ChatClientRoom ccr = new ChatClientRoom(rpc, sessionId);
+            clientSessionList.addElement(ccr);
+            ccr.pack();
+            ccr.show();
+        }
+    }
 
-   public void windowDeiconified(WindowEvent e) {
-      System.out.println("unhandled windowDeiconified");
-   }
+    public void goAway() {
+        /* need to cleanup here */
+        Enumeration<ChatClientRoom> cc = clientSessionList.elements();
+        while (cc.hasMoreElements()) {
+            ChatClientRoom ccr = cc.nextElement();
+            ccr.goAway();
+        }
+        this.dispose();
+        try {
+            rpc.disconnect();
+        } catch (Exception e) {
+            System.err.println("ChatClientLogin could not disconnect from GMI");
+        }
+        System.exit(0);
+    }
 
-   public void windowIconified(WindowEvent e) {
-      System.out.println("unhandled Icon");
-   }
+    public void windowClosing(WindowEvent e) {
+        goAway();
+    }
 
-   public void windowOpened(WindowEvent e) {
-      System.out.println("windowOpened");
-   }
+    // All NOP
+    public void windowActivated(WindowEvent e) {
+        System.out.println("unhandled windowActivated");
+    }
 
-   public static String host = "127.0.0.1";
-   public static int port = 1999;
+    public void windowClosed(WindowEvent e) {
+        System.out.println("unhandled windowClosed");
+    }
 
-   @SuppressWarnings("deprecation")
-   public static void main(String args[]) {
+    public void windowDeactivated(WindowEvent e) {
+    }
 
-      try {
-         InetAddress ia = InetAddress.getByName(args[0]);
-         host = ia.getHostAddress();
-      } catch (Exception e) {
-         System.out.println("usage: ChatClientLogin host [port=1999]");
-         System.exit(0);
-      }
+    public void windowDeiconified(WindowEvent e) {
+        System.out.println("unhandled windowDeiconified");
+    }
 
-      try {
-         port = Integer.parseInt(args[1]);
-      } catch (Exception e) {
-         System.out.println("warning: either no args[1] or invalid integer");
-         port = 1999;
-      }
+    public void windowIconified(WindowEvent e) {
+        System.out.println("unhandled Icon");
+    }
 
-      try {
-         RemoteCallClient rc = new RemoteCallClient(host, port);
-         ChatClientLogin cl = new ChatClientLogin(rc);
-         cl.pack();
-         cl.show();
-      } catch (Exception e) {
-         System.err.println(e);
-      }
-
-   }
+    public void windowOpened(WindowEvent e) {
+        System.out.println("windowOpened");
+    }
 }

@@ -25,25 +25,25 @@
 package info.jhpc.textbook.chapter07;
 
 class Binop2 implements /* Runnable, */StoreOp {
-   Object lopnd, ropnd;
+    Object lopnd, ropnd;
 
-   Op2 continuation;
+    Op2 continuation;
 
-   int needed = 2;
+    int needed = 2;
 
-   public Binop2(Op2 continuation) {
-      this.continuation = continuation;
-   }
+    public Binop2(Op2 continuation) {
+        this.continuation = continuation;
+    }
 
-   public void store(int i, Object value) {
-      if (i == 0)
-         lopnd = value;
-      else
-         ropnd = value;
-      if (--needed == 0)
-         continuation.op(lopnd, ropnd);
-   }
-   // public void run() {
-   // continuation.op(lopnd,ropnd);
-   // }
+    public void store(int i, Object value) {
+        if (i == 0)
+            lopnd = value;
+        else
+            ropnd = value;
+        if (--needed == 0)
+            continuation.op(lopnd, ropnd);
+    }
+    // public void run() {
+    // continuation.op(lopnd,ropnd);
+    // }
 }

@@ -25,19 +25,19 @@
 /**
  * Defines the exception thrown when the specified range is
  * in decreasing order.
- *
+ * <p>
  * Written by: John Shafaee
  * Date: July 5, 1999
  */
 
 package info.jhpc.textbook.chapter12.integration;
 
-import java.io.*;
+import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class BadThreadCountException extends IllegalArgumentException implements
-      Serializable {
-   public BadThreadCountException() {
-      super("Thread count must be atleast 1.");
-   }
+        Serializable {
+    public BadThreadCountException() {
+        super("Thread count must be atleast 1.");
+    }
 }

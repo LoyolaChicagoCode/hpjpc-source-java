@@ -45,32 +45,32 @@ import java.math.BigInteger;
 
 public class TicketGenerator {
 
-   private BigInteger ticket = new BigInteger("0");
-   private BigInteger unity = new BigInteger("1");
-   private String prefix;
+    private BigInteger ticket = new BigInteger("0");
+    private BigInteger unity = new BigInteger("1");
+    private String prefix;
 
-   public TicketGenerator(String prefix) {
-      this.prefix = prefix;
-   }
+    public TicketGenerator(String prefix) {
+        this.prefix = prefix;
+    }
 
-   public String nextTicket() {
-      try {
-         ticket = ticket.add(unity);
-      } catch (ArithmeticException e) {
-         System.err.println(e);
-      }
-      return prefix + ticket;
-   }
+    public String nextTicket() {
+        try {
+            ticket = ticket.add(unity);
+        } catch (ArithmeticException e) {
+            System.err.println(e);
+        }
+        return prefix + ticket;
+    }
 
-   public static class Test {
-      public static void main(String args[]) {
-         int i;
-         TicketGenerator tg = new TicketGenerator("rpc");
-         String lastTicket = null;
-         for (i = 0; i < 100000; i++) {
-            lastTicket = tg.nextTicket();
-         }
-         System.out.println(lastTicket);
-      }
-   }
+    public static class Test {
+        public static void main(String[] args) {
+            int i;
+            TicketGenerator tg = new TicketGenerator("rpc");
+            String lastTicket = null;
+            for (i = 0; i < 100000; i++) {
+                lastTicket = tg.nextTicket();
+            }
+            System.out.println(lastTicket);
+        }
+    }
 }

@@ -53,46 +53,45 @@ import java.util.Hashtable;
 
 // begin-class-MessageServer
 public class MessageServer extends Thread {
-   private ServerSocket callListener;
-   private Hashtable<String, MessageService> subscribers;
+    public static final boolean logging = true;
+    private ServerSocket callListener;
+    private Hashtable<String, MessageService> subscribers;
 
-   public static final boolean logging = true;
+    public MessageServer(int port) throws IOException {
+        log("Simple Messaging Architecture (SMA) version 1.0");
+        log("Copyright (c) 2000, George K. Thiruvathukal");
+        callListener = new ServerSocket(port);
+        subscribers = new Hashtable<String, MessageService>();
+        log("Created MessageServer instance fully!");
+    }
 
-   public void log(String s) {
-      if (!logging)
-         return;
-      System.err.println("MessageServer: " + s);
-   }
+    public void log(String s) {
+        if (!logging)
+            return;
+        System.err.println("MessageServer: " + s);
+    }
 
-   public MessageServer(int port) throws IOException {
-      log("Simple Messaging Architecture (SMA) version 1.0");
-      log("Copyright (c) 2000, George K. Thiruvathukal");
-      callListener = new ServerSocket(port);
-      subscribers = new Hashtable<String, MessageService>();
-      log("Created MessageServer instance fully!");
-   }
+    public void subscribe(int messageType, MessageService d) {
+        subscribers.put(messageType + "", d);
+    }
 
-   public void subscribe(int messageType, MessageService d) {
-      subscribers.put(messageType + "", d);
-   }
+    public MessageService getSubscriber(int messageType) {
+        return subscribers.get(messageType + "");
+    }
 
-   public MessageService getSubscriber(int messageType) {
-      return subscribers.get(messageType + "");
-   }
-
-   public void run() {
-      log("MessageServer thread started. run() method dispatched.");
-      while (true) {
-         try {
-            Socket s = callListener.accept();
-            MessageServerDispatcher csd = new MessageServerDispatcher(this, s);
-            csd.setDaemon(false);
-            csd.start();
-         } catch (Exception e) {
-            log("Exception " + e);
-            e.printStackTrace();
-         }
-      }
-   }
+    public void run() {
+        log("MessageServer thread started. run() method dispatched.");
+        while (true) {
+            try {
+                Socket s = callListener.accept();
+                MessageServerDispatcher csd = new MessageServerDispatcher(this, s);
+                csd.setDaemon(false);
+                csd.start();
+            } catch (Exception e) {
+                log("Exception " + e);
+                e.printStackTrace();
+            }
+        }
+    }
 }
 // end-class-MessageServer

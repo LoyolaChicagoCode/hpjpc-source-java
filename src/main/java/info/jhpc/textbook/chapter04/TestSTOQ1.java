@@ -26,47 +26,47 @@
 //create a bunch of threads to send messages to each other
 package info.jhpc.textbook.chapter04;
 
-class TestSTOQ1 extends Thread {
-   final static int threadCount = 5, interCount = 1000;
+public class TestSTOQ1 extends Thread {
+    final static int threadCount = 5, interCount = 1000;
 
-   static SharedTableOfQueues stoq = new SharedTableOfQueues();
+    static SharedTableOfQueues stoq = new SharedTableOfQueues();
 
-   int myId, numThreads, numToEach;
+    int myId, numThreads, numToEach;
 
-   public static void main(String[] x) {
-      int i;
-      System.out
-            .println("create a bunch of threads to send messages to each other");
-      System.out.println(" each thread has its own input queue");
-      for (i = 0; i < threadCount; i++) {
-         Thread worker = new TestSTOQ1(i, threadCount, interCount);
-         worker.start();
-      }
-   }
+    TestSTOQ1(int me, int num, int times) {
+        myId = me;
+        numThreads = num;
+        numToEach = times;
+    }
 
-   TestSTOQ1(int me, int num, int times) {
-      myId = me;
-      numThreads = num;
-      numToEach = times;
-   }
+    public static void main(String[] x) {
+        int i;
+        System.out
+                .println("create a bunch of threads to send messages to each other");
+        System.out.println(" each thread has its own input queue");
+        for (i = 0; i < threadCount; i++) {
+            Thread worker = new TestSTOQ1(i, threadCount, interCount);
+            worker.start();
+        }
+    }
 
-   public void run() {
-      try {
-         int numRcvd, sendTo, sendIter;
-         String myKey = "" + myId;
-         for (sendIter = 1; sendIter <= numToEach; sendIter++) {
-            for (sendTo = 0; sendTo < numThreads; sendTo++) {
-               // send everyone my number as a String
-               stoq.put("" + sendTo, myKey);
+    public void run() {
+        try {
+            int numRcvd, sendTo, sendIter;
+            String myKey = "" + myId;
+            for (sendIter = 1; sendIter <= numToEach; sendIter++) {
+                for (sendTo = 0; sendTo < numThreads; sendTo++) {
+                    // send everyone my number as a String
+                    stoq.put("" + sendTo, myKey);
+                }
+                for (numRcvd = 0; numRcvd < numThreads; numRcvd++) {
+                    // String s=(String)
+                    stoq.get(myKey);
+                    // System.out.println(myId+" gets "+s);
+                }
             }
-            for (numRcvd = 0; numRcvd < numThreads; numRcvd++) {
-               // String s=(String)
-               stoq.get(myKey);
-               // System.out.println(myId+" gets "+s);
-            }
-         }
-         System.out.println(myId + " done");
-      } catch (InterruptedException ie) {
-      }
-   }
+            System.out.println(myId + " done");
+        } catch (InterruptedException ie) {
+        }
+    }
 }

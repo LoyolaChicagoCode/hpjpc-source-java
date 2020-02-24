@@ -24,47 +24,46 @@
  */
 package info.jhpc.textbook.chapter04;
 
-class TestSimpleFuture {
-   static class Add extends Thread {
-      SimpleFuture result, left, right;
+public class TestSimpleFuture {
+    public static void main(String[] args) {
+        int i;
 
-      Add(SimpleFuture LL, SimpleFuture RR, SimpleFuture DST) {
-         left = LL;
-         right = RR;
-         result = DST;
-      }
+        SimpleFuture f0, f1, f2;
+        SimpleFuture i0 = f0 = new SimpleFuture();
+        SimpleFuture i1 = f1 = new SimpleFuture();
+        for (i = 2; i <= 20; i++) {
+            f2 = new SimpleFuture();
+            new Add(f0, f1, f2).start();
+            f0 = f1;
+            f1 = f2;
+        }
+        i0.setValue(new Long(0));
+        i1.setValue(new Long(1));
+        try {
+            System.out.println(f1.getValue());
+        } catch (Exception e) {
+        }
+    }
 
-      protected void op() {
-         try {
-            result.setValue(new Long(((Long) (left.getValue())).longValue()
-                  + ((Long) (right.getValue())).longValue()));
-         } catch (InterruptedException ie) {
-         }
-         ;
-      }
+    static class Add extends Thread {
+        SimpleFuture result, left, right;
 
-      public void run() {
-         op();
-      }
-   }
+        Add(SimpleFuture LL, SimpleFuture RR, SimpleFuture DST) {
+            left = LL;
+            right = RR;
+            result = DST;
+        }
 
-   public static void main(String[] args) {
-      int i;
+        protected void op() {
+            try {
+                result.setValue(new Long(((Long) (left.getValue())).longValue()
+                        + ((Long) (right.getValue())).longValue()));
+            } catch (InterruptedException ie) {
+            }
+        }
 
-      SimpleFuture f0, f1, f2;
-      SimpleFuture i0 = f0 = new SimpleFuture();
-      SimpleFuture i1 = f1 = new SimpleFuture();
-      for (i = 2; i <= 20; i++) {
-         f2 = new SimpleFuture();
-         new Add(f0, f1, f2).start();
-         f0 = f1;
-         f1 = f2;
-      }
-      i0.setValue(new Long(0));
-      i1.setValue(new Long(1));
-      try {
-         System.out.println(f1.getValue());
-      } catch (Exception e) {
-      }
-   }
+        public void run() {
+            op();
+        }
+    }
 }

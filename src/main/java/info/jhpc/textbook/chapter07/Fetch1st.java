@@ -24,25 +24,25 @@
  */
 package info.jhpc.textbook.chapter07;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Future;
 
 class Fetch1st implements Runnable {
-   Future src;
+    Future src;
 
-   Op1 continuation;
+    Op1 continuation;
 
-   public Fetch1st(Future src, Op1 continuation) {
-      this.src = src;
-      this.continuation = continuation;
-   }
+    public Fetch1st(Future src, Op1 continuation) {
+        this.src = src;
+        this.continuation = continuation;
+    }
 
-   public void run() {
-      try {
-         if (!src.isSet())
-            src.runDelayed(this);
-         continuation.op(src.getValue());
-      } catch (InterruptedException e) {
-         continuation.op(e);
-      }
-   }
+    public void run() {
+        try {
+            if (!src.isSet())
+                src.runDelayed(this);
+            continuation.op(src.getValue());
+        } catch (InterruptedException e) {
+            continuation.op(e);
+        }
+    }
 }

@@ -43,6 +43,6 @@ package info.jhpc.message;
 
 // begin-interface-MessageService
 public interface MessageService {
-   Message process(Message m);
+    Message process(Message m);
 }
 // end-interface-MessageService

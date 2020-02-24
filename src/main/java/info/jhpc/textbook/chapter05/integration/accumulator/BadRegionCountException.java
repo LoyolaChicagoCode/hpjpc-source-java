@@ -25,7 +25,7 @@
 /**
  * Defines the exception thrown when the specified range is
  * in decreasing order.
- *
+ * <p>
  * Written by: John Shafaee
  * Date: July 5, 1999
  */
@@ -34,7 +34,7 @@ package info.jhpc.textbook.chapter05.integration.accumulator;
 
 @SuppressWarnings("serial")
 public class BadRegionCountException extends IllegalArgumentException {
-   public BadRegionCountException() {
-      super("Region count must be at least 1.");
-   }
+    public BadRegionCountException() {
+        super("Region count must be at least 1.");
+    }
 }

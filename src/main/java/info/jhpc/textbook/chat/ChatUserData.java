@@ -44,41 +44,41 @@ package info.jhpc.textbook.chat;
 import java.util.Vector;
 
 public class ChatUserData {
-   private String userName;
-   private Vector<String> inList = new Vector<String>();
+    private String userName;
+    private Vector<String> inList = new Vector<String>();
 
-   ChatUserData(String userName) {
-      this.userName = userName;
-   }
+    ChatUserData(String userName) {
+        this.userName = userName;
+    }
 
-   public void appendMessage(String message) {
-      inList.addElement(message);
-   }
+    public void appendMessage(String message) {
+        inList.addElement(message);
+    }
 
-   public Vector<String> getSomeMessages(int max) {
-      Vector<String> results = new Vector<String>();
-      int n;
-      if (max <= 0)
-         return results;
-      for (n = 0; n < max && n < inList.size(); n++)
-         results.addElement(inList.elementAt(n));
-      for (int i = 0; i < n; i++)
-         inList.removeElementAt(0);
-      return results;
-   }
+    public Vector<String> getSomeMessages(int max) {
+        Vector<String> results = new Vector<String>();
+        int n;
+        if (max <= 0)
+            return results;
+        for (n = 0; n < max && n < inList.size(); n++)
+            results.addElement(inList.elementAt(n));
+        for (int i = 0; i < n; i++)
+            inList.removeElementAt(0);
+        return results;
+    }
 
-   @SuppressWarnings("unchecked")
-   public Vector<String> getAllMessages() {
-      Vector<String> clone = (Vector<String>) inList.clone();
-      inList.removeAllElements();
-      return clone;
-   }
+    @SuppressWarnings("unchecked")
+    public Vector<String> getAllMessages() {
+        Vector<String> clone = (Vector<String>) inList.clone();
+        inList.removeAllElements();
+        return clone;
+    }
 
-   public String getUserName() {
-      return userName;
-   }
+    public String getUserName() {
+        return userName;
+    }
 
-   public String toString() {
-      return "ChatUserData: " + userName + " " + inList + ".";
-   }
+    public String toString() {
+        return "ChatUserData: " + userName + " " + inList + ".";
+    }
 }

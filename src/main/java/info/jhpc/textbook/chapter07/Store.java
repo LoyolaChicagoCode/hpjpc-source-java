@@ -25,16 +25,16 @@
 package info.jhpc.textbook.chapter07;
 
 class Store implements Op1 {
-   StoreOp dst;
+    StoreOp dst;
 
-   int pos;
+    int pos;
 
-   public Store(StoreOp dst, int pos) {
-      this.dst = dst;
-      this.pos = pos;
-   }
+    public Store(StoreOp dst, int pos) {
+        this.dst = dst;
+        this.pos = pos;
+    }
 
-   public void op(Object value) {
-      dst.store(pos, value);
-   }
+    public void op(Object value) {
+        dst.store(pos, value);
+    }
 }

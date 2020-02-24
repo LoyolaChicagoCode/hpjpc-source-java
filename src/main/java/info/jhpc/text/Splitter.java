@@ -46,152 +46,152 @@ import java.util.Vector;
 
 public class Splitter {
 
-   private String text;
-   private String delimiters;
-   private Vector<String> tokens;
-   private StringTokenizer tokenizer;
-   private String labels[];
+    private String text;
+    private String delimiters;
+    private Vector<String> tokens;
+    private StringTokenizer tokenizer;
+    private String[] labels;
 
-   public Splitter(String[] labels, String text, String delimiters) {
-      this.text = text;
-      this.delimiters = delimiters;
-      tokens = new Vector<String>();
-      tokenizer = null;
-      this.labels = labels;
-      performSplit();
-   }
+    public Splitter(String[] labels, String text, String delimiters) {
+        this.text = text;
+        this.delimiters = delimiters;
+        tokens = new Vector<String>();
+        tokenizer = null;
+        this.labels = labels;
+        performSplit();
+    }
 
-   public Splitter(String text, String delimiters) {
-      this(new String[0], text, delimiters);
-   }
+    public Splitter(String text, String delimiters) {
+        this(new String[0], text, delimiters);
+    }
 
-   public Splitter(String[] labels, String delimiters) {
-      String defaultText = "";
-      for (int i = 0; i < labels.length; i++) {
-         defaultText += labels[i];
-         defaultText += delimiters.charAt(0);
-      }
-      this.text = defaultText;
-      this.delimiters = delimiters;
-      tokens = new Vector<String>();
-      tokenizer = null;
-      this.labels = labels;
-      performSplit();
-   }
+    public Splitter(String[] labels, String delimiters) {
+        String defaultText = "";
+        for (int i = 0; i < labels.length; i++) {
+            defaultText += labels[i];
+            defaultText += delimiters.charAt(0);
+        }
+        this.text = defaultText;
+        this.delimiters = delimiters;
+        tokens = new Vector<String>();
+        tokenizer = null;
+        this.labels = labels;
+        performSplit();
+    }
 
-   public void setText(String text) {
-      this.text = text;
-      performSplit();
-   }
+    public static void main(String[] args) {
+        String[] labels = {"username", "password", "home dir", "shell"};
+        Splitter s = new Splitter("gkt:X8kk43jkjs:/home/people/gkt:/bin/ksh", ":");
+        s.setLabels(labels);
 
-   public void setDelimiters(String delimiters) {
-      this.delimiters = delimiters;
-      performSplit();
-   }
+        /* setLabels labelled the fields for us, "username" refers to field 0 */
+        System.out.println("username = " + s.getTokenAt("username"));
 
-   public void setTextAndDelimiters(String text, String delimiters) {
-      this.text = text;
-      this.delimiters = delimiters;
-      performSplit();
-   }
+        /* the password is in field number 1 (0 represents the first field) */
+        System.out.println("password = " + s.getTokenAt(1));
 
-   public void setLabels(String[] labels) {
-      this.labels = labels;
-   }
+        /*
+         * inevitably, people will want to be able to put a numbered field
+         * reference in a string. this will work provided the field has not been
+         * labelled by setLabels with numbers
+         */
+        System.out.println("home dir = " + s.getTokenAt("2"));
 
-   public String getLabel(int index) {
-      if (labels == null || index < 0 || index >= labels.length)
-         return index + "";
-      else
-         return labels[index];
-   }
+        /* a null reference is returned if a label has not been defined but used */
+        System.out.println("bad ref \"bad\" = " + s.getTokenAt("bad"));
 
-   private void performSplit() {
-      tokenizer = new StringTokenizer(text, delimiters);
-      tokens.removeAllElements();
-      while (tokenizer.hasMoreTokens()) {
-         tokens.addElement(tokenizer.nextToken());
-      }
-   }
+        /* similar story for out of bounds field reference */
+        System.out.println("bad ref (500) = " + s.getTokenAt(500));
+        System.out.println("all tokens (gkt) = " + s);
 
-   public int getTokenCount() {
-      return tokens.size();
-   }
+        s.setText("tc:X4kkjk3jkjs:/home/people/tc:/bin/csh");
+        System.out.println("all tokens (tc) = " + s);
+    }
 
-   public String getTokenAt(int position) {
-      if (position >= 0 && position < tokens.size())
-         return tokens.elementAt(position);
-      else
-         return null;
-   }
+    public void setText(String text) {
+        this.text = text;
+        performSplit();
+    }
 
-   public String getTokenAt(String label) {
-      int index = findLabel(label);
-      if (index < 0) {
-         try {
-            index = Integer.parseInt(label);
-         } catch (NumberFormatException e) {
+    public void setDelimiters(String delimiters) {
+        this.delimiters = delimiters;
+        performSplit();
+    }
+
+    public void setTextAndDelimiters(String text, String delimiters) {
+        this.text = text;
+        this.delimiters = delimiters;
+        performSplit();
+    }
+
+    public void setLabels(String[] labels) {
+        this.labels = labels;
+    }
+
+    public String getLabel(int index) {
+        if (labels == null || index < 0 || index >= labels.length)
+            return index + "";
+        else
+            return labels[index];
+    }
+
+    private void performSplit() {
+        tokenizer = new StringTokenizer(text, delimiters);
+        tokens.removeAllElements();
+        while (tokenizer.hasMoreTokens()) {
+            tokens.addElement(tokenizer.nextToken());
+        }
+    }
+
+    public int getTokenCount() {
+        return tokens.size();
+    }
+
+    public String getTokenAt(int position) {
+        if (position >= 0 && position < tokens.size())
+            return tokens.elementAt(position);
+        else
             return null;
-         }
-      }
-      return getTokenAt(index);
-   }
+    }
 
-   private int findLabel(String label) {
-      int index;
-      for (index = 0; index < labels.length; index++)
-         if (label.equals(labels[index]))
-            return index;
-      return -1;
-   }
+    public String getTokenAt(String label) {
+        int index = findLabel(label);
+        if (index < 0) {
+            try {
+                index = Integer.parseInt(label);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return getTokenAt(index);
+    }
 
-   public Vector<String> getAllTokens() {
-      return tokens;
-   }
+    private int findLabel(String label) {
+        int index;
+        for (index = 0; index < labels.length; index++)
+            if (label.equals(labels[index]))
+                return index;
+        return -1;
+    }
 
-   public void setTokenAt(String text, int position) {
-      tokens.setElementAt(text, position);
-   }
+    public Vector<String> getAllTokens() {
+        return tokens;
+    }
 
-   public String toString() {
-      int i;
-      String s = "";
+    public void setTokenAt(String text, int position) {
+        tokens.setElementAt(text, position);
+    }
 
-      for (i = 0; i < getTokenCount(); i++) {
-         if (i > 0)
-            s = s + "\n";
+    public String toString() {
+        int i;
+        String s = "";
 
-         s = s + "[" + getLabel(i) + "] = " + getTokenAt(i);
-      }
-      return s;
-   }
+        for (i = 0; i < getTokenCount(); i++) {
+            if (i > 0)
+                s = s + "\n";
 
-   public static void main(String[] args) {
-      String[] labels = { "username", "password", "home dir", "shell" };
-      Splitter s = new Splitter("gkt:X8kk43jkjs:/home/people/gkt:/bin/ksh", ":");
-      s.setLabels(labels);
-
-      /* setLabels labelled the fields for us, "username" refers to field 0 */
-      System.out.println("username = " + s.getTokenAt("username"));
-
-      /* the password is in field number 1 (0 represents the first field) */
-      System.out.println("password = " + s.getTokenAt(1));
-
-      /*
-       * inevitably, people will want to be able to put a numbered field
-       * reference in a string. this will work provided the field has not been
-       * labelled by setLabels with numbers
-       */
-      System.out.println("home dir = " + s.getTokenAt("2"));
-
-      /* a null reference is returned if a label has not been defined but used */
-      System.out.println("bad ref \"bad\" = " + s.getTokenAt("bad"));
-
-      /* similar story for out of bounds field reference */
-      System.out.println("bad ref (500) = " + s.getTokenAt(500));
-      System.out.println("all tokens (gkt) = " + s);
-
-      s.setText("tc:X4kkjk3jkjs:/home/people/tc:/bin/csh");
-      System.out.println("all tokens (tc) = " + s);
-   }
+            s = s + "[" + getLabel(i) + "] = " + getTokenAt(i);
+        }
+        return s;
+    }
 }

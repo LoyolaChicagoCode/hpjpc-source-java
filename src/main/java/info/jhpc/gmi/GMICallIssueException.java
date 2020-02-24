@@ -45,18 +45,18 @@ import java.io.Serializable;
 
 public class GMICallIssueException extends Exception implements Serializable {
 
-   /**
-    * 
-    */
-   private static final long serialVersionUID = -1557074051823242013L;
-   CallMessage cm;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -1557074051823242013L;
+    CallMessage cm;
 
-   public GMICallIssueException(CallMessage cm) {
-      this.cm = cm;
-   }
+    public GMICallIssueException(CallMessage cm) {
+        this.cm = cm;
+    }
 
-   public String toString() {
-      return "GMICallIssueException: could not write CallMessage of type "
-            + cm.getClass();
-   }
+    public String toString() {
+        return "GMICallIssueException: could not write CallMessage of type "
+                + cm.getClass();
+    }
 }

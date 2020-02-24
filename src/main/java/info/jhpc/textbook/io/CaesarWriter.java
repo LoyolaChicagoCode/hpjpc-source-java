@@ -48,29 +48,29 @@ import java.io.Writer;
 
 public class CaesarWriter extends TranslateWriter {
 
-   public CaesarWriter(Writer w, String inAlphabet, String key) {
-      super(w, inAlphabet, Alphabet.getAlphabet(inAlphabet, key)
-            .getCipherAlphabet());
-   }
+    public CaesarWriter(Writer w, String inAlphabet, String key) {
+        super(w, inAlphabet, Alphabet.getAlphabet(inAlphabet, key)
+                .getCipherAlphabet());
+    }
 
-   public static void main(String args[]) {
-      String key = args[0];
-      InputStreamReader isr = new InputStreamReader(System.in);
-      BufferedReader in = new BufferedReader(isr);
-      OutputStreamWriter osw = new OutputStreamWriter(System.out);
-      CaesarWriter cw = new CaesarWriter(osw, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", key);
-      try {
-         while (true) {
-            String input = in.readLine();
-            if (input == null)
-               break;
-            cw.write(input + "\n");
-            cw.flush();
-         }
-         cw.close();
-      } catch (Exception e) {
-         return;
-      }
-   }
+    public static void main(String[] args) {
+        String key = args[0];
+        InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader in = new BufferedReader(isr);
+        OutputStreamWriter osw = new OutputStreamWriter(System.out);
+        CaesarWriter cw = new CaesarWriter(osw, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", key);
+        try {
+            while (true) {
+                String input = in.readLine();
+                if (input == null)
+                    break;
+                cw.write(input + "\n");
+                cw.flush();
+            }
+            cw.close();
+        } catch (Exception e) {
+            return;
+        }
+    }
 
 }

@@ -26,5 +26,5 @@
 package info.jhpc.textbook.chapter07;
 
 interface StoreOp {
-   public void store(int i, Object value);
+    void store(int i, Object value);
 }

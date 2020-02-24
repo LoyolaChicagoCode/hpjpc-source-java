@@ -52,63 +52,61 @@ import java.util.Hashtable;
 
 public class FutureTable {
 
-   /**
-    * The FutureFactory to generate the futures.
-    */
-   protected FutureFactory ff;
+    /**
+     * The FutureFactory to generate the futures.
+     */
+    protected FutureFactory ff;
 
-   /**
-    * The table.
-    */
-   protected Hashtable<Object, Future> tbl = new Hashtable<Object, Future>();
+    /**
+     * The table.
+     */
+    protected Hashtable<Object, Future> tbl = new Hashtable<Object, Future>();
 
-   /**
-    * Default constructor. Use the default FutureFactory, which uses Future's
-    * class run queue.
-    */
-   public FutureTable() {
-      ff = new FutureFactory();
-   }
+    /**
+     * Default constructor. Use the default FutureFactory, which uses Future's
+     * class run queue.
+     */
+    public FutureTable() {
+        ff = new FutureFactory();
+    }
 
-   /**
-    * Constructor taking an explicit future factory.
-    *
-    * @param f
-    *           The future factory to use when creating futures.
-    */
-   public FutureTable(FutureFactory f) {
-      ff = f;
-   }
+    /**
+     * Constructor taking an explicit future factory.
+     *
+     * @param f The future factory to use when creating futures.
+     */
+    public FutureTable(FutureFactory f) {
+        ff = f;
+    }
 
-   /**
-    * Constructor taking an explicit run queue.
-    *
-    * @param f
-    *           The run queue to use in the created futures.
-    */
-   public FutureTable(RunQueue rq) {
-      ff = new FutureFactory(rq);
-   }
+    /**
+     * Constructor taking an explicit run queue.
+     *
+     * @param f The run queue to use in the created futures.
+     */
+    public FutureTable(RunQueue rq) {
+        ff = new FutureFactory(rq);
+    }
 
-   /**
-    * Returns the Future associated with the key in this table. Creates one if
-    * none existed previously.
-    *
-    * @return The Future associated with the key.
-    */
-   public synchronized Future get(Object key) {
-      Future f = tbl.get(key);
-      if (f == null)
-         tbl.put(key, f = new Future());
-      return f;
-   }
+    /**
+     * Returns the Future associated with the key in this table. Creates one if
+     * none existed previously.
+     *
+     * @return The Future associated with the key.
+     */
+    public synchronized Future get(Object key) {
+        Future f = tbl.get(key);
+        if (f == null)
+            tbl.put(key, f = new Future());
+        return f;
+    }
 
-   /**
-    * Removes any Future associated with key in the table. Not that easy to use
-    * safely.
-    */
-   public synchronized void remove(Object key) {
-      tbl.remove(key);
-   }
+    /**
+     * Removes any Future associated with key in the table. Not that easy to use
+     * safely.
+     */
+    public synchronized void remove(Object key) {
+        tbl.remove(key);
+    }
 
 }

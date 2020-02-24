@@ -48,96 +48,96 @@ import java.io.Serializable;
 
 public class MemoServer implements Callable {
 
-   SharedTableOfQueues stoq = new SharedTableOfQueues();
+    private SharedTableOfQueues stoq = new SharedTableOfQueues();
 
-   public Serializable call(CallMessage message) throws Exception {
+    public Serializable call(CallMessage message) throws Exception {
 
-      if (message instanceof MemoMessage) {
-         MemoMessage mm = (MemoMessage) message;
-         return mm.go(stoq);
-      } else
-         return new Ok(false);
-   }
+        if (message instanceof MemoMessage) {
+            MemoMessage mm = (MemoMessage) message;
+            return mm.go(stoq);
+        } else
+            return new Ok(false);
+    }
 
-   public static class Server {
-      public static int MEMO_DEFAULT_PORT = 2099;
-      public static int memoPort;
+    public static class Server {
+        public static int MEMO_DEFAULT_PORT = 2099;
+        public static int memoPort;
 
-      public static void message(String message) {
-         System.out.println("Memo.Server: " + message);
-      }
+        public static void message(String message) {
+            System.out.println("Memo.Server: " + message);
+        }
 
-      public static void main(String args[]) {
-         System.out.println("MemoServer version 1.0");
-         System.out.println("Copyright (c) 2000, TC, GKT, John, etc.");
+        public static void main(String[] args) {
+            System.out.println("MemoServer version 1.0");
+            System.out.println("Copyright (c) 2000, TC, GKT, John, etc.");
 
-         RemoteCallServer cs;
-         try {
-            memoPort = Integer.parseInt(args[0]);
-         } catch (Exception e) {
-            memoPort = MEMO_DEFAULT_PORT;
-         }
+            RemoteCallServer cs;
+            try {
+                memoPort = Integer.parseInt(args[0]);
+            } catch (Exception e) {
+                memoPort = MEMO_DEFAULT_PORT;
+            }
 
-         message("running server on " + memoPort);
-         try {
-            cs = new RemoteCallServer(memoPort);
-         } catch (Exception e) {
-            System.err.println("");
-            return;
-         }
+            message("running server on " + memoPort);
+            try {
+                cs = new RemoteCallServer(memoPort);
+            } catch (Exception e) {
+                System.err.println();
+                return;
+            }
 
-         message("registering 'memo2000' name for Memo instance");
-         /* create some callables. */
-         cs.bind("memo", new MemoServer());
+            message("registering 'memo2000' name for Memo instance");
+            /* create some callables. */
+            cs.bind("memo", new MemoServer());
 
-         /* listen for remote calls */
-         message("Starting RMI-Lite Listener");
-         cs.start();
-         try {
-            cs.join();
-         } catch (Exception e) {
-            message("could not join() with main thread");
-         }
-      }
+            /* listen for remote calls */
+            message("Starting RMI-Lite Listener");
+            cs.start();
+            try {
+                cs.join();
+            } catch (Exception e) {
+                message("could not join() with main thread");
+            }
+        }
 
-   }
+    }
 
-   public static class SimpleTest1 {
+    public static class SimpleTest1 {
 
-      public static void main(String args[]) {
-         try {
-            RemoteCallClient rc = new RemoteCallClient("127.0.0.1", 2099);
-            MemoPut p = new MemoPut("memo2000", "A", "value of A");
-            rc.call(p);
-            MemoGet g = new MemoGet("memo2000", "A");
-            System.out.println("A -> " + rc.call(g));
-            rc.disconnect();
-         } catch (Exception e) {
-            System.err.println(e);
-         }
+        public static void main(String[] args) {
+            try {
+                RemoteCallClient rc = new RemoteCallClient("127.0.0.1", 2099);
+                MemoPut p = new MemoPut("memo2000", "A", "value of A");
+                rc.call(p);
+                MemoGet g = new MemoGet("memo2000", "A");
+                System.out.println("A -> " + rc.call(g));
+                rc.disconnect();
+            } catch (Exception e) {
+                System.err.println(e);
+            }
 
-      }
-   }
+        }
+    }
 
-   public static class WeirdTest1 {
+    public static class WeirdTest1 {
 
-      public static void main(String args[]) {
-         try {
-            MemoClient c1 = new MemoClient("127.0.0.1", 2099, "memo2000");
-            MemoClient c2 = new MemoClient("127.0.0.1", 2099, "memo2001");
+        public static void main(String[] args) {
+            try {
+                MemoClient c1 = new MemoClient("127.0.0.1", 2099, "memo2000");
+                MemoClient c2 = new MemoClient("127.0.0.1", 2099, "memo2001");
 
-            System.out.println("connected to both");
-            c1.put("A", "memo2000:A");
-            System.out.println("put1 ");
-            c2.put("A", "memo2001:A");
-            System.out.println("put2 ");
-            System.out.println("A @ memo2000 = " + c1.get("A"));
-            System.out.println("A @ memo2001 = " + c2.get("A"));
-            c1.goodbye();
-            c2.goodbye();
-         } catch (Exception e) {
-            System.err.println(e);
-         }
-      }
-   }
+                System.out.println("connected to both");
+                c1.put("A", "memo2000:A");
+                System.out.println("put1 ");
+                c2.put("A", "memo2001:A");
+                System.out.println("put2 ");
+                System.out.println("A @ memo2000 = " + c1.get("A"));
+                System.out.println("A @ memo2001 = " + c2.get("A"));
+                c1.goodbye();
+                c2.goodbye();
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }
+    }
 }

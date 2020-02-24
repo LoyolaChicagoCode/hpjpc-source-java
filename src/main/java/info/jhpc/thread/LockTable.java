@@ -52,58 +52,59 @@ import java.util.Hashtable;
  */
 
 public class LockTable {
-   protected Hashtable<Object, Object> table = new Hashtable<Object, Object>();
+    protected Hashtable<Object, Object> table = new Hashtable<Object, Object>();
 
-   /**
-    * Lock single lock indicated by object s. Since LockTable uses a hashtable
-    * to maintain the locks, it uses equals() to detect whether two locks are
-    * the same. Thus two strings can be equal and indicate the same lock, even
-    * though they are not the same object.
-    */
-   public synchronized void lock(Object s) throws InterruptedException {
-      while (table.get(s) != null)
-         wait();
-      table.put(s, s);
-   }
+    /**
+     * Lock single lock indicated by object s. Since LockTable uses a hashtable
+     * to maintain the locks, it uses equals() to detect whether two locks are
+     * the same. Thus two strings can be equal and indicate the same lock, even
+     * though they are not the same object.
+     */
+    public synchronized void lock(Object s) throws InterruptedException {
+        while (table.get(s) != null)
+            wait();
+        table.put(s, s);
+    }
 
-   /**
-    * Unlock the single lock indicated by object s.
-    */
-   public synchronized void unlock(Object s) {
-      table.remove(s);
-      notifyAll();
-   }
+    /**
+     * Unlock the single lock indicated by object s.
+     */
+    public synchronized void unlock(Object s) {
+        table.remove(s);
+        notifyAll();
+    }
 
-   /**
-    * Simultaneously lock all the locks indicated by the objects in the array
-    * sa. Since LockTable uses a hashtable to maintain the locks, it uses
-    * equals() to detect whether two locks are the same. Thus two strings can be
-    * equal and indicate the same lock, even though they are not the same
-    * object.
-    */
-   public synchronized void lock(Object[] sa) throws InterruptedException {
-      int i;
-      TryToLock: while (true) {
-         for (i = 0; i < sa.length; i++) {
-            if (table.get(sa[i]) != null) {
-               wait();
-               continue TryToLock;
+    /**
+     * Simultaneously lock all the locks indicated by the objects in the array
+     * sa. Since LockTable uses a hashtable to maintain the locks, it uses
+     * equals() to detect whether two locks are the same. Thus two strings can be
+     * equal and indicate the same lock, even though they are not the same
+     * object.
+     */
+    public synchronized void lock(Object[] sa) throws InterruptedException {
+        int i;
+        TryToLock:
+        while (true) {
+            for (i = 0; i < sa.length; i++) {
+                if (table.get(sa[i]) != null) {
+                    wait();
+                    continue TryToLock;
+                }
             }
-         }
-         for (i = 0; i < sa.length; i++)
-            table.put(sa[i], sa[i]);
-         return;
-      }
-   }
+            for (i = 0; i < sa.length; i++)
+                table.put(sa[i], sa[i]);
+            return;
+        }
+    }
 
-   /**
-    * Simultaneously unlock all the locks indicated by the objects in the array
-    * sa.
-    */
-   public synchronized void unlock(Object[] sa) {
-      int i;
-      for (i = 0; i < sa.length; i++)
-         table.remove(sa[i]);
-      notifyAll();
-   }
+    /**
+     * Simultaneously unlock all the locks indicated by the objects in the array
+     * sa.
+     */
+    public synchronized void unlock(Object[] sa) {
+        int i;
+        for (i = 0; i < sa.length; i++)
+            table.remove(sa[i]);
+        notifyAll();
+    }
 }

@@ -24,78 +24,78 @@
  */
 package info.jhpc.textbook.chapter12.warshall;
 
+import java.io.Serializable;
 import java.util.Random;
-import java.io.*;
 
 class IndexedKey implements Serializable {
-   /**
-    *
-    */
-   private static final long serialVersionUID = 5742533745001444067L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 5742533745001444067L;
 
-   private static Random rand = new Random();
+    private static Random rand = new Random();
 
-   private static Random hasher = new Random();
+    private static Random hasher = new Random();
 
-   private int id;
+    private int id;
 
-   private long x;
+    private long x;
 
-   private IndexedKey(long x) {
-      synchronized (rand) {
-         for (id = rand.nextInt(); id < Short.MIN_VALUE && Short.MAX_VALUE < id; id = rand
-               .nextInt())
-            ;
-      }
-      this.x = x;
-   }
+    private IndexedKey(long x) {
+        synchronized (rand) {
+            for (id = rand.nextInt(); id < Short.MIN_VALUE && Short.MAX_VALUE < id; id = rand
+                    .nextInt())
+                ;
+        }
+        this.x = x;
+    }
 
-   private IndexedKey(int id, long x) {
-      this.id = id;
-      this.x = x;
-   }
+    private IndexedKey(int id, long x) {
+        this.id = id;
+        this.x = x;
+    }
 
-   public static IndexedKey unique(long x) {
-      return new IndexedKey(x);
-   }
+    public static IndexedKey unique(long x) {
+        return new IndexedKey(x);
+    }
 
-   public static IndexedKey make(int id, long x) {
-      return new IndexedKey(id, x);
-   }
+    public static IndexedKey make(int id, long x) {
+        return new IndexedKey(id, x);
+    }
 
-   public int getId() {
-      return id;
-   }
+    public int getId() {
+        return id;
+    }
 
-   public long getX() {
-      return x;
-   }
+    public long getX() {
+        return x;
+    }
 
-   public IndexedKey at(long x) {
-      return new IndexedKey(id, x);
-   }
+    public IndexedKey at(long x) {
+        return new IndexedKey(id, x);
+    }
 
-   public IndexedKey add(long x) {
-      return new IndexedKey(id, this.x + x);
-   }
+    public IndexedKey add(long x) {
+        return new IndexedKey(id, this.x + x);
+    }
 
-   public boolean equals(Object o) {
-      if (o instanceof IndexedKey) {
-         IndexedKey k = (IndexedKey) o;
-         return id == k.id && x == k.x;
-      } else
-         return false;
-   }
+    public boolean equals(Object o) {
+        if (o instanceof IndexedKey) {
+            IndexedKey k = (IndexedKey) o;
+            return id == k.id && x == k.x;
+        } else
+            return false;
+    }
 
-   public int hashCode() {
-      synchronized (hasher) {
-         hasher.setSeed(id + x);
-         hasher.nextInt();
-         return hasher.nextInt();
-      }
-   }
+    public int hashCode() {
+        synchronized (hasher) {
+            hasher.setSeed(id + x);
+            hasher.nextInt();
+            return hasher.nextInt();
+        }
+    }
 
-   public String toString() {
-      return "IndexedKey(" + id + "," + x + ")";
-   }
+    public String toString() {
+        return "IndexedKey(" + id + "," + x + ")";
+    }
 }

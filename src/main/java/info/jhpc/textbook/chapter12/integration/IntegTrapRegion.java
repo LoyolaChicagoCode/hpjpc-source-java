@@ -32,90 +32,90 @@
 
 package info.jhpc.textbook.chapter12.integration;
 
-import java.io.*;
+import java.io.Serializable;
 
 class IntegTrapRegion implements Serializable {
 
-   /**
-    *
-    */
-   private static final long serialVersionUID = -8937266464553439210L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -8937266464553439210L;
 
-   // Private variables used in calculating a specified region
-   private double x_start, x_end;
+    // Private variables used in calculating a specified region
+    private double x_start, x_end;
 
-   private int granularity;
+    private int granularity;
 
-   private double areaOfRegion = 0;
+    private double areaOfRegion = 0;
 
-   private F_of_x f;
+    private F_of_x f;
 
-   /**
-    * Constructor
-    */
-   public IntegTrapRegion(double x_start, double x_end, int granularity,
-         F_of_x f) {
+    /**
+     * Constructor
+     */
+    public IntegTrapRegion(double x_start, double x_end, int granularity,
+                           F_of_x f) {
 
-      this.x_start = x_start;
-      this.x_end = x_end;
-      this.granularity = granularity;
-      this.f = f;
+        this.x_start = x_start;
+        this.x_end = x_end;
+        this.granularity = granularity;
+        this.f = f;
 
-   }
+    }
 
-   /**
-    * This is the method that is overloaded from the Thread class. The code
-    * within this method is called when the thread is started. All of the
-    * calculations that the thread will perform are defined within this method.
-    * The equation used to calculate the area of the trapazoid is defined as a
-    * seperate provate method.
-    */
-   public void run() {
+    /**
+     * This is the method that is overloaded from the Thread class. The code
+     * within this method is called when the thread is started. All of the
+     * calculations that the thread will perform are defined within this method.
+     * The equation used to calculate the area of the trapazoid is defined as a
+     * seperate provate method.
+     */
+    public void run() {
 
-      double area = 0.0d;
-      double range = x_end - x_start;
-      double x0 = x_start;
-      double x1 = x_start + ((1.0d / granularity) * range);
+        double area = 0.0d;
+        double range = x_end - x_start;
+        double x0 = x_start;
+        double x1 = x_start + ((1.0d / granularity) * range);
 
-      for (int i = 0; i < granularity; i++) {
-         area = area + calcArea(x0, x1);
-         x0 = x1;
-         x1 = x_start + ((i + 2.0d) / granularity * range);
-      }
+        for (int i = 0; i < granularity; i++) {
+            area = area + calcArea(x0, x1);
+            x0 = x1;
+            x1 = x_start + ((i + 2.0d) / granularity * range);
+        }
 
-      areaOfRegion = area;
+        areaOfRegion = area;
 
-      // indicate to the user that the thread is done
-   }
+        // indicate to the user that the thread is done
+    }
 
-   /**
-    * Method that returns the final computed region size. Implemented to avoid
-    * the dependency on other classes.
-    */
-   public double getArea() {
-      return areaOfRegion;
-   }
+    /**
+     * Method that returns the final computed region size. Implemented to avoid
+     * the dependency on other classes.
+     */
+    public double getArea() {
+        return areaOfRegion;
+    }
 
-   /**
-    * Calculates the are of a trapazoid given the beginning and ending x
-    * coordinates. The method uses the defind f(x) function for calculating the
-    * height of the trapazoid legs (l1, l2).
-    */
-   private double calcArea(double x0, double x1) {
-      double base = x1 - x0;
-      double l1 = f.f(x0);
-      double l2 = f.f(x1);
+    /**
+     * Calculates the are of a trapazoid given the beginning and ending x
+     * coordinates. The method uses the defind f(x) function for calculating the
+     * height of the trapazoid legs (l1, l2).
+     */
+    private double calcArea(double x0, double x1) {
+        double base = x1 - x0;
+        double l1 = f.f(x0);
+        double l2 = f.f(x1);
 
-      // Calculates and returns the area of the specified trapazoid
-      return (base * .5d * (max(l1, l2) + min(l1, l2)));
-   }
+        // Calculates and returns the area of the specified trapazoid
+        return (base * .5d * (max(l1, l2) + min(l1, l2)));
+    }
 
-   private double max(double a, double b) {
-      return ((a > b) ? a : b);
-   }
+    private double max(double a, double b) {
+        return ((a > b) ? a : b);
+    }
 
-   private double min(double a, double b) {
-      return ((a > b) ? b : a);
-   }
+    private double min(double a, double b) {
+        return ((a > b) ? b : a);
+    }
 
 }

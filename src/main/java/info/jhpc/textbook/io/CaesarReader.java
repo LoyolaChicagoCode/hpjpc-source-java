@@ -41,35 +41,35 @@ http://opensource.org.
 
 package info.jhpc.textbook.io;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.IOException;
 
 public class CaesarReader extends TranslateReader {
 
-   public CaesarReader(Reader r, String inAlphabet, String key) {
-      super(r, Alphabet.getAlphabet(inAlphabet, key).getCipherAlphabet(),
-            inAlphabet);
-   }
+    public CaesarReader(Reader r, String inAlphabet, String key) {
+        super(r, Alphabet.getAlphabet(inAlphabet, key).getCipherAlphabet(),
+                inAlphabet);
+    }
 
-   public static void main(String[] args) throws IOException {
-      String key = args[0];
-      InputStreamReader isr = new InputStreamReader(System.in);
-      CaesarReader cr = new CaesarReader(isr, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", key);
+    public static void main(String[] args) throws IOException {
+        String key = args[0];
+        InputStreamReader isr = new InputStreamReader(System.in);
+        CaesarReader cr = new CaesarReader(isr, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", key);
 
-      try {
-         while (true) {
-            int result = cr.read();
-            if (result < 0)
-               break;
-            System.out.write((char) result);
-         }
-      } catch (Exception e) {
-         System.out.println(e);
-      } finally {
-         System.out.flush();
-      }
-      cr.close();
-   }
+        try {
+            while (true) {
+                int result = cr.read();
+                if (result < 0)
+                    break;
+                System.out.write((char) result);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+            System.out.flush();
+        }
+        cr.close();
+    }
 
 }

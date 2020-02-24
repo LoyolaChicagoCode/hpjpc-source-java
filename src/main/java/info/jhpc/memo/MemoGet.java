@@ -45,19 +45,19 @@ import info.jhpc.thread.SharedTableOfQueues;
 
 import java.io.Serializable;
 
-class MemoGet extends MemoMessage {
-   /**
-    * 
-    */
-   private static final long serialVersionUID = 1803319509838486044L;
-   Serializable key;
+public class MemoGet extends MemoMessage {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1803319509838486044L;
+    private Serializable key;
 
-   public MemoGet(String target, Serializable key) {
-      super(target);
-      this.key = key;
-   }
+    public MemoGet(String target, Serializable key) {
+        super(target);
+        this.key = key;
+    }
 
-   public Serializable go(SharedTableOfQueues stoq) throws Exception {
-      return (Serializable) stoq.get(key);
-   }
+    public Serializable go(SharedTableOfQueues stoq) throws Exception {
+        return (Serializable) stoq.get(key);
+    }
 }

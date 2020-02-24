@@ -47,43 +47,43 @@ import info.jhpc.message.MessageClient;
 // begin-class-DateClient-Message
 public class DateClient {
 
-   public static void main(String[] args) {
-      if (args.length < 2) {
-         System.out.println("Usage: DateClient host port");
-      }
-      String host = args[0];
-      int port;
-      try {
-         port = Integer.parseInt(args[1]);
-      } catch (Exception e) {
-         port = DateService.DATE_SERVICE_PORT;
-      }
+    public static void main(String[] args) {
+        if (args.length < 2) {
+            System.out.println("Usage: DateClient host port");
+        }
+        String host = args[0];
+        int port;
+        try {
+            port = Integer.parseInt(args[1]);
+        } catch (Exception e) {
+            port = DateService.DATE_SERVICE_PORT;
+        }
 
-      MessageClient conn;
-      try {
-         conn = new MessageClient(host, port);
-      } catch (Exception e) {
-         System.err.println("Could not contact DateService @ " + host + ":"
-               + port);
-         return;
-      }
+        MessageClient conn;
+        try {
+            conn = new MessageClient(host, port);
+        } catch (Exception e) {
+            System.err.println("Could not contact DateService @ " + host + ":"
+                    + port);
+            return;
+        }
 
-      Message m = new Message();
-      m.setType(DateService.DATE_SERVICE_MESSAGE);
-      m.setParam("person", "george");
-      m = conn.call(m);
-      System.out.println("Message instance received from server " + m);
-      System.out.println("Today's Date is " + m.getParam("date"));
-      m.setType(75);
-      m.setBooleanParam("b1", true);
-      m.setIntegerParam("i1", 15);
-      m.setLongParam("l1", 15);
-      m.setStringParam("s1", "George");
+        Message m = new Message();
+        m.setType(DateService.DATE_SERVICE_MESSAGE);
+        m.setParam("person", "george");
+        m = conn.call(m);
+        System.out.println("Message instance received from server " + m);
+        System.out.println("Today's Date is " + m.getParam("date"));
+        m.setType(75);
+        m.setBooleanParam("b1", true);
+        m.setIntegerParam("i1", 15);
+        m.setLongParam("l1", 15);
+        m.setStringParam("s1", "George");
 
-      m = conn.call(m);
-      System.out.println("Message instance received from server " + m);
-      conn.disconnect();
-   }
+        m = conn.call(m);
+        System.out.println("Message instance received from server " + m);
+        conn.disconnect();
+    }
 }
 // end-class-DateClient-Message
 

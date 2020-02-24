@@ -48,44 +48,44 @@ import java.net.Socket;
 
 // begin-class-MessageClient
 public class MessageClient extends Thread {
-   Socket socket;
-   DataOutputStream out;
-   DataInputStream in;
+    private Socket socket;
+    private DataOutputStream out;
+    private DataInputStream in;
 
-   public MessageClient(String host, int port) throws IOException {
-      socket = new Socket(host, port);
-      out = new DataOutputStream(socket.getOutputStream());
-      in = new DataInputStream(socket.getInputStream());
-   }
+    public MessageClient(String host, int port) throws IOException {
+        socket = new Socket(host, port);
+        out = new DataOutputStream(socket.getOutputStream());
+        in = new DataInputStream(socket.getInputStream());
+    }
 
-   public Message call(Message message) {
-      try {
-         message.encode(out);
-      } catch (Exception e) {
-         System.err.println("MessageClient: Call (to) failure: " + e);
-         return null;
-      }
+    public Message call(Message message) {
+        try {
+            message.encode(out);
+        } catch (Exception e) {
+            System.err.println("MessageClient: Call (to) failure: " + e);
+            return null;
+        }
 
-      try {
-         Message m = new Message();
-         m.decode(in);
-         return m;
-      } catch (Exception e) {
-         System.err.println("MessageClient: Call (from) failure: " + e);
-         return new Message();
-      }
-   }
+        try {
+            Message m = new Message();
+            m.decode(in);
+            return m;
+        } catch (Exception e) {
+            System.err.println("MessageClient: Call (from) failure: " + e);
+            return new Message();
+        }
+    }
 
-   public void disconnect() {
-      Message m = new Message();
-      m.setType(0);
-      m.setParam("$disconnect", "$disconnect");
-      call(m);
-      try {
-         socket.close();
-      } catch (Exception e) {
-         System.err.println("ungraceful disconnect on client " + e);
-      }
-   }
+    public void disconnect() {
+        Message m = new Message();
+        m.setType(0);
+        m.setParam("$disconnect", "$disconnect");
+        call(m);
+        try {
+            socket.close();
+        } catch (Exception e) {
+            System.err.println("ungraceful disconnect on client " + e);
+        }
+    }
 }
 // end-class-MessageClient

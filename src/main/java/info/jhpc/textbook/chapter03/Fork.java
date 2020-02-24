@@ -1,23 +1,23 @@
 package info.jhpc.textbook.chapter03;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Lock;
 
 // begin-class-Fork
-class Fork {
-   public char id;
+public class Fork {
+    public char id;
 
-   private Lock lock = new Lock();
+    private Lock lock = new Lock();
 
-   public void pickup() throws InterruptedException {
-      lock.lock();
-   }
+    public Fork(int value) {
+        this.id = new Integer(value).toString().charAt(0);
+    }
 
-   public void putdown() throws InterruptedException {
-      lock.unlock();
-   }
+    public void pickup() throws InterruptedException {
+        lock.lock();
+    }
 
-   public Fork(int value) {
-      this.id = new Integer(value).toString().charAt(0);
-   }
+    public void putdown() throws InterruptedException {
+        lock.unlock();
+    }
 }
 // end-class-Fork

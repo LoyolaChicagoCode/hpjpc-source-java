@@ -45,86 +45,84 @@ package info.jhpc.textbook.concurrency;
  * Implementation of MultipleReadersWritersMonitor that serves readers and
  * writers in the order of arrival. If several readers arrive in a cluster, they
  * will be allowed to read at the same time.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public class TakeANumberMonitor implements MultipleReadersWritersMonitor {
-   /**
-    * Number readers reading
-    */
-   protected int nr = 0;
-   /**
-    * Take a number
-    */
-   protected int nextNumber = 0;
-   /**
-    * Number now being served
-    */
-   protected int nowServing = 0;
+    /**
+     * Number readers reading
+     */
+    protected int nr = 0;
+    /**
+     * Take a number
+     */
+    protected int nextNumber = 0;
+    /**
+     * Number now being served
+     */
+    protected int nowServing = 0;
 
-   /**
-    * Reset the monitor.
-    */
-   public void reset() {
-      nr = 0;
-      nextNumber = 0;
-      nowServing = 0;
-   }
+    /**
+     * Reset the monitor.
+     */
+    public void reset() {
+        nr = 0;
+        nextNumber = 0;
+        nowServing = 0;
+    }
 
-   /**
-    * Called to begin reading the shared data structure.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public synchronized void startReading() throws InterruptedException {
-      int myNumber = nextNumber++;
-      while (nowServing != myNumber)
-         wait();
-      nr++;
-      nowServing++;
-      notifyAll();
-   }
+    /**
+     * Called to begin reading the shared data structure.
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public synchronized void startReading() throws InterruptedException {
+        int myNumber = nextNumber++;
+        while (nowServing != myNumber)
+            wait();
+        nr++;
+        nowServing++;
+        notifyAll();
+    }
 
-   /**
-    * Called when the thread is finished reading the shared data structure.
-    */
-   public synchronized void stopReading() {
-      nr--;
-      if (nr == 0)
-         notifyAll();
-   }
+    /**
+     * Called when the thread is finished reading the shared data structure.
+     */
+    public synchronized void stopReading() {
+        nr--;
+        if (nr == 0)
+            notifyAll();
+    }
 
-   /**
-    * Called to begin writing the shared data structure.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting for access.
-    */
-   public synchronized void startWriting() throws InterruptedException {
-      int myNumber = nextNumber++;
-      while (nowServing != myNumber)
-         wait();
-      while (nr > 0)
-         wait();
-   }
+    /**
+     * Called to begin writing the shared data structure.
+     *
+     * @throws InterruptedException If interrupted while waiting for access.
+     */
+    public synchronized void startWriting() throws InterruptedException {
+        int myNumber = nextNumber++;
+        while (nowServing != myNumber)
+            wait();
+        while (nr > 0)
+            wait();
+    }
 
-   /**
-    * Called when the thread is finished writing the shared data structure.
-    */
-   public synchronized void stopWriting() {
-      nowServing++;
-      notifyAll();
-   }
+    /**
+     * Called when the thread is finished writing the shared data structure.
+     */
+    public synchronized void stopWriting() {
+        nowServing++;
+        notifyAll();
+    }
 
-   /**
-    * Get legible information about the identity of the monitor.
-    * 
-    * @return "Queued-Readers-Writers Monitor"
-    */
-   public String getMonitorInfo() {
-      return "Take-A-Number Monitor";
-   }
+    /**
+     * Get legible information about the identity of the monitor.
+     *
+     * @return "Queued-Readers-Writers Monitor"
+     */
+    public String getMonitorInfo() {
+        return "Take-A-Number Monitor";
+    }
 }

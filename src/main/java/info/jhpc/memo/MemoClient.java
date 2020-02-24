@@ -47,62 +47,62 @@ import java.io.Serializable;
 
 public class MemoClient {
 
-   RemoteCallClient rc;
-   String target;
-   String host;
-   int port;
+    private RemoteCallClient rc;
+    private String target;
+    private String host;
+    private int port;
 
-   public MemoClient(String host, int port, String target) throws Exception {
-      this.host = host;
-      this.port = port;
-      this.rc = new RemoteCallClient(host, port);
-      this.target = target;
-   }
+    public MemoClient(String host, int port, String target) throws Exception {
+        this.host = host;
+        this.port = port;
+        this.rc = new RemoteCallClient(host, port);
+        this.target = target;
+    }
 
-   public void goodbye() {
-      try {
-         rc.disconnect();
-      } catch (Exception e) {
-         System.err.println("warning: Failed to disconnect from GMI.");
-      }
-   }
+    public void goodbye() {
+        try {
+            rc.disconnect();
+        } catch (Exception e) {
+            System.err.println("warning: Failed to disconnect from GMI.");
+        }
+    }
 
-   public void setTarget(String target) {
-      this.target = target;
-   }
+    public void setTarget(String target) {
+        this.target = target;
+    }
 
-   public Object get(Serializable key) throws InterruptedException, Exception {
-      MemoGet mg = new MemoGet(target, key);
-      return rc.call(mg);
-   }
+    public Object get(Serializable key) throws Exception {
+        MemoGet mg = new MemoGet(target, key);
+        return rc.call(mg);
+    }
 
-   public Object put(Serializable key, Serializable value) throws Exception {
-      MemoPut mp = new MemoPut(target, key, value);
-      return rc.call(mp);
-   }
+    public Object put(Serializable key, Serializable value) throws Exception {
+        MemoPut mp = new MemoPut(target, key, value);
+        return rc.call(mp);
+    }
 
-   public Object getCopy(Serializable key) throws InterruptedException,
-         Exception {
-      MemoGetCopy mgc = new MemoGetCopy(target, key);
-      return rc.call(mgc);
-   }
+    public Object getCopy(Serializable key) throws
+            Exception {
+        MemoGetCopy mgc = new MemoGetCopy(target, key);
+        return rc.call(mgc);
+    }
 
-   public Object getCopySkip(Serializable key) throws Exception {
-      MemoGetCopySkip mgcs = new MemoGetCopySkip(target, key);
-      return rc.call(mgcs);
-   }
+    public Object getCopySkip(Serializable key) throws Exception {
+        MemoGetCopySkip mgcs = new MemoGetCopySkip(target, key);
+        return rc.call(mgcs);
+    }
 
-   public Object getSkip(Serializable key) throws Exception {
-      MemoGetSkip mgs = new MemoGetSkip(target, key);
-      return rc.call(mgs);
-   }
+    public Object getSkip(Serializable key) throws Exception {
+        MemoGetSkip mgs = new MemoGetSkip(target, key);
+        return rc.call(mgs);
+    }
 
-   public Object runDelayed(Serializable key, Runnable r) throws Exception {
-      if (r instanceof Serializable) {
-         Serializable rs = (Serializable) r;
-         MemoRunDelayed mrd = new MemoRunDelayed(target, key, rs);
-         return rc.call(mrd);
-      } else
-         throw new Exception("r must be both Runnable and Serializable");
-   }
+    public Object runDelayed(Serializable key, Runnable r) throws Exception {
+        if (r instanceof Serializable) {
+            Serializable rs = (Serializable) r;
+            MemoRunDelayed mrd = new MemoRunDelayed(target, key, rs);
+            return rc.call(mrd);
+        } else
+            throw new Exception("r must be both Runnable and Serializable");
+    }
 }

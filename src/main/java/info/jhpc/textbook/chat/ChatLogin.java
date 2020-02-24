@@ -49,20 +49,20 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class ChatLogin extends CallMessage implements Serializable {
-   private String userId;
-   private String password;
+    private String userId;
+    private String password;
 
-   ChatLogin(String target, String userId, String password) {
-      super(target);
-      this.userId = userId;
-      this.password = password;
-   }
+    ChatLogin(String target, String userId, String password) {
+        super(target);
+        this.userId = userId;
+        this.password = password;
+    }
 
-   public String getUserId() {
-      return userId;
-   }
+    public String getUserId() {
+        return userId;
+    }
 
-   public String getPassword() {
-      return password;
-   }
+    public String getPassword() {
+        return password;
+    }
 }

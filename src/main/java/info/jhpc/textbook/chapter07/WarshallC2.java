@@ -28,186 +28,190 @@
  */
 package info.jhpc.textbook.chapter07;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Accumulator;
+import info.jhpc.thread.Future;
+import info.jhpc.thread.FutureFactory;
+import info.jhpc.thread.RunQueue;
+
 import java.util.Random;
 
 class WarshallC2 {
-   int numThreads;
+    int numThreads;
 
-   public WarshallC2(int numThreads) {
-      this.numThreads = numThreads;
-   }
+    public WarshallC2(int numThreads) {
+        this.numThreads = numThreads;
+    }
 
-   private class Row implements Runnable {
-      boolean[] row;
+    public boolean[][] closure(boolean[][] a) {
+        int i;
+        RunQueue rq = new RunQueue(numThreads);
+        FutureFactory ff = new FutureFactory(rq);
+        Future[] kthRows = new Future[a.length];
+        for (i = 0; i < kthRows.length; ++i)
+            kthRows[i] = ff.make();
+        Accumulator done = new Accumulator(a.length, new boolean[a.length][]);
+        for (i = 0; i < a.length; i++) {
+            rq.run(new Row(a[i].clone(), i, kthRows, done));
+        }
+        boolean[][] result = null;
+        try {
+            result = (boolean[][]) done.getFuture().getValue();
+            rq.setMaxThreadsWaiting(0);
+        } catch (InterruptedException ex) {
+        }
+        return result;
+    }
 
-      int myRowNumber;
+    public static class Test1 {
+        public static void main(String[] args) {
+            int N = 10;
+            int nt = 3;
+            int i;
+            boolean[][] a = new boolean[N][N];
+            WarshallC2 w = new WarshallC2(nt);
+            for (i = 0; i < N; i++)
+                a[i][(i + 1) % N] = true;
+            show(a);
+            System.out.println();
+            a = w.closure(a);
+            show(a);
+        }
 
-      Future[] row_k_step_k;
+        static void show(boolean[][] a) {
+            int i, j;
+            for (i = 0; i < a.length; i++) {
+                for (j = 0; j < a.length; j++) {
+                    System.out.print(a[i][j] ? '1' : '0');
+                }
+                System.out.println();
+            }
+        }
+    }
 
-      Accumulator done;
+    public static class Test2 {
+        public static void main(String[] args) {
+            int N = 10;
+            int nt = 3;
+            int i, j;
+            double probTrue = 0.3;
+            boolean[][] a = new boolean[N][N];
 
-      int pc = 0;
+            WarshallC2 w = new WarshallC2(nt);
 
-      int j, k;
+            Random rand = new Random();
+            for (i = 0; i < N; i++) {
+                for (j = 0; j < N; j++) {
+                    a[i][j] = (rand.nextDouble() <= probTrue);
+                }
+            }
+            show(a);
+            System.out.println();
+            a = w.closure(a);
+            show(a);
+        }
 
-      Row(boolean[] row, int myRowNumber, Future[] row_k_step_k,
-            Accumulator done) {
-         this.row = row;
-         this.myRowNumber = myRowNumber;
-         this.row_k_step_k = row_k_step_k;
-         this.done = done;
-      }
+        static void show(boolean[][] a) {
+            int i, j;
+            for (i = 0; i < a.length; i++) {
+                for (j = 0; j < a.length; j++) {
+                    System.out.print(a[i][j] ? '1' : '0');
+                }
+                System.out.println();
+            }
+        }
+    }
 
-      public void run() {
-         boolean[] row_k;
-         for (;;)
+    public static class TestTime2 {
+        public static void main(String[] args) {
+            int N = 0;
+            int nt = 0;
             try {
-               switch (pc) {
-               case 0:
-                  k = 0;
-                  pc = 1;
-               case 1:
-                  if (k >= row_k_step_k.length) {
-                     boolean[][] result = (boolean[][]) done.getData();
-                     result[myRowNumber] = row;
-                     done.signal();
-                     return;
-                  }
-                  if (k == myRowNumber) {
-                     row_k_step_k[k].setValue(row.clone());
-                     k++;
-                     continue;
-                  }
-                  if (!row[k]) {
-                     k++;
-                     continue;
-                  }
-                  pc = 2;
-                  if (!row_k_step_k[k].isSet()) {
-                     row_k_step_k[k].runDelayed(this);
-                     return;
-                  }
-               case 2:
-                  row_k = (boolean[]) row_k_step_k[k].getValue();
-                  for (j = 0; j < row.length; j++) {
-                     row[j] |= row_k[j];
-                  }
-                  pc = 1;
-                  k++;
-                  continue;
-               }// switch
-            } catch (InterruptedException ex) {
+                N = Integer.parseInt(args[0]);
+                nt = Integer.parseInt(args[1]);
+            } catch (Exception e) {
+                System.out.println("usage: java WarshallC2$TestTime2 N nt");
+                System.exit(0);
             }
-      }
-   }
+            int i, j;
+            double probTrue = 0.3;
+            boolean[][] a = new boolean[N][N];
 
-   public boolean[][] closure(boolean[][] a) {
-      int i;
-      RunQueue rq = new RunQueue(numThreads);
-      FutureFactory ff = new FutureFactory(rq);
-      Future[] kthRows = new Future[a.length];
-      for (i = 0; i < kthRows.length; ++i)
-         kthRows[i] = ff.make();
-      Accumulator done = new Accumulator(a.length, new boolean[a.length][]);
-      for (i = 0; i < a.length; i++) {
-         rq.run(new Row((boolean[]) a[i].clone(), i, kthRows, done));
-      }
-      boolean[][] result = null;
-      try {
-         result = (boolean[][]) done.getFuture().getValue();
-         rq.setMaxThreadsWaiting(0);
-      } catch (InterruptedException ex) {
-      }
-      return result;
-   }
+            WarshallC2 w = new WarshallC2(nt);
 
-   public static class Test1 {
-      public static void main(String[] args) {
-         int N = 10;
-         int nt = 3;
-         int i;
-         boolean a[][] = new boolean[N][N];
-         WarshallC2 w = new WarshallC2(nt);
-         for (i = 0; i < N; i++)
-            a[i][(i + 1) % N] = true;
-         show(a);
-         System.out.println();
-         a = w.closure(a);
-         show(a);
-      }
-
-      static void show(boolean a[][]) {
-         int i, j;
-         for (i = 0; i < a.length; i++) {
-            for (j = 0; j < a.length; j++) {
-               System.out.print(a[i][j] ? '1' : '0');
+            Random rand = new Random();
+            for (i = 0; i < N; i++) {
+                for (j = 0; j < N; j++) {
+                    a[i][j] = (rand.nextDouble() <= probTrue);
+                }
             }
-            System.out.println();
-         }
-      }
-   }
+            long start = System.currentTimeMillis();
+            a = w.closure(a);
+            System.out.println("WarshallC2\t" + N + "\t" + nt + "\t"
+                    + (System.currentTimeMillis() - start));
+        }
+    }
 
-   public static class Test2 {
-      public static void main(String[] args) {
-         int N = 10;
-         int nt = 3;
-         int i, j;
-         double probTrue = 0.3;
-         boolean a[][] = new boolean[N][N];
+    private class Row implements Runnable {
+        boolean[] row;
 
-         WarshallC2 w = new WarshallC2(nt);
+        int myRowNumber;
 
-         Random rand = new Random();
-         for (i = 0; i < N; i++) {
-            for (j = 0; j < N; j++) {
-               a[i][j] = (rand.nextDouble() <= probTrue);
-            }
-         }
-         show(a);
-         System.out.println();
-         a = w.closure(a);
-         show(a);
-      }
+        Future[] row_k_step_k;
 
-      static void show(boolean a[][]) {
-         int i, j;
-         for (i = 0; i < a.length; i++) {
-            for (j = 0; j < a.length; j++) {
-               System.out.print(a[i][j] ? '1' : '0');
-            }
-            System.out.println();
-         }
-      }
-   }
+        Accumulator done;
 
-   public static class TestTime2 {
-      public static void main(String[] args) {
-         int N = 0;
-         int nt = 0;
-         try {
-            N = Integer.parseInt(args[0]);
-            nt = Integer.parseInt(args[1]);
-         } catch (Exception e) {
-            System.out.println("usage: java WarshallC2$TestTime2 N nt");
-            System.exit(0);
-         }
-         int i, j;
-         double probTrue = 0.3;
-         boolean a[][] = new boolean[N][N];
+        int pc = 0;
 
-         WarshallC2 w = new WarshallC2(nt);
+        int j, k;
 
-         Random rand = new Random();
-         for (i = 0; i < N; i++) {
-            for (j = 0; j < N; j++) {
-               a[i][j] = (rand.nextDouble() <= probTrue);
-            }
-         }
-         long start = System.currentTimeMillis();
-         a = w.closure(a);
-         System.out.println("WarshallC2\t" + N + "\t" + nt + "\t"
-               + (System.currentTimeMillis() - start));
-      }
-   }
+        Row(boolean[] row, int myRowNumber, Future[] row_k_step_k,
+            Accumulator done) {
+            this.row = row;
+            this.myRowNumber = myRowNumber;
+            this.row_k_step_k = row_k_step_k;
+            this.done = done;
+        }
+
+        public void run() {
+            boolean[] row_k;
+            for (; ; )
+                try {
+                    switch (pc) {
+                        case 0:
+                            k = 0;
+                            pc = 1;
+                        case 1:
+                            if (k >= row_k_step_k.length) {
+                                boolean[][] result = (boolean[][]) done.getData();
+                                result[myRowNumber] = row;
+                                done.signal();
+                                return;
+                            }
+                            if (k == myRowNumber) {
+                                row_k_step_k[k].setValue(row.clone());
+                                k++;
+                                continue;
+                            }
+                            if (!row[k]) {
+                                k++;
+                                continue;
+                            }
+                            pc = 2;
+                            if (!row_k_step_k[k].isSet()) {
+                                row_k_step_k[k].runDelayed(this);
+                                return;
+                            }
+                        case 2:
+                            row_k = (boolean[]) row_k_step_k[k].getValue();
+                            for (j = 0; j < row.length; j++) {
+                                row[j] |= row_k[j];
+                            }
+                            pc = 1;
+                            k++;
+                            continue;
+                    }// switch
+                } catch (InterruptedException ex) {
+                }
+        }
+    }
 }

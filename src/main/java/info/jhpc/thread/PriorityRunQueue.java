@@ -58,416 +58,405 @@ package info.jhpc.thread;
 
 public class PriorityRunQueue {
 
-   /**
-    * The number of elements in the heap of Runnable objects to execute.
-    */
+    /**
+     * The number of elements in the heap of Runnable objects to execute.
+     */
 
-   protected int N = 0;
+    protected int N = 0;
 
-   /**
-    * The heap of Runnable objects to execute.
-    */
+    /**
+     * The heap of Runnable objects to execute.
+     */
 
-   protected Runnable[] runnables = new Runnable[16];
+    protected Runnable[] runnables = new Runnable[16];
 
-   /**
-    * The priorities for the heap of Runnable objects to execute.
-    */
+    /**
+     * The priorities for the heap of Runnable objects to execute.
+     */
 
-   protected float[] priorities = new float[runnables.length];
+    protected float[] priorities = new float[runnables.length];
 
-   /**
-    * The number of threads currently waiting for Runnable objects to execute
-    * that have not been notified to wake up yet.
-    */
+    /**
+     * The number of threads currently waiting for Runnable objects to execute
+     * that have not been notified to wake up yet.
+     */
 
-   protected int numThreadsWaiting = 0;
+    protected int numThreadsWaiting = 0;
 
-   /**
-    * The number of threads currently waiting that have been notified to wake up
-    * because a Runnable object has been enqueued. numThreadsWaiting +
-    * numNotifies = Xeq threads waiting
-    */
+    /**
+     * The number of threads currently waiting that have been notified to wake up
+     * because a Runnable object has been enqueued. numThreadsWaiting +
+     * numNotifies = Xeq threads waiting
+     */
 
-   protected int numNotifies = 0;
+    protected int numNotifies = 0;
 
-   /**
-    * The maximum number of Xeq threads that can be waiting at a time for
-    * Runnable objects to execute. The default value is 1.
-    */
+    /**
+     * The maximum number of Xeq threads that can be waiting at a time for
+     * Runnable objects to execute. The default value is 1.
+     */
 
-   protected int maxThreadsWaiting = 1;
+    protected int maxThreadsWaiting = 1;
 
-   /**
-    * The number of Xeq threads currently in existence.
-    */
+    /**
+     * The number of Xeq threads currently in existence.
+     */
 
-   protected int numThreadsCreated = 0;
+    protected int numThreadsCreated = 0;
 
-   /**
-    * Whether the Xeq threads should continue.
-    */
+    /**
+     * Whether the Xeq threads should continue.
+     */
 
-   protected boolean goOn = true;
+    protected boolean goOn = true;
 
-   /**
-    * The maximum number of threads that can be created at a time to execute
-    * Runnable objects. The default value is 1.
-    */
+    /**
+     * The maximum number of threads that can be created at a time to execute
+     * Runnable objects. The default value is 1.
+     */
 
-   protected int maxThreadsCreated = 1;
+    protected int maxThreadsCreated = 1;
 
-   /**
-    * Whether to make the Xeq threads daemons.
-    */
+    /**
+     * Whether to make the Xeq threads daemons.
+     */
 
-   protected volatile boolean makeDaemon = true;
+    protected volatile boolean makeDaemon = true;
 
-   /**
-    * The priority at which Xeq threads run.
-    */
+    /**
+     * The priority at which Xeq threads run.
+     */
 
-   protected int xeqPriority = Thread.NORM_PRIORITY;
+    protected int xeqPriority = Thread.NORM_PRIORITY;
 
-   /**
-    * The number of milliseconds Xeq wait for something to run before
-    * terminating themselves.
-    */
+    /**
+     * The number of milliseconds Xeq wait for something to run before
+     * terminating themselves.
+     */
 
-   protected long waitTime = 600000; // 10 min.
+    protected long waitTime = 600000; // 10 min.
 
-   /**
-    * Create a PriorityRunQueue with the default maximum number of Xeq threads
-    * that can be created at a time and a maximum number that can be waiting at
-    * any one time for more Runnable objects to execute.
-    */
+    /**
+     * Create a PriorityRunQueue with the default maximum number of Xeq threads
+     * that can be created at a time and a maximum number that can be waiting at
+     * any one time for more Runnable objects to execute.
+     */
 
-   public PriorityRunQueue() {
-   }
+    public PriorityRunQueue() {
+    }
 
-   /**
-    * Create a PriorityRunQueue with a specified maximum number of Xeq threads
-    * that can be created at a time.
-    *
-    * @param maxCreatable
-    *           Initial value for maxThreadsCreated.
-    */
+    /**
+     * Create a PriorityRunQueue with a specified maximum number of Xeq threads
+     * that can be created at a time.
+     *
+     * @param maxCreatable Initial value for maxThreadsCreated.
+     */
 
-   public PriorityRunQueue(int maxCreatable) {
-      maxThreadsCreated = maxCreatable;
-   }
+    public PriorityRunQueue(int maxCreatable) {
+        maxThreadsCreated = maxCreatable;
+    }
 
-   /**
-    * Create a PriorityRunQueue with a specified maximum number of Xeq threads
-    * that can be created at a time and a maximum number that can be waiting at
-    * any one time for more Runnable objects to execute.
-    *
-    * @param maxCreatable
-    *           Initial value for maxThreadsCreated.
-    * @param maxWaiting
-    *           Initial value for maxThreadsWaiting.
-    */
+    /**
+     * Create a PriorityRunQueue with a specified maximum number of Xeq threads
+     * that can be created at a time and a maximum number that can be waiting at
+     * any one time for more Runnable objects to execute.
+     *
+     * @param maxCreatable Initial value for maxThreadsCreated.
+     * @param maxWaiting   Initial value for maxThreadsWaiting.
+     */
 
-   public PriorityRunQueue(int maxCreatable, int maxWaiting) {
-      maxThreadsCreated = maxCreatable;
-      maxThreadsWaiting = maxWaiting;
-   }
+    public PriorityRunQueue(int maxCreatable, int maxWaiting) {
+        maxThreadsCreated = maxCreatable;
+        maxThreadsWaiting = maxWaiting;
+    }
 
-   /**
-    * A thread that will dequeue and run Runnable objects in the
-    * PriorityRunQueue.
-    */
+    /**
+     * Enqueue an object to be run when a thread becomes available.
+     *
+     * @param runnable The Runnable object to be enqueued for execution.
+     */
 
-   protected class Xeq extends Thread {
-      public void run() {
-         Runnable r;
-         try {
-            while (goOn) {
-               r = dequeue();
-               r.run();
+    public void put(Runnable runnable, double priority) {
+        boolean createThread = false;
+        synchronized (this) {
+            N++;
+            if (N >= runnables.length) {
+                Runnable[] newRunnables = new Runnable[2 * runnables.length];
+                System.arraycopy(runnables, 0, newRunnables, 0, runnables.length);
+                float[] newPriorities = new float[2 * runnables.length];
+                System.arraycopy(priorities, 0, newPriorities, 0, priorities.length);
+                runnables = newRunnables;
+                priorities = newPriorities;
             }
-         } catch (InterruptedException ie) {// nothing
-         } catch (Exception e) {
-            e.printStackTrace();
-         }
-         numThreadsCreated--;
-      }
-   }
+            runnables[N] = runnable;
+            priorities[N] = (float) priority;
+            siftDown(N);
 
-   /**
-    * Enqueue an object to be run when a thread becomes available.
-    *
-    * @param runnable
-    *           The Runnable object to be enqueued for execution.
-    */
-
-   public void put(Runnable runnable, double priority) {
-      boolean createThread = false;
-      synchronized (this) {
-         N++;
-         if (N >= runnables.length) {
-            Runnable[] newRunnables = new Runnable[2 * runnables.length];
-            System.arraycopy(runnables, 0, newRunnables, 0, runnables.length);
-            float[] newPriorities = new float[2 * runnables.length];
-            System.arraycopy(priorities, 0, newPriorities, 0, priorities.length);
-            runnables = newRunnables;
-            priorities = newPriorities;
-         }
-         runnables[N] = runnable;
-         priorities[N] = (float) priority;
-         siftDown(N);
-
-         if (numThreadsWaiting > 0) {
-            numThreadsWaiting--;
-            numNotifies++;
-            notify();
-         } else if (numThreadsCreated < maxThreadsCreated) {
-            // was: if (nt==0 && numThreadsCreated<maxThreadsCreated) {
-            numThreadsCreated++;
-            createThread = true;
-         }
-      }
-      if (createThread) {
-         Thread t = new Xeq();
-         // System.out.println("new Xeq():"+numThreadsCreated);
-         t.setPriority(xeqPriority);
-         t.start();
-      }
-   }
-
-   // ******************************************************************
-   protected void siftUp(int i, int n) {
-      int j, k;
-      for (j = i, k = 2 * j; k <= n; j = k, k = 2 * j) {
-         if (k < n && priorities[k] < priorities[k + 1])
-            k++;
-         if (priorities[j] < priorities[k]) {
-            exchange(j, k);
-         } else
-            break;
-      }
-   }
-
-   // ******************************************************************
-   protected void siftDown(int i) {
-      for (int j = i / 2; i > 1; i = j, j = i / 2) {
-         if (priorities[j] < priorities[i]) {
-            exchange(i, j);
-         } else
-            break;
-         // i=j;
-      }
-   }
-
-   // ******************************************************************
-   protected void exchange(int i, int j) {
-      float fltTmp = priorities[i];
-      priorities[i] = priorities[j];
-      priorities[j] = fltTmp;
-      Runnable runTmp = runnables[i];
-      runnables[i] = runnables[j];
-      runnables[j] = runTmp;
-   }
-
-   // ******************************************************************
-
-   /**
-    * Same as put(runnable, priority).
-    *
-    * @param runnable
-    *           The Runnable object to be enqueued for execution.
-    */
-
-   public void run(Runnable runnable, double priority) {
-      put(runnable, priority);
-   }
-
-   /**
-    * Removes and returns a Runnable object to be executed. Called by an Xeq
-    * thread.
-    * <p>
-    * Will wait for an object to run if the limit on waiting threads hasn't been
-    * reached. If it has, dequeue will throw an InterruptedException to kill the
-    * Xeq thread.
-    *
-    * @throws InterruptedException
-    *            To kill the Xeq thread if the limit of waiting threads has been
-    *            reached and there are no objects to run.
-    */
-
-   protected synchronized Runnable dequeue() throws InterruptedException {
-      Runnable runnable;
-      while (N == 0) {
-         if (numThreadsWaiting < maxThreadsWaiting) {
-            numThreadsWaiting++;
-            wait(waitTime);
-            if (numNotifies == 0 /* && N==0 */) {
-               numThreadsWaiting--;
-               throw new InterruptedException();
-            } else {
-               numNotifies--;
+            if (numThreadsWaiting > 0) {
+                numThreadsWaiting--;
+                numNotifies++;
+                notify();
+            } else if (numThreadsCreated < maxThreadsCreated) {
+                // was: if (nt==0 && numThreadsCreated<maxThreadsCreated) {
+                numThreadsCreated++;
+                createThread = true;
             }
-         } else { // terminate
-            throw new InterruptedException();
-         }
-      }
-      runnable = runnables[1];
-      runnables[1] = runnables[N];
-      priorities[1] = priorities[N];
-      N--;
-      siftUp(1, N);
-      return runnable;
-   }
+        }
+        if (createThread) {
+            Thread t = new Xeq();
+            // System.out.println("new Xeq():"+numThreadsCreated);
+            t.setPriority(xeqPriority);
+            t.start();
+        }
+    }
 
-   /**
-    * Set the limit on the number of threads created by this PriorityRunQueue
-    * object that may be waiting at any one time to run objects.
-    *
-    * @param n
-    *           The new limit.
-    */
+    // ******************************************************************
+    protected void siftUp(int i, int n) {
+        int j, k;
+        for (j = i, k = 2 * j; k <= n; j = k, k = 2 * j) {
+            if (k < n && priorities[k] < priorities[k + 1])
+                k++;
+            if (priorities[j] < priorities[k]) {
+                exchange(j, k);
+            } else
+                break;
+        }
+    }
 
-   public synchronized void setMaxThreadsWaiting(int n) {
-      maxThreadsWaiting = n;
-      numNotifies += numThreadsWaiting;
-      numThreadsWaiting = 0;
-      notifyAll();
-   }
+    // ******************************************************************
+    protected void siftDown(int i) {
+        for (int j = i / 2; i > 1; i = j, j = i / 2) {
+            if (priorities[j] < priorities[i]) {
+                exchange(i, j);
+            } else
+                break;
+            // i=j;
+        }
+    }
 
-   /**
-    * Set the limit on the number of threads that may be created by this
-    * PriorityRunQueue object at any one time to run objects.
-    *
-    * @param n
-    *           The new limit.
-    */
+    // ******************************************************************
+    protected void exchange(int i, int j) {
+        float fltTmp = priorities[i];
+        priorities[i] = priorities[j];
+        priorities[j] = fltTmp;
+        Runnable runTmp = runnables[i];
+        runnables[i] = runnables[j];
+        runnables[j] = runTmp;
+    }
 
-   public void setMaxThreadsCreated(int n) {
-      maxThreadsCreated = n;
-   }
+    /**
+     * Same as put(runnable, priority).
+     *
+     * @param runnable The Runnable object to be enqueued for execution.
+     */
 
-   /**
-    * Get the limit on the number of threads created to process objects that may
-    * be waiting for new objects to process.
-    *
-    * @return maxThreadsWaiting
-    */
+    public void run(Runnable runnable, double priority) {
+        put(runnable, priority);
+    }
 
-   public int getMaxThreadsWaiting() {
-      return maxThreadsWaiting;
-   }
+    // ******************************************************************
 
-   /**
-    * Get the limit on the number of threads that may be created to process
-    * objects.
-    *
-    * @return maxThreadsCreated
-    */
+    /**
+     * Removes and returns a Runnable object to be executed. Called by an Xeq
+     * thread.
+     * <p>
+     * Will wait for an object to run if the limit on waiting threads hasn't been
+     * reached. If it has, dequeue will throw an InterruptedException to kill the
+     * Xeq thread.
+     *
+     * @throws InterruptedException To kill the Xeq thread if the limit of waiting threads has been
+     *                              reached and there are no objects to run.
+     */
 
-   public int getMaxThreadsCreated() {
-      return maxThreadsCreated;
-   }
+    protected synchronized Runnable dequeue() throws InterruptedException {
+        Runnable runnable;
+        while (N == 0) {
+            if (numThreadsWaiting < maxThreadsWaiting) {
+                numThreadsWaiting++;
+                wait(waitTime);
+                if (numNotifies == 0 /* && N==0 */) {
+                    numThreadsWaiting--;
+                    throw new InterruptedException();
+                } else {
+                    numNotifies--;
+                }
+            } else { // terminate
+                throw new InterruptedException();
+            }
+        }
+        runnable = runnables[1];
+        runnables[1] = runnables[N];
+        priorities[1] = priorities[N];
+        N--;
+        siftUp(1, N);
+        return runnable;
+    }
 
-   /**
-    * Get the number of threads that have been created by this PriorityRunQueue
-    * to process objects and which are waiting to process more such objects.
-    *
-    * @return numThreadsWaiting
-    */
+    /**
+     * Get the limit on the number of threads created to process objects that may
+     * be waiting for new objects to process.
+     *
+     * @return maxThreadsWaiting
+     */
 
-   public int getNumThreadsWaiting() {
-      return numThreadsWaiting;
-   }
+    public int getMaxThreadsWaiting() {
+        return maxThreadsWaiting;
+    }
 
-   /**
-    * Get the number of existing threads that have been created by this
-    * PriorityRunQueue to process objects.
-    *
-    * @return numThreadsCreated
-    */
+    /**
+     * Set the limit on the number of threads created by this PriorityRunQueue
+     * object that may be waiting at any one time to run objects.
+     *
+     * @param n The new limit.
+     */
 
-   public int getNumThreadsCreated() {
-      return numThreadsCreated;
-   }
+    public synchronized void setMaxThreadsWaiting(int n) {
+        maxThreadsWaiting = n;
+        numNotifies += numThreadsWaiting;
+        numThreadsWaiting = 0;
+        notifyAll();
+    }
 
-   /**
-    * Same as setMaxThreadsWaiting(0). Any waiting user threads would prevent
-    * the system from terminating. This does not force the queue to stop running
-    * threads.
-    */
+    /**
+     * Get the limit on the number of threads that may be created to process
+     * objects.
+     *
+     * @return maxThreadsCreated
+     */
 
-   public synchronized void terminate() throws InterruptedException {
-      goOn = false;
-      setMaxThreadsWaiting(0);
-      while (numThreadsCreated > 0)
-         wait(10);
-   }
+    public int getMaxThreadsCreated() {
+        return maxThreadsCreated;
+    }
 
-   /**
-    * Set the time limit an Xeq thread is to wait for a Runnable.
-    *
-    * @param n
-    *           The new limit.
-    */
+    /**
+     * Set the limit on the number of threads that may be created by this
+     * PriorityRunQueue object at any one time to run objects.
+     *
+     * @param n The new limit.
+     */
 
-   public synchronized void setWaitTime(long n) {
-      waitTime = n;
-      numNotifies += numThreadsWaiting;
-      numThreadsWaiting = 0;
-      notifyAll();
-   }
+    public void setMaxThreadsCreated(int n) {
+        maxThreadsCreated = n;
+    }
 
-   /**
-    * Get the time limit an Xeq thread is to wait for a Runnable.
-    *
-    * @return waitTime
-    */
+    /**
+     * Get the number of threads that have been created by this PriorityRunQueue
+     * to process objects and which are waiting to process more such objects.
+     *
+     * @return numThreadsWaiting
+     */
 
-   public long getWaitTime() {
-      return waitTime;
-   }
+    public int getNumThreadsWaiting() {
+        return numThreadsWaiting;
+    }
 
-   /**
-    * Set the priority at which the Runnables are to execute.
-    *
-    * @param n
-    *           The new priority.
-    */
+    /**
+     * Get the number of existing threads that have been created by this
+     * PriorityRunQueue to process objects.
+     *
+     * @return numThreadsCreated
+     */
 
-   public void setPriority(int n) {
-      xeqPriority = n;
-   }
+    public int getNumThreadsCreated() {
+        return numThreadsCreated;
+    }
 
-   /**
-    * Get the priority at which the Runnables are to execute.
-    *
-    * @return priority
-    */
+    /**
+     * Same as setMaxThreadsWaiting(0). Any waiting user threads would prevent
+     * the system from terminating. This does not force the queue to stop running
+     * threads.
+     */
 
-   public int getPriority() {
-      return xeqPriority;
-   }
+    public synchronized void terminate() throws InterruptedException {
+        goOn = false;
+        setMaxThreadsWaiting(0);
+        while (numThreadsCreated > 0)
+            wait(10);
+    }
 
-   /**
-    * Set whether the created threads will be daemons.
-    *
-    * @param d
-    *           True if the created threads are to be daemon threads; false if
-    *           user threads.
-    */
+    /**
+     * Get the time limit an Xeq thread is to wait for a Runnable.
+     *
+     * @return waitTime
+     */
 
-   public void setDaemon(boolean d) {
-      makeDaemon = d;
-   }
+    public long getWaitTime() {
+        return waitTime;
+    }
 
-   /**
-    * Find out whether the created threads are daemons.
-    *
-    * @return true if the created threads are daemons.
-    */
+    /**
+     * Set the time limit an Xeq thread is to wait for a Runnable.
+     *
+     * @param n The new limit.
+     */
 
-   public boolean getDaemon() {
-      return makeDaemon;
-   }
+    public synchronized void setWaitTime(long n) {
+        waitTime = n;
+        numNotifies += numThreadsWaiting;
+        numThreadsWaiting = 0;
+        notifyAll();
+    }
+
+    /**
+     * Get the priority at which the Runnables are to execute.
+     *
+     * @return priority
+     */
+
+    public int getPriority() {
+        return xeqPriority;
+    }
+
+    /**
+     * Set the priority at which the Runnables are to execute.
+     *
+     * @param n The new priority.
+     */
+
+    public void setPriority(int n) {
+        xeqPriority = n;
+    }
+
+    /**
+     * Find out whether the created threads are daemons.
+     *
+     * @return true if the created threads are daemons.
+     */
+
+    public boolean getDaemon() {
+        return makeDaemon;
+    }
+
+    /**
+     * Set whether the created threads will be daemons.
+     *
+     * @param d True if the created threads are to be daemon threads; false if
+     *          user threads.
+     */
+
+    public void setDaemon(boolean d) {
+        makeDaemon = d;
+    }
+
+    /**
+     * A thread that will dequeue and run Runnable objects in the
+     * PriorityRunQueue.
+     */
+
+    protected class Xeq extends Thread {
+        public void run() {
+            Runnable r;
+            try {
+                while (goOn) {
+                    r = dequeue();
+                    r.run();
+                }
+            } catch (InterruptedException ie) {// nothing
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            numThreadsCreated--;
+        }
+    }
 
 }

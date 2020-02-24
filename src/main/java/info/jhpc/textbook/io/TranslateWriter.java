@@ -47,72 +47,73 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 public class TranslateWriter extends FilterWriter {
-   private String from;
-   private String to;
-   private static char[] oneChar;
-   private static char[] charArray;
+    private static char[] oneChar;
+    private static char[] charArray;
 
-   static {
-      oneChar = new char[1];
-   }
+    static {
+        oneChar = new char[1];
+    }
 
-   public TranslateWriter(Writer w, String from, String to) {
-      super(w);
-      this.from = from;
-      this.to = to;
-   }
+    private String from;
+    private String to;
 
-   public TranslateWriter(Writer w) {
-      super(w);
-      String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      String lower = "abcdefghijklmnopqrstuvwxyz";
+    public TranslateWriter(Writer w, String from, String to) {
+        super(w);
+        this.from = from;
+        this.to = to;
+    }
 
-      this.from = upper + lower;
-      this.to = lower + upper;
-   }
+    public TranslateWriter(Writer w) {
+        super(w);
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = "abcdefghijklmnopqrstuvwxyz";
 
-   /*
-    * All write operations are implemented in terms of the write(char[],int,int)
-    * method.
-    */
+        this.from = upper + lower;
+        this.to = lower + upper;
+    }
 
-   public void write(int c) throws IOException {
-      oneChar[0] = (char) c;
-      write(oneChar, 0, 1);
-   }
+    /*
+     * All write operations are implemented in terms of the write(char[],int,int)
+     * method.
+     */
 
-   public void write(char[] cbuf, int off, int len) throws IOException {
-      if (cbuf == null)
-         throw new IOException();
+    public static void main(String[] args) throws IOException {
+        OutputStreamWriter osw = new OutputStreamWriter(System.out);
+        TranslateWriter translateWriter = new TranslateWriter(osw);
 
-      int i;
-      for (i = 0; i < cbuf.length; i++) {
-         int mapIndex = from.indexOf(cbuf[i]);
-         if (mapIndex >= 0)
-            cbuf[i] = to.charAt(mapIndex);
-      }
-      super.write(cbuf, off, len);
-   }
+        try {
+            translateWriter.write("George K. Thiruvathukal\n");
+            translateWriter.flush();
+            // if you do not flush() System.out, you may see no output.
+        } catch (Exception e) {
+            System.err.println("Could not write to translate writer.");
+            System.exit(1);
+        }
+        translateWriter.close();
+    }
 
-   public void write(String s, int off, int len) throws IOException {
-      if (s == null)
-         throw new IOException();
-      charArray = s.toCharArray();
-      write(charArray, off, len);
-   }
+    public void write(int c) throws IOException {
+        oneChar[0] = (char) c;
+        write(oneChar, 0, 1);
+    }
 
-   public static void main(String[] args) throws IOException {
-      OutputStreamWriter osw = new OutputStreamWriter(System.out);
-      TranslateWriter translateWriter = new TranslateWriter(osw);
+    public void write(char[] cbuf, int off, int len) throws IOException {
+        if (cbuf == null)
+            throw new IOException();
 
-      try {
-         translateWriter.write("George K. Thiruvathukal\n");
-         translateWriter.flush();
-         // if you do not flush() System.out, you may see no output.
-      } catch (Exception e) {
-         System.err.println("Could not write to translate writer.");
-         System.exit(1);
-      }
-      translateWriter.close();
-   }
+        int i;
+        for (i = 0; i < cbuf.length; i++) {
+            int mapIndex = from.indexOf(cbuf[i]);
+            if (mapIndex >= 0)
+                cbuf[i] = to.charAt(mapIndex);
+        }
+        super.write(cbuf, off, len);
+    }
+
+    public void write(String s, int off, int len) throws IOException {
+        if (s == null)
+            throw new IOException();
+        charArray = s.toCharArray();
+        write(charArray, off, len);
+    }
 }

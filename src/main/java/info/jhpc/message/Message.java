@@ -47,183 +47,182 @@ import java.util.Hashtable;
 
 // begin-class-Message
 public class Message {
-   private static boolean debug = true;
-   private static int maxDebugLevel = 1;
-   private static final String P_STRING = "S$";
-   private static final String P_INTEGER = "I$";
-   private static final String P_LONG = "L$";
-   private static final String P_BOOLEAN = "B$";
+    private static final String P_STRING = "S$";
+    private static final String P_INTEGER = "I$";
+    private static final String P_LONG = "L$";
+    private static final String P_BOOLEAN = "B$";
+    private static boolean debug = true;
+    private static int maxDebugLevel = 1;
+    private Hashtable<Object, String> parameters = new Hashtable<Object, String>();
+    private int type = 0;
+    private int tag = 0;
+    private int length = 0;
 
-   private Hashtable<Object, String> parameters = new Hashtable<Object, String>();
-   private int type = 0;
-   private int tag = 0;
-   private int length = 0;
+    public Message() {
+        // nothing additional to do
+    }
 
-   public Message() {
-      // nothing additional to do
-   }
+    public static void log(int level, String function, String message) {
+        if (debug && level <= maxDebugLevel)
+            System.out.println("Message::" + function + "> " + message);
+    }
 
-   public static void log(int level, String function, String message) {
-      if (debug && level <= maxDebugLevel)
-         System.out.println("Message::" + function + "> " + message);
-   }
+    public static void main(String[] args) {
+        Message m1 = new Message();
+        Message m2 = new Message();
+        m1.setType(2);
+        m1.setTag(3);
+        m1.setStringParam("s1", "George");
+        m1.setBooleanParam("b2", true);
+        m1.setIntegerParam("i3", 100);
+        m1.setIntegerParam("i4", 100);
 
-   public void encode(DataOutputStream out) throws IOException {
-      // output a header
-      out.writeUTF("SMA");
-      // output length, type, tag
-      out.writeInt(length);
-      out.writeInt(type);
-      out.writeInt(tag);
-      // output # of pairs
-      out.writeInt(parameters.size());
-      // output pairs
-      Enumeration<Object> e = parameters.keys();
-      while (e.hasMoreElements()) {
-         String key = (String) e.nextElement();
-         out.writeUTF(key);
-         String value = parameters.get(key);
-         out.writeUTF(value);
-      }
-   }
+        try {
+            FileOutputStream fos = new FileOutputStream("m1.dat");
+            DataOutputStream dos = new DataOutputStream(fos);
+            m1.encode(dos);
+            fos.close();
+        } catch (Exception e) {
+            System.out.println("exception/m1.dat" + e);
+        }
+        System.out.println("Message written to m1.dat");
+        try {
+            FileInputStream fis = new FileInputStream("m1.dat");
+            DataInputStream dis = new DataInputStream(fis);
+            m2.decode(dis);
+            fis.close();
+        } catch (Exception e) {
+            System.out.println("exception/m2 " + e);
+        }
+        System.out.println("Read m2");
+        System.out.println("Message m1 " + m1);
+        System.out.println("Message m2 " + m2);
 
-   public void decode(DataInputStream in) throws IOException {
-      // read header
-      String header = in.readUTF();
-      if (!header.equals("SMA"))
-         throw new IOException();
-      // read length, type, tag
-      length = in.readInt();
-      type = in.readInt();
-      tag = in.readInt();
-      int parameterCount = in.readInt();
-      for (int i = 0; i < parameterCount; i++) {
-         String key = in.readUTF();
-         String value = in.readUTF();
-         parameters.put(key, value);
-      }
-   }
+    }
 
-   public void setType(int type) {
-      this.type = type;
-   }
+    public void encode(DataOutputStream out) throws IOException {
+        // output a header
+        out.writeUTF("SMA");
+        // output length, type, tag
+        out.writeInt(length);
+        out.writeInt(type);
+        out.writeInt(tag);
+        // output # of pairs
+        out.writeInt(parameters.size());
+        // output pairs
+        Enumeration<Object> e = parameters.keys();
+        while (e.hasMoreElements()) {
+            String key = (String) e.nextElement();
+            out.writeUTF(key);
+            String value = parameters.get(key);
+            out.writeUTF(value);
+        }
+    }
 
-   public int getType() {
-      return type;
-   }
+    public void decode(DataInputStream in) throws IOException {
+        // read header
+        String header = in.readUTF();
+        if (!header.equals("SMA"))
+            throw new IOException();
+        // read length, type, tag
+        length = in.readInt();
+        type = in.readInt();
+        tag = in.readInt();
+        int parameterCount = in.readInt();
+        for (int i = 0; i < parameterCount; i++) {
+            String key = in.readUTF();
+            String value = in.readUTF();
+            parameters.put(key, value);
+        }
+    }
 
-   public void setTag(int tag) {
-      this.tag = tag;
-   }
+    public int getType() {
+        return type;
+    }
 
-   public int getTag() {
-      return tag;
-   }
+    public void setType(int type) {
+        this.type = type;
+    }
 
-   public void setParam(String key, String value) {
-      parameters.put(P_STRING + key, value);
-   }
+    public int getTag() {
+        return tag;
+    }
 
-   public String getParam(String key) {
-      return parameters.get(P_STRING + key);
-   }
+    public void setTag(int tag) {
+        this.tag = tag;
+    }
 
-   public void setStringParam(String key, String value) {
-      parameters.put(P_STRING + key, value);
-   }
+    public void setParam(String key, String value) {
+        parameters.put(P_STRING + key, value);
+    }
 
-   public String getStringParam(String key) {
-      return parameters.get(P_STRING + key);
-   }
+    public String getParam(String key) {
+        return parameters.get(P_STRING + key);
+    }
 
-   public void setIntegerParam(String key, int value) {
-      parameters.put(P_INTEGER + key, value + "");
-   }
+    public void setStringParam(String key, String value) {
+        parameters.put(P_STRING + key, value);
+    }
 
-   public int getIntegerParam(String key) {
-      try {
-         return Integer.parseInt(parameters.get(P_INTEGER + key));
-      } catch (Exception e) {
-         return 0; // This cannot happen. I'm just making javac happy.
-      }
-   }
+    public String getStringParam(String key) {
+        return parameters.get(P_STRING + key);
+    }
 
-   public void setLongParam(String key, long value) {
-      parameters.put(P_LONG + key, value + "");
-   }
+    public void setIntegerParam(String key, int value) {
+        parameters.put(P_INTEGER + key, value + "");
+    }
 
-   public long getLongParam(String key) {
-      try {
-         return Long.parseLong(parameters.get(P_LONG + key));
-      } catch (Exception e) {
-         return 0; // This cannot happen. I'm just making javac happy.
-      }
-   }
+    public int getIntegerParam(String key) {
+        try {
+            return Integer.parseInt(parameters.get(P_INTEGER + key));
+        } catch (Exception e) {
+            return 0; // This cannot happen. I'm just making javac happy.
+        }
+    }
 
-   public void setBooleanParam(String key, boolean value) {
-      parameters.put(P_BOOLEAN + key, value + "");
-   }
+    public void setLongParam(String key, long value) {
+        parameters.put(P_LONG + key, value + "");
+    }
 
-   public boolean getBooleanParam(String key) {
-      String value = parameters.get(P_BOOLEAN + key);
-      return value.equals(true + "");
-   }
+    public long getLongParam(String key) {
+        try {
+            return Long.parseLong(parameters.get(P_LONG + key));
+        } catch (Exception e) {
+            return 0; // This cannot happen. I'm just making javac happy.
+        }
+    }
 
-   public void merge(Message m) {
-      Enumeration<Object> e = m.parameters.keys();
-      while (e.hasMoreElements()) {
-         Object key = e.nextElement();
-         parameters.put(key, m.parameters.get(key));
-      }
-   }
+    public void setBooleanParam(String key, boolean value) {
+        parameters.put(P_BOOLEAN + key, value + "");
+    }
 
-   public String toString() {
-      StringBuffer buffer = new StringBuffer();
-      buffer.append("Message {");
-      Enumeration<Object> e = parameters.keys();
-      while (e.hasMoreElements()) {
-         String key = (String)e.nextElement();
-         String value = parameters.get(key);
-         buffer.append(key);
-         buffer.append("=");
-         buffer.append(value);
-         if (e.hasMoreElements()) buffer.append(", ");
-      }
-      buffer.append("}");
-      return buffer.toString();
-   }
+    public boolean getBooleanParam(String key) {
+        String value = parameters.get(P_BOOLEAN + key);
+        return value.equals(true + "");
+    }
 
-   public static void main(String args[]) {
-      Message m1 = new Message();
-      Message m2 = new Message();
-      m1.setType(2);
-      m1.setTag(3);
-      m1.setStringParam("s1", "George");
-      m1.setBooleanParam("b2", true);
-      m1.setIntegerParam("i3", 100);
-      m1.setIntegerParam("i4", 100);
+    public void merge(Message m) {
+        Enumeration<Object> e = m.parameters.keys();
+        while (e.hasMoreElements()) {
+            Object key = e.nextElement();
+            parameters.put(key, m.parameters.get(key));
+        }
+    }
 
-      try {
-         FileOutputStream fos = new FileOutputStream("m1.dat");
-         DataOutputStream dos = new DataOutputStream(fos);
-         m1.encode(dos);
-         fos.close();
-      } catch (Exception e) {
-         System.out.println("exception/m1.dat" + e);
-      }
-      System.out.println("Message written to m1.dat");
-      try {
-         FileInputStream fis = new FileInputStream("m1.dat");
-         DataInputStream dis = new DataInputStream(fis);
-         m2.decode(dis);
-         fis.close();
-      } catch (Exception e) {
-         System.out.println("exception/m2 " + e);
-      }
-      System.out.println("Read m2");
-      System.out.println("Message m1 " + m1);
-      System.out.println("Message m2 " + m2);
-
-   }
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Message {");
+        Enumeration<Object> e = parameters.keys();
+        while (e.hasMoreElements()) {
+            String key = (String) e.nextElement();
+            String value = parameters.get(key);
+            buffer.append(key);
+            buffer.append("=");
+            buffer.append(value);
+            if (e.hasMoreElements()) buffer.append(", ");
+        }
+        buffer.append("}");
+        return buffer.toString();
+    }
 }
 // end-class-Message

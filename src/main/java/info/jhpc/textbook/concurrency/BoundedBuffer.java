@@ -44,67 +44,63 @@ package info.jhpc.textbook.concurrency;
 /**
  * A FIFO queue of Objects for communication between producer and consumer
  * threads.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 public class BoundedBuffer {
-   /**
-    * Position of first object in the buffer. (Actually hd%buffer.length.)
-    * Buffer is empty if hd==tl.
-    */
-   protected int hd = 0;
-   /**
-    * Position of next empty slot in the buffer. (Actually tl%buffer.length.)
-    * Buffer is empty if hd==tl.
-    */
-   protected int tl = 0;
-   /**
-    * Array conbtaining FIFO queue of objects.
-    */
-   protected Object[] buffer;
+    /**
+     * Position of first object in the buffer. (Actually hd%buffer.length.)
+     * Buffer is empty if hd==tl.
+     */
+    protected int hd = 0;
+    /**
+     * Position of next empty slot in the buffer. (Actually tl%buffer.length.)
+     * Buffer is empty if hd==tl.
+     */
+    protected int tl = 0;
+    /**
+     * Array conbtaining FIFO queue of objects.
+     */
+    protected Object[] buffer;
 
-   /**
-    * Create a buffer of the specified size.
-    * 
-    * @param size
-    *           Length of the buffer.
-    */
-   public BoundedBuffer(int size) {
-      buffer = new Object[size];
-   }
+    /**
+     * Create a buffer of the specified size.
+     *
+     * @param size Length of the buffer.
+     */
+    public BoundedBuffer(int size) {
+        buffer = new Object[size];
+    }
 
-   /**
-    * Put an object into the buffer. Wait until there is an empty slot
-    * available.
-    * 
-    * @param v
-    *           Object to insert into the buffer.
-    * @throws InterruptedException
-    *            If interrupted while waiting.
-    */
-   public synchronized void put(Object v) throws InterruptedException {
-      while (tl - hd >= buffer.length)
-         wait();
-      buffer[tl++ % buffer.length] = v;
-      notifyAll();
-   }
+    /**
+     * Put an object into the buffer. Wait until there is an empty slot
+     * available.
+     *
+     * @param v Object to insert into the buffer.
+     * @throws InterruptedException If interrupted while waiting.
+     */
+    public synchronized void put(Object v) throws InterruptedException {
+        while (tl - hd >= buffer.length)
+            wait();
+        buffer[tl++ % buffer.length] = v;
+        notifyAll();
+    }
 
-   /**
-    * Remove and return an object from the buffer. Wait until there is an object
-    * in the buffer to remove and return.
-    * 
-    * @return The object removed.
-    * @throws InterruptedException
-    *            If interrupted while waiting.
-    */
-   public synchronized Object get() throws InterruptedException {
-      Object v;
-      while (tl == hd)
-         wait();
-      v = buffer[hd % buffer.length];
-      buffer[hd++ % buffer.length] = null;
-      notifyAll();
-      return v;
-   }
+    /**
+     * Remove and return an object from the buffer. Wait until there is an object
+     * in the buffer to remove and return.
+     *
+     * @return The object removed.
+     * @throws InterruptedException If interrupted while waiting.
+     */
+    public synchronized Object get() throws InterruptedException {
+        Object v;
+        while (tl == hd)
+            wait();
+        v = buffer[hd % buffer.length];
+        buffer[hd++ % buffer.length] = null;
+        notifyAll();
+        return v;
+    }
 }

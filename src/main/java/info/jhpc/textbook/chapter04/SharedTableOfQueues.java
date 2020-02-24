@@ -26,73 +26,75 @@ package info.jhpc.textbook.chapter04;
 
 /* snipon: info.jhpc.textbook.chapter04.SharedTableOfQueues */
 
-import info.jhpc.thread.*;
-import java.util.*;
+import info.jhpc.thread.Monitor;
+import info.jhpc.thread.QueueComponent;
+
+import java.util.Hashtable;
 
 /* snip: all */
-class SharedTableOfQueues extends Monitor {
+public class SharedTableOfQueues extends Monitor {
 
-   Hashtable<Object, Folder> tbl = new Hashtable<Object, Folder>();
+    Hashtable<Object, Folder> tbl = new Hashtable<Object, Folder>();
 
-   private class Folder {
-      volatile QueueComponent q = new QueueComponent();
-
-      volatile Condition notEmpty = new Condition();
-
-      volatile int numWaiting = 0;
-   }
-
-   /* snip: put */
-   public void put(Object key, Object value) {
-      enter();
-      Folder f = tbl.get(key);
-      if (f == null)
-         tbl.put(key, f = new Folder());
-      f.q.put(value);
-      f.notEmpty.leaveWithSignal();
-   }
-
-   /* pins: put */
-
-   /* snip: get */
-   public Object get(Object key) throws InterruptedException {
-      Folder f = null;
-      enter();
-      try {
-         f = tbl.get(key);
-         if (f == null)
+    /* snip: put */
+    public void put(Object key, Object value) {
+        enter();
+        Folder f = tbl.get(key);
+        if (f == null)
             tbl.put(key, f = new Folder());
-         f.numWaiting++;
-         if (f.q.isEmpty())
-            f.notEmpty.await();
-         f.numWaiting--;
-         return f.q.get();
-      } finally {
-         if (f != null && f.q.isEmpty() && f.numWaiting == 0)
-            tbl.remove(key);
-         leave();
-      }
-   }
+        f.q.put(value);
+        f.notEmpty.leaveWithSignal();
+    }
 
-   /* pins: get */
+    /* snip: get */
+    public Object get(Object key) throws InterruptedException {
+        Folder f = null;
+        enter();
+        try {
+            f = tbl.get(key);
+            if (f == null)
+                tbl.put(key, f = new Folder());
+            f.numWaiting++;
+            if (f.q.isEmpty())
+                f.notEmpty.await();
+            f.numWaiting--;
+            return f.q.get();
+        } finally {
+            if (f != null && f.q.isEmpty() && f.numWaiting == 0)
+                tbl.remove(key);
+            leave();
+        }
+    }
 
-   /* snip: getSkip */
-   public Object getSkip(Object key) {
-      Folder f = null;
-      enter();
-      try {
-         f = tbl.get(key);
-         if (f == null || f.q.isEmpty()) {
-            return null;
-         }
-         return f.q.get();
-      } finally {
-         if (f != null && f.q.isEmpty() && f.numWaiting == 0)
-            tbl.remove(key);
-         leave();
-      }
-   }
-   /* pins: getSkip */
+    /* pins: put */
+
+    /* snip: getSkip */
+    public Object getSkip(Object key) {
+        Folder f = null;
+        enter();
+        try {
+            f = tbl.get(key);
+            if (f == null || f.q.isEmpty()) {
+                return null;
+            }
+            return f.q.get();
+        } finally {
+            if (f != null && f.q.isEmpty() && f.numWaiting == 0)
+                tbl.remove(key);
+            leave();
+        }
+    }
+
+    /* pins: get */
+
+    private class Folder {
+        volatile QueueComponent q = new QueueComponent();
+
+        volatile Condition notEmpty = new Condition();
+
+        volatile int numWaiting = 0;
+    }
+    /* pins: getSkip */
 
 }
 /* pins: all */

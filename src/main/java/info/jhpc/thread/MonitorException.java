@@ -50,16 +50,16 @@ package info.jhpc.thread;
  */
 
 public class MonitorException extends RuntimeException {
-   /**
-    *
-    */
-   private static final long serialVersionUID = 3701657508355132071L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 3701657508355132071L;
 
-   public MonitorException() {
-      super("Illegal operation by thread outside Monitor");
-   }
+    public MonitorException() {
+        super("Illegal operation by thread outside Monitor");
+    }
 
-   public MonitorException(String s) {
-      super(s + " by thread outside the Monitor");
-   }
+    public MonitorException(String s) {
+        super(s + " by thread outside the Monitor");
+    }
 }

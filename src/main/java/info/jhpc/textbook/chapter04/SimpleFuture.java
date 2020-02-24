@@ -26,54 +26,54 @@ package info.jhpc.textbook.chapter04;
 
 /* snipon: info.jhpc.textbook.chapter04.SimpleFuture */
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Monitor;
 
 /* snip: all */
 public class SimpleFuture extends Monitor {
 
-   private volatile Object value;
+    private volatile Object value;
 
-   private Condition is_set = new Condition();
+    private Condition is_set = new Condition();
 
-   public SimpleFuture() {
-      value = this;
-   }
+    public SimpleFuture() {
+        value = this;
+    }
 
-   public SimpleFuture(Object val) {
-      value = val;
-   }
+    public SimpleFuture(Object val) {
+        value = val;
+    }
 
-   public Object getValue() throws InterruptedException {
-      try {
-         enter();
-         if (value == this)
-            is_set.await();
-         is_set.leaveWithSignal();
-         return value;
-      } catch (InterruptedException ie) {
-         leave();
-         throw ie;
-      }
-   }
+    public Object getValue() throws InterruptedException {
+        try {
+            enter();
+            if (value == this)
+                is_set.await();
+            is_set.leaveWithSignal();
+            return value;
+        } catch (InterruptedException ie) {
+            leave();
+            throw ie;
+        }
+    }
 
-   public boolean isSet() {
-      enter();
-      try {
-         return (value != this);
-      } finally {
-         leave();
-      }
-   }
+    public void setValue(Object val) {
+        enter();
+        if (value != this) {
+            leave();
+            return;
+        }
+        value = val;
+        is_set.leaveWithSignal();
+    }
 
-   public void setValue(Object val) {
-      enter();
-      if (value != this) {
-         leave();
-         return;
-      }
-      value = val;
-      is_set.leaveWithSignal();
-   }
+    public boolean isSet() {
+        enter();
+        try {
+            return (value != this);
+        } finally {
+            leave();
+        }
+    }
 
 }
 /* pins: all */

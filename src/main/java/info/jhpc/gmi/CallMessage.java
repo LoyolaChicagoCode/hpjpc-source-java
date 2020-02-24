@@ -44,66 +44,63 @@ package info.jhpc.gmi;
 import java.io.Serializable;
 
 public abstract class CallMessage implements Serializable {
-   /**
-    *
-    */
-   private static final long serialVersionUID = -1984358643551609711L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -1984358643551609711L;
 
-   /**
-    * The name of the remote object. This must correspond to the name of an
-    * object that was bound and registered.
-    */
-   protected String target;
+    /**
+     * The name of the remote object. This must correspond to the name of an
+     * object that was bound and registered.
+     */
+    protected String target;
 
-   private String ticket;
+    private String ticket;
 
-   /**
-    * establish a tag for use in a remote call.
-    *
-    * @param ticket
-    *           the tag
-    */
-   public void setTicket(String ticket) {
-      this.ticket = ticket;
-   }
+    /**
+     * Constructs a Call message with an invocation target in mind.
+     *
+     * @param target the name of a remote object.
+     */
 
-   /**
-    * get the tag for a remote call
-    */
-   public String getTicket() {
-      return ticket;
-   }
+    public CallMessage(String target) {
+        this.target = target;
+    }
 
-   /**
-    * Constructs a Call message with an invocation target in mind.
-    *
-    * @param target
-    *           the name of a remote object.
-    */
+    /**
+     * get the tag for a remote call
+     */
+    public String getTicket() {
+        return ticket;
+    }
 
-   public CallMessage(String target) {
-      this.target = target;
-   }
+    /**
+     * establish a tag for use in a remote call.
+     *
+     * @param ticket the tag
+     */
+    public void setTicket(String ticket) {
+        this.ticket = ticket;
+    }
 
-   /**
-    * Change the invocation target. This allows a call message to be reused to
-    * make multiple calls to different objects.
-    *
-    * @param target
-    *           the name of a remote object.
-    */
-   public void setTarget(String target) {
-      this.target = target;
-   }
+    /**
+     * Get the invocation target. This method cannot be overridden as GMI depends
+     * on it to determine the name of the object to be called.
+     *
+     * @return the invocation target.
+     */
+    public final String getTarget() {
+        return target;
+    }
 
-   /**
-    * Get the invocation target. This method cannot be overridden as GMI depends
-    * on it to determine the name of the object to be called.
-    *
-    * @return the invocation target.
-    */
-   public final String getTarget() {
-      return target;
-   }
+    /**
+     * Change the invocation target. This allows a call message to be reused to
+     * make multiple calls to different objects.
+     *
+     * @param target the name of a remote object.
+     */
+    public void setTarget(String target) {
+        this.target = target;
+    }
 
 }

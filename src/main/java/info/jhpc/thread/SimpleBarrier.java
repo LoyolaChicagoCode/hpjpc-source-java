@@ -43,7 +43,7 @@ package info.jhpc.thread;
 
 /**
  * Allows multiple threads to gather at a point before proceeding.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
@@ -51,44 +51,42 @@ package info.jhpc.thread;
 // begin-class-SimpleBarrier
 
 public class SimpleBarrier {
-   /**
-    * Number of threads that still must gather.
-    */
-   protected int count;
-   /**
-    * Total number of threads that must gather.
-    */
-   protected int initCount;
+    /**
+     * Number of threads that still must gather.
+     */
+    protected int count;
+    /**
+     * Total number of threads that must gather.
+     */
+    protected int initCount;
 
-   /**
-    * Creates a Barrier at which n threads may repeatedly gather.
-    * 
-    * @param n
-    *           total number of threads that must gather.
-    */
+    /**
+     * Creates a Barrier at which n threads may repeatedly gather.
+     *
+     * @param n total number of threads that must gather.
+     */
 
-   public SimpleBarrier(int n) {
-      if (n <= 0)
-         throw new IllegalArgumentException(
-               "Barrier initialization specified non-positive value " + n);
-      initCount = count = n;
-   }
+    public SimpleBarrier(int n) {
+        if (n <= 0)
+            throw new IllegalArgumentException(
+                    "Barrier initialization specified non-positive value " + n);
+        initCount = count = n;
+    }
 
-   /**
-    * Is called by a thread to wait for the rest of the n threads to gather
-    * before the set of threads may continue executing.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting.
-    */
-   public synchronized void gather() throws InterruptedException {
-      if (--count > 0)
-         wait();
-      else {
-         count = initCount;
-         notifyAll();
-      }
-   }
+    /**
+     * Is called by a thread to wait for the rest of the n threads to gather
+     * before the set of threads may continue executing.
+     *
+     * @throws InterruptedException If interrupted while waiting.
+     */
+    public synchronized void gather() throws InterruptedException {
+        if (--count > 0)
+            wait();
+        else {
+            count = initCount;
+            notifyAll();
+        }
+    }
 }
 
 // end-class-SimpleBarrier

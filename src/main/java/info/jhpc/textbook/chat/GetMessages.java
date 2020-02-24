@@ -48,21 +48,21 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class GetMessages extends CallMessage implements Serializable {
 
-   String sessionId;
-   int max;
+    String sessionId;
+    int max;
 
-   GetMessages(String target, String sessionId, int max) {
-      super(target);
-      this.sessionId = sessionId;
-      this.max = max;
-   }
+    GetMessages(String target, String sessionId, int max) {
+        super(target);
+        this.sessionId = sessionId;
+        this.max = max;
+    }
 
-   public String getSessionId() {
-      return sessionId;
-   }
+    public String getSessionId() {
+        return sessionId;
+    }
 
-   public int getMax() {
-      return max;
-   }
+    public int getMax() {
+        return max;
+    }
 
 }

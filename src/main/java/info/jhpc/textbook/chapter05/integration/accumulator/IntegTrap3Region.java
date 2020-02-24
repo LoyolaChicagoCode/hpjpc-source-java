@@ -23,11 +23,11 @@
  Boston, MA  02111-1307, USA.
  */
 /**
- * This class defines the operations that a single thread 
- * performsin calulcating the area under a function based 
- * on a specified range. The class implements Runnable as 
- * opposed to extending thread in order to be compatible 
- * with the RunQueue abstratction.  This is part of the 
+ * This class defines the operations that a single thread
+ * performsin calulcating the area under a function based
+ * on a specified range. The class implements Runnable as
+ * opposed to extending thread in order to be compatible
+ * with the RunQueue abstratction.  This is part of the
  * second version of the ItegTrap program.
  *
  * @author John Shafaee & Thomas Christopher
@@ -36,63 +36,63 @@
 
 package info.jhpc.textbook.chapter05.integration.accumulator;
 
-import info.jhpc.thread.*;
+import info.jhpc.thread.Accumulator;
 
 class IntegTrap3Region implements Runnable {
 
-   // Provate variables used in calculating a specified region
-   private String name;
+    // Privte variables used in calculating a specified region
+    private String name;
 
-   private double x_start, x_end;
+    private double x_start, x_end;
 
-   private int granularity;
+    private int granularity;
 
-   private F_of_x f;
+    private F_of_x f;
 
-   private Accumulator result;
+    private Accumulator result;
 
-   /**
-    * Constructor
-    */
-   public IntegTrap3Region(double x_start, double x_end, int granularity,
-         F_of_x f, Accumulator result) {
+    /**
+     * Constructor
+     */
+    public IntegTrap3Region(double x_start, double x_end, int granularity,
+                            F_of_x f, Accumulator result) {
 
-      this.name = new String(x_start + "-" + x_end);
-      this.x_start = x_start;
-      this.x_end = x_end;
-      this.granularity = granularity;
-      this.f = f;
-      this.result = result;
-   }
+        this.name = x_start + "-" + x_end;
+        this.x_start = x_start;
+        this.x_end = x_end;
+        this.granularity = granularity;
+        this.f = f;
+        this.result = result;
+    }
 
-   /**
-    * This is the method that is implemented as directed by the Runnable
-    * interface. The code within this method is called when the thread is
-    * started. All of the calculations that the thread will perform are defined
-    * within this method. The equation used to calculate the area of the
-    * trapazoid is defined as a seperate provate method.
-    */
-   public void run() {
+    /**
+     * This is the method that is implemented as directed by the Runnable
+     * interface. The code within this method is called when the thread is
+     * started. All of the calculations that the thread will perform are defined
+     * within this method. The equation used to calculate the area of the
+     * trapazoid is defined as a seperate provate method.
+     */
+    public void run() {
 
-      System.out.println("Thread: " + this.name + " started!");
+        System.out.println("Thread: " + this.name + " started!");
 
-      double area = 0.0d;
-      double range = x_end - x_start;
-      double g = granularity;
+        double area = 0.0d;
+        double range = x_end - x_start;
+        double g = granularity;
 
-      for (int i = granularity - 1; i > 0; i--) {
-         area += f.f((i / g) * range + x_start);
-      }
-      area += (f.f(x_start) + f.f(x_end)) / 2.0;
-      area = area * (range / g);
+        for (int i = granularity - 1; i > 0; i--) {
+            area += f.f((i / g) * range + x_start);
+        }
+        area += (f.f(x_start) + f.f(x_end)) / 2.0;
+        area = area * (range / g);
 
-      synchronized (result) {
-         result.setData(new Double(area
-               + ((Double) result.getData()).doubleValue()));
-      }
-      result.signal();
+        synchronized (result) {
+            result.setData(new Double(area
+                    + ((Double) result.getData()).doubleValue()));
+        }
+        result.signal();
 
-      System.out.println("Thread: " + this.name + " completed! ");
-   }
+        System.out.println("Thread: " + this.name + " completed! ");
+    }
 
 }

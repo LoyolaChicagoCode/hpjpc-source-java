@@ -25,5 +25,5 @@
 package info.jhpc.textbook.chapter07;
 
 interface Op2 {
-   public void op(Object lopnd, Object ropnd);
+    void op(Object lopnd, Object ropnd);
 }

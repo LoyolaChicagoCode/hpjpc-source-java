@@ -25,7 +25,7 @@
 /**
  * Defines the exception thrown when the specified range is
  * in decreasing order.
- *
+ * <p>
  * Written by: John Shafaee
  * Date: July 5, 1999
  */
@@ -34,7 +34,7 @@ package info.jhpc.textbook.chapter05.integration.threaded;
 
 @SuppressWarnings("serial")
 public class BadThreadCountException extends IllegalArgumentException {
-   public BadThreadCountException() {
-      super("Thread count must be atleast 1.");
-   }
+    public BadThreadCountException() {
+        super("Thread count must be atleast 1.");
+    }
 }

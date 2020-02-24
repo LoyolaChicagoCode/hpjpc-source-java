@@ -43,17 +43,16 @@ package info.jhpc.thread;
 
 /**
  * Interface implemented by Monitor.Lock.
- * 
+ *
  * @author Thomas W. Christopher (Tools of Computing LLC)
  * @version 0.2 Beta
  */
 
 public interface MonitorLock {
-   /**
-    * Enter the monitor again after an earlier release.
-    * 
-    * @throws InterruptedException
-    *            If interrupted while waiting to enter.
-    */
-   public void reacquire() throws InterruptedException, MonitorException;
+    /**
+     * Enter the monitor again after an earlier release.
+     *
+     * @throws InterruptedException If interrupted while waiting to enter.
+     */
+    void reacquire() throws InterruptedException, MonitorException;
 }
