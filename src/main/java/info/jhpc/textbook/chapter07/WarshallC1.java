@@ -30,7 +30,7 @@ import info.jhpc.thread.Future;
 
 import java.util.Random;
 
-class WarshallC1 {
+public class WarshallC1 {
 
     public boolean[][] closure(boolean[][] a) {
         int i;

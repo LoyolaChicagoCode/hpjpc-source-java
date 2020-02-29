@@ -27,7 +27,7 @@ package info.jhpc.textbook.chapter09;
 import info.jhpc.thread.IndexedKey;
 import info.jhpc.thread.SharedTableOfQueues;
 
-class BarrierTQ {
+public class BarrierTQ {
     private IndexedKey initialKey = IndexedKey.unique(0);
 
     private SharedTableOfQueues stoq = new SharedTableOfQueues();

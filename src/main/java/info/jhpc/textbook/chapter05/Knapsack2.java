@@ -31,7 +31,7 @@ import info.jhpc.thread.TerminationGroup;
 
 import java.util.BitSet;
 
-class Knapsack2 {
+public class Knapsack2 {
     int LEVELS;
     BitSet selected;
     int capacity;

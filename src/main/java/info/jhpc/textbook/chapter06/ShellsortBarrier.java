@@ -26,7 +26,7 @@ package info.jhpc.textbook.chapter06;
 
 import info.jhpc.thread.SimpleBarrier;
 
-class ShellsortBarrier {
+public class ShellsortBarrier {
     static int minDivisible = 3;
 
     int numThreads;

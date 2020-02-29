@@ -26,7 +26,7 @@ package info.jhpc.textbook.chapter07;
 
 import info.jhpc.thread.Future;
 
-class TestVadd3 {
+public class TestVadd3 {
     public static void main(String[] args) throws InterruptedException {
         double[] x = {1.0, 2.0, 3.0};
         double[] y = {4.0, 5.0, 6.0};

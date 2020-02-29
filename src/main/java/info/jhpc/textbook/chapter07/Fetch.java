@@ -26,7 +26,7 @@ package info.jhpc.textbook.chapter07;
 
 import info.jhpc.thread.Future;
 
-class Fetch implements Runnable {
+public class Fetch implements Runnable {
     Future src;
 
     Op1 continuation;

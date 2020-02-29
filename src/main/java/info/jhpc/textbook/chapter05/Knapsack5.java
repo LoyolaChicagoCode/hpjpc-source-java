@@ -32,7 +32,7 @@ import info.jhpc.thread.TerminationGroup;
 import java.util.BitSet;
 import java.util.Stack;
 
-class Knapsack5 {
+public class Knapsack5 {
     int DFSLEVELS = 20;
     int LEVELS = 5;
     BitSet selected;

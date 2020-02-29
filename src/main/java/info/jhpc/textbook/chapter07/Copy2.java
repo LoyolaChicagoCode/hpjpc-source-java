@@ -26,7 +26,7 @@ package info.jhpc.textbook.chapter07;
 
 import info.jhpc.thread.Future;
 
-class Copy2 implements Runnable {
+public class Copy2 implements Runnable {
     Future src;
 
     StoreOp dst;

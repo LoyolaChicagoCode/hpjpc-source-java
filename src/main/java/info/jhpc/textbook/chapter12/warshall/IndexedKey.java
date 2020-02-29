@@ -27,7 +27,7 @@ package info.jhpc.textbook.chapter12.warshall;
 import java.io.Serializable;
 import java.util.Random;
 
-class IndexedKey implements Serializable {
+public class IndexedKey implements Serializable {
     /**
      *
      */

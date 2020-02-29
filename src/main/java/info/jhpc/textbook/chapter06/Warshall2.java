@@ -32,7 +32,7 @@ import info.jhpc.thread.SimpleBarrier;
 import java.util.Random;
 
 // dynamic allocation
-class Warshall2 {
+public class Warshall2 {
     int numThreads;
 
     public Warshall2(int numThreads) {

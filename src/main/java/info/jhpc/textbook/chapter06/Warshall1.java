@@ -29,7 +29,7 @@ import info.jhpc.thread.SimpleBarrier;
 
 import java.util.Random;
 
-class Warshall1 {
+public class Warshall1 {
     int numThreads;
 
     public Warshall1(int numThreads) {

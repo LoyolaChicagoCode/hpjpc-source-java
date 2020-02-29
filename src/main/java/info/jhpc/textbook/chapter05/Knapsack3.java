@@ -32,7 +32,7 @@ import info.jhpc.thread.TerminationGroup;
 import java.util.BitSet;
 import java.util.Stack;
 
-class Knapsack3 {
+public class Knapsack3 {
     int LEVELS;
     BitSet selected;
     int capacity;

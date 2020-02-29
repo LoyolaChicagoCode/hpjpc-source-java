@@ -27,7 +27,7 @@ package info.jhpc.textbook.chapter05;
 import info.jhpc.thread.RunQueue;
 import info.jhpc.thread.SimpleFuture;
 
-class ShellsortDC {
+public class ShellsortDC {
     static int minDivisible = 3;
 
     static int numInSequence(int i, int k, int n) {

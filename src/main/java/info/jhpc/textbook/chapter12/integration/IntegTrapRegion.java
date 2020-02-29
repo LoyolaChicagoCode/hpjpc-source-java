@@ -34,7 +34,7 @@ package info.jhpc.textbook.chapter12.integration;
 
 import java.io.Serializable;
 
-class IntegTrapRegion implements Serializable {
+public class IntegTrapRegion implements Serializable {
 
     /**
      *

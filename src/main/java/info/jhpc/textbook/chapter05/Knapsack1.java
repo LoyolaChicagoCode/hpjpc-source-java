@@ -29,7 +29,7 @@ import info.jhpc.thread.SharedTerminationGroup;
 
 import java.util.BitSet;
 
-class Knapsack1 {
+public class Knapsack1 {
     BitSet selected;
     int capacity;
     float bestProfit = 0;

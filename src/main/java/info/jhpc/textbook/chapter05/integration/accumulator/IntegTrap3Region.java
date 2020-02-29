@@ -38,7 +38,7 @@ package info.jhpc.textbook.chapter05.integration.accumulator;
 
 import info.jhpc.thread.Accumulator;
 
-class IntegTrap3Region implements Runnable {
+public class IntegTrap3Region implements Runnable {
 
     // Privte variables used in calculating a specified region
     private String name;

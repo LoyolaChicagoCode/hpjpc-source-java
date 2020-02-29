@@ -34,7 +34,7 @@ import info.jhpc.thread.SharedTableOfQueues;
 
 import java.util.Random;
 
-class WarshallTQ {
+public class WarshallTQ {
     int blkSize = 8; // 8x8 blocks
 
     public WarshallTQ(int blkSize) {

@@ -21,6 +21,7 @@ local.properties
 .cache
 .settings/
 .gradle/
+.idea/
 # Emacs files
 *~
 \#*\#

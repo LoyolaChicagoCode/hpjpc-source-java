@@ -33,7 +33,7 @@
 
 package info.jhpc.textbook.chapter05.integration.threaded;
 
-class IntegTrap1Region extends Thread {
+public class IntegTrap1Region extends Thread {
 
     // Private variables used in calculating a specified region
     private double x_start, x_end;

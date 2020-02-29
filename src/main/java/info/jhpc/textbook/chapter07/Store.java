@@ -24,7 +24,8 @@
  */
 package info.jhpc.textbook.chapter07;
 
-class Store implements Op1 {
+public class Store implements Op1 {
+
     StoreOp dst;
 
     int pos;

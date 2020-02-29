@@ -33,7 +33,7 @@ import info.jhpc.memo.MemoClient;
 import java.io.Serializable;
 import java.util.Random;
 
-class WarshallTQ {
+public class WarshallTQ {
     private int blkSize = 8; // 8x8 blocks
 
     private int numBlocks;

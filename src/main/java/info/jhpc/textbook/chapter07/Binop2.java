@@ -24,7 +24,7 @@
  */
 package info.jhpc.textbook.chapter07;
 
-class Binop2 implements /* Runnable, */StoreOp {
+public class Binop2 implements /* Runnable, */StoreOp {
     Object lopnd, ropnd;
 
     Op2 continuation;

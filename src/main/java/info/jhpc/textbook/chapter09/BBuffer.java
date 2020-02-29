@@ -27,7 +27,7 @@ package info.jhpc.textbook.chapter09;
 import info.jhpc.thread.IndexedKey;
 import info.jhpc.thread.SharedTableOfQueues;
 
-class BBuffer {
+public class BBuffer {
     private IndexedKey fulls = IndexedKey.unique(0);
 
     private IndexedKey empties = fulls.at(1);

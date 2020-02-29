@@ -35,7 +35,7 @@ import info.jhpc.thread.RunQueue;
 
 import java.util.Random;
 
-class WarshallC3 {
+public class WarshallC3 {
     int numThreads;
 
     public WarshallC3(int numThreads) {

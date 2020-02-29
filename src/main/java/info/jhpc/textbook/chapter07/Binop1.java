@@ -26,7 +26,7 @@ package info.jhpc.textbook.chapter07;
 
 import info.jhpc.thread.Future;
 
-class Binop1 implements Runnable {
+public class Binop1 implements Runnable {
     Future lopnd, ropnd;
 
     Op2 continuation;

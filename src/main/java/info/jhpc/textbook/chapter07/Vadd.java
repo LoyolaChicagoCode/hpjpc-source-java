@@ -25,7 +25,7 @@
 
 package info.jhpc.textbook.chapter07;
 
-class Vadd implements Op2 {
+public class Vadd implements Op2 {
     Op1 continuation;
 
     Vadd(Op1 contin) {
